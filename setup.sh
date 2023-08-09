@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Exit the script if any command fails
 set -e
@@ -18,7 +18,7 @@ create_symlink() {
         return
     fi
 
-    if [ -e $dest ]; then
+    if [ -e $dest ] || [ -L $dest ]; then
         echo "Removing existing file or symlink at $dest"
         rm -rf $dest
     fi
