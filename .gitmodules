@@ -1,0 +1,3 @@
+[submodule "rack"]
+	path = rack
+	url = git@github.com:atimofeev/vcv-rack2-settings.git
