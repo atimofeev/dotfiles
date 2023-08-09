@@ -3,11 +3,13 @@
 # Exit the script if any command fails
 set -e
 
+
+
 declare -A links
-links["./hyper/hyper.js"]="$HOME/.hyper.js"
-links["./vi"]="$HOME/.vimrc"
-links["./fish"]="$HOME/.config/fish"
-links["./rack"]="$HOME/.Rack2"
+links["$PWD/hyper/hyper.js"]="$HOME/.hyper.js"
+links["$PWD/vi"]="$HOME/.vimrc"
+links["$PWD/fish"]="$HOME/.config/fish"
+links["$PWD/rack"]="$HOME/.Rack2"
 
 create_symlink() {
     local src=$1
