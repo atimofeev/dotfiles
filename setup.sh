@@ -7,8 +7,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 declare -A links
 links["$DIR/hyper/hyper.js"]="$HOME/.hyper.js"
-links["$DIR/vi"]="$HOME/.vimrc"
 links["$DIR/fish"]="$HOME/.config/fish"
+links["$DIR/vi"]="$HOME/.vimrc"
+links["$DIR/tmux/tmux.conf"]="$HOME/.tmux.conf"
 links["$DIR/rack"]="$HOME/.Rack2"
 
 create_symlink() {
