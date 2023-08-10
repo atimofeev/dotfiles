@@ -3,13 +3,16 @@
 # Exit the script if any command fails
 set -e
 
+# Get current location of this script
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 declare -A links
 links["$DIR/hyper/hyper.js"]="$HOME/.hyper.js"
 links["$DIR/fish"]="$HOME/.config/fish"
+links["$DIR/fish/fish_history"]="$HOME/.local/share/fish/fish_history"
 links["$DIR/vi"]="$HOME/.vimrc"
 links["$DIR/tmux/tmux.conf"]="$HOME/.tmux.conf"
+links["$DIR/qtile"]="$HOME/.config/qtile"
 links["$DIR/rack"]="$HOME/.Rack2"
 
 create_symlink() {
