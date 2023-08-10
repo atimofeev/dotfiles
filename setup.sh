@@ -3,13 +3,13 @@
 # Exit the script if any command fails
 set -e
 
-
+DIR="$( dirname "${BASH_SOURCE[0]}" )"
 
 declare -A links
-links["$PWD/hyper/hyper.js"]="$HOME/.hyper.js"
-links["$PWD/vi"]="$HOME/.vimrc"
-links["$PWD/fish"]="$HOME/.config/fish"
-links["$PWD/rack"]="$HOME/.Rack2"
+links["$DIR/hyper/hyper.js"]="$HOME/.hyper.js"
+links["$DIR/vi"]="$HOME/.vimrc"
+links["$DIR/fish"]="$HOME/.config/fish"
+links["$DIR/rack"]="$HOME/.Rack2"
 
 create_symlink() {
     local src=$1

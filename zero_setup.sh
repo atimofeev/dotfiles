@@ -37,4 +37,8 @@ fisher install \
 # Additional configuration for agnoster theme
 agnoster powerline
 sed -i "s/^  agnoster::context/ #agnoster::context/g" \$HOME/.config/fish/functions/fish_prompt.fish
+source \$HOME/.config/fish/functions/fish_prompt.fish
+
+# Config for Done, notification on 25s+ command execution
+set -g __done_min_cmd_duration 25000
 FISH_SCRIPT
