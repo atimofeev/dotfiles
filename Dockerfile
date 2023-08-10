@@ -2,11 +2,12 @@
 FROM alpine:latest
 
 # Set workdir
-WORKDIR /tmp
+WORKDIR /root
 
 # Mount points for access to github
-VOLUME ~/.ssh:/root/.ssh
-VOLUME ~/.gitconfig:/root/.gitconfig
+COPY ssh /root/.ssh
+COPY git/.gitconfig /root/.gitconfig
+RUN chmod 700 /root/.ssh/
 
 # Install build dependencies and runtime dependencies
 RUN apk add --no-cache \
@@ -20,7 +21,9 @@ RUN apk add --no-cache \
     curl \
     xz \
     git \
-    libstdc++
+    libstdc++ \
+    openssh-client \
+    bash
 
 # Download, compile and install fish shell
 RUN curl -L https://github.com/fish-shell/fish-shell/releases/download/3.6.1/fish-3.6.1.tar.xz | tar xJ && \
@@ -30,6 +33,8 @@ RUN curl -L https://github.com/fish-shell/fish-shell/releases/download/3.6.1/fis
     make install
 
 # Get dotfiles from github and run setup script
+# Includes hack to Cache Bust every build
+ADD http://date.jsontest.com /etc/builddate
 RUN git clone git@github.com:atimofeev/dotfiles.git && \
     ./dotfiles/setup.sh
 
@@ -42,12 +47,6 @@ RUN apk del \
     util-linux-dev \
     curl \
     xz && \
-    rm -rf /tmp/fish-3.6.1
+    rm -rf /root/fish-3.6.1
 
-#COPY ./fish/ fish/
-#RUN rm -rf /root/.config/fish/*
-#RUN mkdir -p /root/.config/fish
-#RUN cp -r /tmp/fish /root/.config/
-
-# Set fish as the default shell
-ENTRYPOINT ["/usr/local/bin/fish"]
+ENTRYPOINT ["fish"]
