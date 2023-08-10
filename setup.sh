@@ -3,7 +3,7 @@
 # Exit the script if any command fails
 set -e
 
-DIR="$( dirname "${BASH_SOURCE[0]}" )"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 declare -A links
 links["$DIR/hyper/hyper.js"]="$HOME/.hyper.js"
