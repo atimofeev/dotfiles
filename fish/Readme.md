@@ -1,18 +1,8 @@
-#!/bin/bash
+# Setup from scratch
 
-TMP_DIR="./tmp"
+```shell
+sudo dnf install -y fish #fzf fd bat
 
-# Create TMP_DIR if it doesn't exist
-mkdir -p $TMP_DIR
-
-# Install Hyper terminal
-curl -L https://releases.hyper.is/download/rpm -o $TMP_DIR/hyper_install.rpm
-sudo dnf install -y $TMP_DIR/hyper_install.rpm
-
-# Install fish and dependencies
-sudo dnf install -y fish fzf fd bat
-
-# Run fish commands
 fish << FISH_SCRIPT
 # Disable greeting
 set -g fish_greeting
