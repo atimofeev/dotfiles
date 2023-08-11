@@ -9,6 +9,5 @@ alias k=kubectl
 alias rack='cd ~/Rack2Free && ./Rack && cd -'
 
 # env variables:
-set OPENAI_API_KEY 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
 set GOPATH "$HOME/go"
 set PATH "$GOPATH/bin:$PATH"
