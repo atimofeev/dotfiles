@@ -1,8 +1,7 @@
-# UNTESTED
-TMP_DIR="./tmp"
+URL="https://releases.hyper.is/download/rpm"
+FILE_NAME="hyper.rpm"
+TMP_DIR=/tmp/
 
-# Create TMP_DIR if it doesn't exist
-mkdir -p $TMP_DIR
-
-curl -L https://releases.hyper.is/download/rpm -o $TMP_DIR/hyper_install.rpm
-sudo dnf install -y $TMP_DIR/hyper_install.rpm
+wget -q -O $TMP_DIR$FILE_NAME $URL
+sudo dnf install -yq $TMP_DIR$FILE_NAME
+rm $TMP_DIR$FILE_NAME

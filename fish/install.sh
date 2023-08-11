@@ -1,4 +1,3 @@
-#!/bin/bash
 sudo dnf install -yq fish #fzf
 
 

@@ -1,0 +1,2 @@
+# SRC=DEST
+$DIR/rack/dotfiles=$HOME/.Rack2
