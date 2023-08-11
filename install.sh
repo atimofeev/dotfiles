@@ -47,8 +47,10 @@ get_symlinks() {
     if [[ -f "$app_dir/symlinks.txt" ]]; then
         while IFS= read -r link || [[ -n $link ]]; do
             [[ "$link" =~ ^# || -z "$link" ]] && continue
-            link=${link/\$DIR/$DIR}
-            link=${link/\$HOME/$HOME}
+            while [[ $link =~ \$DIR || $link =~ \$HOME ]]; do
+                link=${link/\$DIR/$DIR}
+                link=${link/\$HOME/$HOME}
+            done
             eval src=\${link%=*}
             eval dest=\${link#*=}
             create_symlink "$src" "$dest"
