@@ -1,0 +1,1 @@
+sudo dnf install -yq git
