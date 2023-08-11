@@ -82,6 +82,12 @@ To install multiple apps concurrently:
 
 Note: This command will also override the `.disabled` tagfile and proceed with the installation.
 
+4. If you only want to setup symlinks for an app, use (-l | --links) flag:
+
+```bash
+./install.sh -l [application_name]
+```
+
 ## Notes
 
 - Should an application include a `requirements.txt` file, the installer will first confirm that all necessary apps have been installed before moving forward.

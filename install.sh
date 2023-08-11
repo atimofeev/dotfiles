@@ -4,6 +4,7 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 FORCE_INSTALL=false
+LINKS_ONLY=false
 declare -a TARGET_APPS
 
 install_app() {
@@ -14,11 +15,16 @@ install_app() {
         return
     fi
 
-    echo "Installing $app_dir..."
-    install_requirements "$app_dir"
-    execute_install_script "$app_dir"
-    get_symlinks "$app_dir"
-    mark_as_installed "$app_dir"
+    if [ $LINKS_ONLY = true ]; then
+        echo "Setting symlinks for $app_dir"
+        get_symlinks "$app_dir"
+    else
+        echo "Installing $app_dir..."
+        install_requirements "$app_dir"
+        execute_install_script "$app_dir"
+        get_symlinks "$app_dir"
+        mark_as_installed "$app_dir"
+    fi
 }
 
 install_requirements() {
@@ -92,6 +98,10 @@ parse_args() {
         case "$1" in
             -f|--force)
                 FORCE_INSTALL=true
+                shift
+                ;;
+            -l|--links)
+                LINKS_ONLY=true
                 shift
                 ;;
             --all)
