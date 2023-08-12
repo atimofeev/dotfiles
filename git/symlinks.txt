@@ -1,2 +1,0 @@
-# SRC=DEST
-$DIR/git/dotfiles/gitconfig=$HOME/.gitconfig
