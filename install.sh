@@ -9,7 +9,9 @@ INSTALLER="Unknown"
 declare -a TARGET_APPS
 
 detect_package_manager() {
-    if command -v apt-get > /dev/null; then
+    if [ -n "$PREFIX" ] && command -v pkg > /dev/null; then
+        INSTALLER="pkg install -yq"
+    elif command -v apt-get > /dev/null; then
         INSTALLER="sudo apt-get install -yq"
     elif command -v dnf > /dev/null; then
         INSTALLER="sudo dnf install -yq"
@@ -20,7 +22,7 @@ detect_package_manager() {
     elif command -v zypper > /dev/null; then
         INSTALLER="sudo zypper install -yq"
     elif command -v pkg > /dev/null; then
-        INSTALLER="pkg install -yq"
+        INSTALLER="sudo pkg install -yq"
     fi
 }
 
