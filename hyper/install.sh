@@ -3,5 +3,5 @@ FILE_NAME="hyper.rpm"
 TMP_DIR=/tmp/
 
 wget -q -O $TMP_DIR$FILE_NAME $URL
-sudo dnf install -yq $TMP_DIR$FILE_NAME
+$INSTALLER $TMP_DIR$FILE_NAME
 rm $TMP_DIR$FILE_NAME

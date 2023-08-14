@@ -5,7 +5,24 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 FORCE_INSTALL=false
 LINKS_ONLY=false
+INSTALLER="Unknown"
 declare -a TARGET_APPS
+
+detect_package_manager() {
+    if command -v apt-get > /dev/null; then
+        INSTALLER="sudo apt-get install -yq"
+    elif command -v dnf > /dev/null; then
+        INSTALLER="sudo dnf install -yq"
+    elif command -v yum > /dev/null; then
+        INSTALLER="sudo yum install -yq"
+    elif command -v pacman > /dev/null; then
+        INSTALLER="sudo pacman -S --noconfirm"
+    elif command -v zypper > /dev/null; then
+        INSTALLER="sudo zypper install -yq"
+    elif command -v pkg > /dev/null; then
+        INSTALLER="pkg install -yq"
+    fi
+}
 
 install_app() {
     local app_dir="$1"
@@ -122,6 +139,8 @@ parse_args() {
 
 main() {
     parse_args "$@"
+    detect_package_manager
+    export INSTALLER
     for app in "${TARGET_APPS[@]}"; do
         install_app "$app"
     done

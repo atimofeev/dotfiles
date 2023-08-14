@@ -1,1 +1,1 @@
-sudo dnf install -yq exa
+$INSTALLER exa

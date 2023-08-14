@@ -1,4 +1,4 @@
-sudo dnf install -yq fish #fzf
+$INSTALLER fish #fzf
 
 
 ### FUZZY CD ###
