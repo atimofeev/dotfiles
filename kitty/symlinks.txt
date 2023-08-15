@@ -1,0 +1,2 @@
+#SRC=DEST
+$DIR/kitty/dotfiles/kitty.conf=$HOME/.config/kitty/kitty.conf
