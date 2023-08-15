@@ -1,2 +1,2 @@
-# SRC=DEST
+#SRC=DEST
 $DIR/hyper/dotfiles/hyper.js=$HOME/.hyper.js
