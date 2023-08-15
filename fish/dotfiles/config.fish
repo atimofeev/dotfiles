@@ -5,6 +5,8 @@ end
 ### ENV VARS ###
 set GOPATH "$HOME/go"
 set PATH "$GOPATH/bin:$PATH"
+set -x MANPAGER "sh -c 'col -bx | bat -l man -p'"   # man pages -> bat
+set -x MANROFFOPT "-c"                              # bat man pages formatting fix
 
 ### ALIASES ###
 alias t=terraform
@@ -22,6 +24,16 @@ alias l.='exa -a | egrep "^\."'                             # show only dotfiles
 # bat
 alias less='bat'
 alias cat='bat --paging=never'
+alias bathelp='bat --plain --language=help' # help [command] -> bat
+function help # help [command] -> bat
+    $argv --help 2>&1 | bathelp
+end
+function batdiff
+    git diff --name-only --relative --diff-filter=d | xargs bat --diff
+end
+function fdb
+    fd $argv -X bat
+end
 
 # nvim
 alias vi='nvim'
