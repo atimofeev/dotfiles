@@ -1,4 +1,4 @@
-URL="https://vcvrack.com/downloads/RackFree-2.3.0-lin-x64.zip"
+URL="https://vcvrack.com/downloads/RackFree-2.4.0-lin-x64.zip"
 FILE_NAME=$(basename $URL)
 TMP_DIR=/tmp/
 
