@@ -22,6 +22,12 @@ alias lt='exa -aT --color=always --group-directories-first --level 2' # tree lis
 alias l.='exa -a | egrep "^\."' # show only dotfiles
 
 alias mv='git mv $argv; or mv $argv'
+alias cd.='cd ..'
+alias cd..='cd ../..'
+alias cd...='cd ../../..'
+alias cd....='cd ../../../..'
+alias cd.....='cd ../../../../..'
+alias cd......='cd ../../../../../..'
 
 # bat
 alias less='bat'
