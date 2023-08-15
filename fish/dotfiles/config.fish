@@ -18,15 +18,16 @@ alias rack='cd ~/Rack2Free && ./Rack && cd -'
 alias ls='exa --color=always --group-directories-first'
 alias ll='exa -l --color=always --group-directories-first'
 alias la='exa -al --color=always --group-directories-first'
-alias lt='exa -aT --color=always --group-directories-first' # tree listing
-alias l.='exa -a | egrep "^\."'                             # show only dotfiles
+alias lt='exa -aT --color=always --group-directories-first --level 2' # tree listing
+alias l.='exa -a | egrep "^\."' # show only dotfiles
+
+alias mv='git mv $argv; or mv $argv'
 
 # bat
 alias less='bat'
 alias cat='bat --paging=never'
-alias bathelp='bat --plain --language=help' # help [command] -> bat
 function help # help [command] -> bat
-    $argv --help 2>&1 | bathelp
+    $argv --help 2>&1 | bat --plain --language=help
 end
 function batdiff
     git diff --name-only --relative --diff-filter=d | xargs bat --diff
@@ -35,9 +36,26 @@ function fdb
     fd $argv -X bat
 end
 
+# ripgrep
+alias rg='rg -i --color=always'
+
+# fzf
+alias fzps="ps -ef | fzf --bind 'ctrl-r:reload(ps -ef)' \
+    --header 'Press CTRL-R to reload' --header-lines=1 \
+    --height=70%--layout=reverse"
+alias fzfb='fzf --preview "bat --color=always --style=numbers --line-range=:500 {}"'
+function fzrg
+    rg --line-number --no-heading --color=always --smart-case $argv | fzf -d ":" -n 2.. --ansi --no-sort --preview-window "down:20%:+{2}" --preview "bat --style=numbers --color=always --highlight-line {2} {1}"
+end  
+
 # nvim
 alias vi='nvim'
 alias vim='nvim'
+
+# [command] | tb
+alias tb="nc termbin.com 9999"
+
+alias chx='chmod +x'
 
 # git
 alias addup='git add -u'
