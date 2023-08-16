@@ -5,3 +5,5 @@ $INSTALLER fd-find # hack for package name inconsistency
 $INSTALLER fzf # fuzzy find
 $INSTALLER ripgrep
 $INSTALLER neovim
+
+bash z_install.sh # install z
