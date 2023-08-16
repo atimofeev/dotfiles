@@ -14,6 +14,9 @@ set -x MANROFFOPT "-c"                              # bat man pages formatting f
 
 # Z #
 #replay "source /usr/local/bin/z"
+set -U Z_DATA "$HOME/.local/share/z/data"
+set -U Z_DATA_DIR "$HOME/.local/share/z"
+set -U Z_EXCLUDE "^$HOME\$"
 
 # EXA #
 alias ls='exa --color=always --group-directories-first'

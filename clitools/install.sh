@@ -6,4 +6,4 @@ $INSTALLER fzf # fuzzy find
 $INSTALLER ripgrep
 $INSTALLER neovim
 
-bash z_install.sh # install z
+#bash z_install.sh # install z
