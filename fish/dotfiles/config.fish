@@ -55,44 +55,70 @@ alias pull='git pull origin'
 alias push='git push origin'
 alias tag='git tag'
 alias newtag='git tag -a'
+function git_remove_file_history
+    set file_path $argv[1]
+
+    if test -z "$file_path"
+        echo "Please provide a file path to remove from Git history."
+        return 1
+    end
+
+    # Ensure that the user is in a Git repository
+    if not git rev-parse --is-inside-work-tree > /dev/null 2>&1
+        echo "You must be inside a Git repository to run this command."
+        return 1
+    end
+
+    # Remove the file from Git history
+    git filter-branch --force --index-filter "git rm --cached --ignore-unmatch $file_path" --prune-empty --tag-name-filter cat -- --all
+
+    # Remove the temporary files created by git filter-branch
+    rm -rf .git/refs/original/
+    git reflog expire --expire=now --all
+    git gc --prune=now
+    git gc --aggressive --prune=now
+
+    echo "Successfully removed $file_path from Git history."
+end
+
 
 # ARCHIVE EXTRACTION #
 function ex
     if test -f "$argv[1]"
-        switch (string match -r '\.\w+$' "$argv[1]")
-            case '*.tar.bz2'
-                tar xjf $argv[1]
-            case '*.tar.gz'
-                tar xzf $argv[1]
-            case '*.bz2'
-                bunzip2 $argv[1]
-            case '*.rar'
-                unrar x $argv[1]
-            case '*.gz'
-                gunzip $argv[1]
-            case '*.tar'
-                tar xf $argv[1]
-            case '*.tbz2'
-                tar xjf $argv[1]
-            case '*.tgz'
-                tar xzf $argv[1]
-            case '*.zip'
-                unzip $argv[1]
-            case '*.Z'
-                uncompress $argv[1]
-            case '*.7z'
-                7z x $argv[1]
-            case '*.deb'
-                ar x $argv[1]
-            case '*.tar.xz'
-                tar xf $argv[1]
-            case '*.tar.zst'
-                unzstd $argv[1]
-            case '*'
-                echo "'$argv[1]' cannot be extracted via ex()"
-        end
+	switch (string match -r '\.\w+$' "$argv[1]")
+		case '*.tar.bz2'
+			tar xjf $argv[1]
+		case '*.tar.gz'
+			tar xzf $argv[1]
+		case '*.bz2'
+			bunzip2 $argv[1]
+		case '*.rar'
+			unrar x $argv[1]
+		case '*.gz'
+			gunzip $argv[1]
+		case '*.tar'
+			tar xf $argv[1]
+		case '*.tbz2'
+			tar xjf $argv[1]
+		case '*.tgz'
+			tar xzf $argv[1]
+		case '*.zip'
+			unzip $argv[1]
+		case '*.Z'
+			uncompress $argv[1]
+		case '*.7z'
+			7z x $argv[1]
+		case '*.deb'
+			ar x $argv[1]
+		case '*.tar.xz'
+			tar xf $argv[1]
+		case '*.tar.zst'
+			unzstd $argv[1]
+		case '*'
+			echo "'$argv[1]' cannot be extracted via ex()"
+	end
     else
-        echo "'$argv[1]' is not a valid file"
+	echo "'$argv[1]' is not a valid file"
     end
 end
 
@@ -145,11 +171,19 @@ alias rr='curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/mas
 ### FUNCTIONS ###
 function touchx
     for file in $argv
-        touch $file
-        chmod +x $file
+		touch $file
+		chmod +x $file
     end
 end
 
 function dn
     $argv 2>/dev/null
+end
+
+function list_funcs
+    for func in (functions)
+		#echo "Function Name: "$func
+		echo
+		functions $func
+    end | bat -l fish
 end
