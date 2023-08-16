@@ -130,6 +130,7 @@ alias k=kubectl
 alias rack='cd ~/Rack2Free && ./Rack && cd -'
 
 alias mv='git mv $argv; or mv $argv'
+alias cdtl='cd $(git rev-parse --show-toplevel 2>/dev/null)'
 alias cd.='cd ..'
 alias cd..='cd ../..'
 alias cd...='cd ../../..'
