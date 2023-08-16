@@ -44,7 +44,7 @@ alias rg='rg -i --color=always'
 # FZF #
 alias fzps="ps -ef | fzf --bind 'ctrl-r:reload(ps -ef)' \
     --header 'Press CTRL-R to reload' --header-lines=1 \
-    --height=70%--layout=reverse"
+    --height=70% --layout=reverse"
 alias fzfb='fzf --preview "bat --color=always --style=numbers --line-range=:500 {}"'
 function fzrg
     rg --line-number --no-heading --color=always --smart-case $argv | fzf -d ":" -n 2.. --ansi --no-sort --preview-window "down:20%:+{2}" --preview "bat --style=numbers --color=always --highlight-line {2} {1}"
