@@ -1,4 +1,4 @@
-$INSTALLER fish #fzf
+$INSTALLER fish
 
 
 ### FUZZY CD ###

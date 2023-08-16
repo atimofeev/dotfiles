@@ -79,6 +79,7 @@ function git_remove_file_history
     git gc --aggressive --prune=now
 
     echo "Successfully removed $file_path from Git history."
+	# do 'git push origin --force --all' after that
 end
 
 
