@@ -1,5 +1,6 @@
+# TODO: fd -> fzf
 if status is-interactive
-    # Commands to run in interactive sessions can go here
+
 end
 
 ### ENV VARS ###
@@ -10,6 +11,9 @@ set -x MANROFFOPT "-c"                              # bat man pages formatting f
 
 
 ### APPS ###
+
+# Z #
+#replay "source /usr/local/bin/z"
 
 # EXA #
 alias ls='exa --color=always --group-directories-first'
