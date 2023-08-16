@@ -78,6 +78,8 @@ get_symlinks() {
             done
             eval src=\${link%=*}
             eval dest=\${link#*=}
+            src=${src%/}
+            dest=${dest%/}
             create_symlink "$src" "$dest"
         done < "$app_dir/symlinks.txt"
     fi
