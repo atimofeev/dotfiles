@@ -8,7 +8,7 @@ if [[ $HOME != *"com.termux"* ]]; then
 fi
 
 # Copy the font to Termux configuration directory
-cp $CUR_DIR/dotfiles/DejaVu.ttf  $HOME/.termux/font.ttf
+cp $CUR_DIR/../fonts/fonts/DejaVuSansMono-Powerline.ttf  $HOME/.termux/font.ttf
 
 # Reload Termux settings
 am broadcast --user 0 -a com.termux.app.reload_style com.termux > /dev/null
