@@ -260,3 +260,6 @@ function list_funcs
 		functions $func
     end | bat -l fish
 end
+
+# starship prompt
+starship init fish | source
