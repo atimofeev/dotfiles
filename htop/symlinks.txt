@@ -1,0 +1,2 @@
+#SRC=DEST
+$DIR/htop/dotfiles/htoprc=$HOME/.config/htop/htoprc
