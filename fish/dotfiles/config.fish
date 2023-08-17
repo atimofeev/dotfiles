@@ -79,8 +79,8 @@ function fzps -d "ps+fzf"
 end
 
 function fzg -d "ripgrep+fzf"
-	set command "rg --line-number --no-heading --color=always \
-		--smart-case $argv"
+    set command "rg --line-number --no-heading --color=always \
+        --smart-case '"$argv"'"
 	set header 'Press CTRL-R to reload'
 	set preview 'bat --color=always --style=numbers	\
 		--line-range=:500 {1} --highlight-line {2}'
