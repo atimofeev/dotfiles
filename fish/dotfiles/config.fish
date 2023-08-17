@@ -1,4 +1,3 @@
-# TODO: fd -> fzf
 if status is-interactive
 
 end
@@ -22,6 +21,7 @@ set -U Z_EXCLUDE "^$HOME\$"
 alias ls='exa --color=always --group-directories-first'
 alias ll='exa -l --color=always --group-directories-first'
 alias la='exa -al --color=always --group-directories-first'
+alias ld='exa -ld --color=always --group-directories-first' # list directory info
 alias lt='exa -aT --color=always --group-directories-first --level 2' # tree listing
 alias l.='exa -a | egrep "^\."' # show only dotfiles
 
@@ -31,7 +31,7 @@ alias cat='bat --paging=never'
 function help # help [command] -> bat
     $argv --help 2>&1 | bat --plain --language=help
 end
-function batdiff
+function bdiff
     git diff --name-only --relative --diff-filter=d | xargs bat --diff
 end
 function fdb
@@ -42,12 +42,76 @@ end
 alias rg='rg -i --color=always'
 
 # FZF #
-alias fzps="ps -ef | fzf --bind 'ctrl-r:reload(ps -ef)' \
-    --header 'Press CTRL-R to reload' --header-lines=1 \
-    --height=70% --layout=reverse"
-alias fzfb='fzf --preview "bat --color=always --style=numbers --line-range=:500 {}"'
-function fzrg
-    rg --line-number --no-heading --color=always --smart-case $argv | fzf -d ":" -n 2.. --ansi --no-sort --preview-window "down:20%:+{2}" --preview "bat --style=numbers --color=always --highlight-line {2} {1}"
+set -gx FZF_DEFAULT_COMMAND 'fd --type f --strip-cwd-prefix \
+	--hidden --follow --exclude .git'
+
+function fz -d "fd+fzf"
+	set command $FZF_DEFAULT_COMMAND
+	set editor "vi"
+	set header "Press CTRL-R to reload"
+	set preview "bat --color=always --style=numbers \
+		--line-range=:500 {1}"
+	
+	echo '' | fzf \
+		--header="$header" \
+		--delimiter : \
+		--preview $preview \
+		--bind "start:reload:$command" \
+		--bind "ctrl-r:reload:$command" \
+		--bind "enter:execute($editor {1})"
+end
+
+function fzps -d "ps+fzf"
+	set command 'ps -ejH --forest'
+	#set command "ps -eHo \"%p %U %C %t %x %y %z %a\" --forest \
+		# | awk 'NR==1 { print; next } /^\s*[0-9]+/ \
+		# { \$7=int(\$7/1024)\"M\" } { print }' OFS='\t'"
+	set header "Press CTRL-R to reload, CTRL-X to kill"
+	
+	eval $command | fzf \
+		--header="$header" \
+		--header-lines=1 \
+		--height=70% \
+		--layout=reverse \
+		--bind "start:unbind(enter)" \
+		--bind "ctrl-r:reload:$command" \
+		--bind "ctrl-x:execute(kill -9 {1})+reload($command)"
+end
+
+function fzg -d "ripgrep+fzf"
+	set command "rg --line-number --no-heading --color=always \
+		--smart-case $argv"
+	set header 'Press CTRL-R to reload'
+	set preview 'bat --color=always --style=numbers	\
+		--line-range=:500 {1} --highlight-line {2}'
+
+	if test (count $argv) -eq 0
+        echo "Provide search pattern!"
+        return 1
+    end
+
+	echo '' | fzf --ansi \
+		--header="$header" \
+		--delimiter : \
+		--preview $preview \
+		--preview-window ":+{2}+3/3" \
+		--bind "start:reload:$command" \
+		--bind "ctrl-r:reload:$command" \
+		--bind "enter:execute(vim {1})" 
+end
+
+function fzdu -d "du+fzf"
+	set command 'du -ah . 2>/dev/null | sort -h -r | head -1000'
+	set header 'Press CTRL-R to reload, Enter to advance, CTRL-X to delete'
+
+	# TODO: fix 'enter:reload' cmd
+	echo '' | fzf \
+		--header="$header" \
+		--bind "start:reload:$command" \
+		--bind "ctrl-r:reload:$command" \
+		--bind "ctrl-x:execute(rm {2})+reload($command)" \
+		--bind "enter:reload(du -ah (echo {} | awk '{\$1=\"\"; print \$0}' \
+			| sed 's/^ *//') 2>/dev/null | sort -h -r | head -1000)"
 end
 
 # GIT #
