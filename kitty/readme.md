@@ -1,6 +1,8 @@
+# Readme
+
 ## Sample config
 
-```
+```conf
 # vim:fileencoding=utf-8:ft=conf
 
 font_family      Fantasque Sans Mono
