@@ -8,5 +8,5 @@ wget -q -P $TMP_DIR $URL
 unzip -q $TMP_DIR$FILE_NAME -d $HOME/
 rm $TMP_DIR$FILE_NAME
 
-git clone git@github.com:atimofeev/vcv-rack2-settings.git $CUR_DIR/dotfiles
+git clone git@github.com:atimofeev/vcv-rack2-settings.git $HOME/repos/vcv-rack2-settings/
 git clone git@github.com:atimofeev/vcv-rack2-patches.git $HOME/repos/vcv-rack2-patches/

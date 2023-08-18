@@ -1,3 +1,0 @@
-[submodule "rack"]
-	path = rack/dotfiles
-	url = git@github.com:atimofeev/vcv-rack2-settings.git
