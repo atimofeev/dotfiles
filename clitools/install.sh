@@ -1,3 +1,4 @@
+$INSTALLER wget
 $INSTALLER exa # substitute for ls
 $INSTALLER bat # substitute for cat/less
 $INSTALLER fd  # substiture for find

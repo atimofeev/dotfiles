@@ -1,12 +1,14 @@
-# this will download and setup Nerd Font
-URL=https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts
-wget -q -P fonts/ $URL/DejaVuSansMono/Regular/DejaVuSansMNerdFontMono-Regular.ttf
-wget -q -P fonts/ $URL/DejaVuSansMono/Italic/DejaVuSansMNerdFontMono-Oblique.ttf
-wget -q -P fonts/ $URL/DejaVuSansMono/Bold/DejaVuSansMNerdFontMono-Bold.ttf
-wget -q -P fonts/ $URL/DejaVuSansMono/Bold-Italic/DejaVuSansMNerdFontMono-BoldOblique.ttf
-
+URL=https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/DejaVuSansMono.tar.xz
+FILENAME=$(basename $URL)
+TMP_DIR=/tmp/
 FONT_DIR="$HOME/.local/share/fonts"
 
-for font in fonts/*.ttf; do
-    cp "$font" "$FONT_DIR"
-done
+wget -q -P $TMP_DIR $URL
+
+tar -Jxf $TMP_DIR$FILENAME -C $FONT_DIR
+
+rm $TMP_DIR$FILENAME
+
+fc-cache -fv
+
+fc-list : family | grep Nerd
