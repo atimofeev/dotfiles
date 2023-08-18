@@ -157,43 +157,25 @@ end
 # ARCHIVE EXTRACTION #
 function ex
     if test -f "$argv[1]"
-	switch (string match -r '\.\w+$' "$argv[1]")
-		case '*.tar.bz2'
-			tar xjf $argv[1]
-		case '*.tar.gz'
-			tar xzf $argv[1]
-		case '*.bz2'
-			bunzip2 $argv[1]
-		case '*.rar'
-			unrar x $argv[1]
-		case '*.gz'
-			gunzip $argv[1]
-		case '*.tar'
-			tar xf $argv[1]
-		case '*.tbz2'
-			tar xjf $argv[1]
-		case '*.tgz'
-			tar xzf $argv[1]
-		case '*.zip'
-			unzip $argv[1]
-		case '*.Z'
-			uncompress $argv[1]
-		case '*.7z'
-			7z x $argv[1]
-		case '*.deb'
-			ar x $argv[1]
-		case '*.tar.xz'
-			tar xf $argv[1]
-		case '*.tar.zst'
-			unzstd $argv[1]
-		case '*'
-			echo "'$argv[1]' cannot be extracted via ex()"
-	end
+        set ext (string match -r '\..+$' "$argv[1]")
+        if test "$ext" = ".tar.bz2"; tar xjf $argv[1]
+        else if test "$ext" = ".tar.gz"; tar xzf $argv[1]
+        else if test "$ext" = ".bz2"; bunzip2 $argv[1]
+        else if test "$ext" = ".rar"; unrar x $argv[1]
+        else if test "$ext" = ".gz"; gunzip $argv[1]
+        else if test "$ext" = ".tar"; tar xf $argv[1]
+        else if test "$ext" = ".tbz2"; tar xjf $argv[1]
+        else if test "$ext" = ".tgz"; tar xzf $argv[1]
+        else if test "$ext" = ".zip"; unzip $argv[1]
+        else if test "$ext" = ".Z"; uncompress $argv[1]
+        else if test "$ext" = ".7z"; 7z x $argv[1]
+        else if test "$ext" = ".tar.xz"; tar -Jxf $argv[1]
+        else if test "$ext" = ".tar.zst"; unzstd $argv[1]
+        else; echo "'$argv[1]' cannot be extracted via ex()"; end
     else
-	echo "'$argv[1]' is not a valid file"
+        echo "'$argv[1]' is not a valid file"
     end
 end
-
 
 ### ALIASES ###
 alias t=terraform
