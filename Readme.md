@@ -1,3 +1,5 @@
+# My dotfiles (WIP)
+
 ## Introduction
 
 This repository contains a script that automates the installation of various applications and manages their respective dotfiles and configurations. Each application is housed in its own directory, which may have its specific installation script, a requirements file, and a symlinks file.
@@ -9,16 +11,16 @@ Example directory structure:
 ```text
 .
 ├── git
-│  ├── dotfiles
+│  ├── files
 │  ├── install.sh
 ├── fish
-│  ├── dotfiles
+│  ├── files
 │  ├── install.sh
 │  ├── requirements.txt
 │  └── symlinks.txt
 ├── hyper
 │  ├── .disabled
-│  ├── dotfiles
+│  ├── files
 │  ├── install.sh
 │  └── symlinks.txt
 ├── install.sh
@@ -27,7 +29,7 @@ Example directory structure:
 
 Each application directory can contain:
 
-- `dotfiles`: A directory with configurations specific to that application.
+- `files`: A directory with configurations specific to that application. May also contain any files required for installation.
 - `install.sh`: A script that manages the installation of the application.
 - `requirements.txt`: A list of other applications required to be installed prior to the current one. Each list entry should match the name of the app directory.
 - `symlinks.txt`: Specifies symlinks to be created.
@@ -46,8 +48,8 @@ fish
 
 ```text
 # SRC=DEST
-$DIR/fish/dotfiles=$HOME/.config/fish
-$DIR/fish/dotfiles/fish_history=$HOME/.local/share/fish/fish_history
+$DIR/fish/files=$HOME/.config/fish
+$DIR/fish/files/fish_history=$HOME/.local/share/fish/fish_history
 ```
 
 Here, `$DIR` refers to the main `install.sh` script's current directory.

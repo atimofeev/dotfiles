@@ -1,3 +1,3 @@
 #SRC=DEST
-$DIR/fish/dotfiles=$HOME/.config/fish
-#$DIR/fish/dotfiles/fish_history=$HOME/.local/share/fish/fish_history
+$DIR/fish/files=$HOME/.config/fish
+#$DIR/fish/files/fish_history=$HOME/.local/share/fish/fish_history

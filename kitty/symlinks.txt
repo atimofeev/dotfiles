@@ -1,2 +1,2 @@
 #SRC=DEST
-$DIR/kitty/dotfiles=$HOME/.config/kitty
+$DIR/kitty/files=$HOME/.config/kitty

@@ -36,7 +36,7 @@ RUN curl -L https://github.com/fish-shell/fish-shell/releases/download/3.6.1/fis
 # Includes hack to Cache Bust every build
 ADD http://date.jsontest.com /etc/builddate
 RUN git clone git@github.com:atimofeev/dotfiles.git && \
-    ./dotfiles/setup.sh
+    ./dotfiles/install.sh
 
 # Clean up
 RUN apk del \

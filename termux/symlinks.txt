@@ -1,2 +1,2 @@
 #SRC=DEST
-$DIR/termux/dotfiles/termux.properties=$HOME/.termux/termux.properties
+$DIR/termux/files/termux.properties=$HOME/.termux/termux.properties

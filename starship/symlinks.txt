@@ -1,2 +1,2 @@
 #SRC=DEST
-$DIR/starship/dotfiles/starship.toml=$HOME/.config/starship.toml
+$DIR/starship/files/starship.toml=$HOME/.config/starship.toml
