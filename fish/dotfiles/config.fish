@@ -42,13 +42,13 @@ end
 alias rg='rg -i --color=always'
 
 # FZF #
+set -gx FZF_EDITOR 'vi'
 set -gx FZF_DEFAULT_COMMAND 'fd --type f --strip-cwd-prefix \
 	--hidden --follow --exclude .git'
 
 function fz -d "fd+fzf"
 	set command $FZF_DEFAULT_COMMAND
-	set editor "vi"
-	set header "Press CTRL-R to reload"
+	set header "Press CTRL-R to reload, Enter to edit"
 	set preview "bat --color=always --style=numbers \
 		--line-range=:500 {1}"
 	
@@ -58,7 +58,7 @@ function fz -d "fd+fzf"
 		--preview $preview \
 		--bind "start:reload:$command" \
 		--bind "ctrl-r:reload:$command" \
-		--bind "enter:execute($editor {1})"
+		--bind "enter:execute($FZF_EDITOR {1})"
 end
 
 function fzps -d "ps+fzf"
@@ -81,7 +81,7 @@ end
 function fzg -d "ripgrep+fzf"
     set command "rg --line-number --no-heading --color=always \
         --smart-case '"$argv"'"
-	set header 'Press CTRL-R to reload'
+	set header 'Press CTRL-R to reload, Enter to edit'
 	set preview 'bat --color=always --style=numbers	\
 		--line-range=:500 {1} --highlight-line {2}'
 
@@ -97,7 +97,7 @@ function fzg -d "ripgrep+fzf"
 		--preview-window ":+{2}+3/3" \
 		--bind "start:reload:$command" \
 		--bind "ctrl-r:reload:$command" \
-		--bind "enter:execute(vim {1})" 
+		--bind "enter:execute($FZF_EDITOR {1})"
 end
 
 function fzdu -d "du+fzf"
