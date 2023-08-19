@@ -1,0 +1,2 @@
+#SRC=DEST
+$DIR/qtile/files/config.py=$HOME/.config/qtile/config.py
