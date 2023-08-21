@@ -114,6 +114,23 @@ function fzdu -d "du+fzf"
 			| sed 's/^ *//') 2>/dev/null | sort -h -r | head -1000)"
 end
 
+function _count_files
+    for dir in (fd --hidden --absolute-path --max-depth 1 --type directory)
+		echo $dir: (fd --full-path $dir --hidden --absolute-path --type file | wc -l)
+    end
+end
+function fzwc -d "count_files+fzf"
+	set command '_count_files'
+	set header 'Press CTRL-R to reload, Enter to advance'
+
+	echo '' | fzf \
+		--header="$header" \
+		--bind "start:reload:$command" \
+		--bind "ctrl-r:reload:$command" \
+		--delimiter : \
+		--bind "enter:reload:cd {1} && $command" 
+end
+
 # GIT #
 alias addup='git add -u'
 alias addall='git add .'
@@ -198,6 +215,8 @@ alias vim='nvim'
 
 # [command] | tb
 alias tb="nc termbin.com 9999"
+
+alias nf='neofetch --backend off --color_blocks off'
 
 alias chx='chmod +x'
 
