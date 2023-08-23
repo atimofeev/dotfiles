@@ -2,6 +2,8 @@ if status is-interactive
 
 end
 
+set -U FZF_COMPLETE 2
+
 ### ENV VARS ###
 set GOPATH "$HOME/go"
 set PATH "$GOPATH/bin:$PATH"
@@ -43,8 +45,8 @@ alias rg='rg -i --color=always'
 
 # FZF #
 set -gx FZF_EDITOR 'vi'
-set -gx FZF_DEFAULT_COMMAND 'fd --type f --strip-cwd-prefix \
-	--hidden --follow --exclude .git'
+#set -gx FZF_DEFAULT_COMMAND 'fd --type f --strip-cwd-prefix \
+#	--hidden --follow --exclude .git'
 
 function fz -d "fd+fzf"
 	set command $FZF_DEFAULT_COMMAND
