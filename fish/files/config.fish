@@ -29,7 +29,7 @@ alias l.='exa -a | egrep "^\."' # show only dotfiles
 
 # BAT #
 alias less='bat'
-alias cat='bat --paging=never'
+alias cat='bat --style plain --paging=never'
 function help # help [command] -> bat
     $argv --help 2>&1 | bat --plain --language=help
 end
