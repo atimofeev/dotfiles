@@ -45,8 +45,9 @@ alias rg='rg -i --color=always'
 
 # FZF #
 set -gx FZF_EDITOR 'vi'
-#set -gx FZF_DEFAULT_COMMAND 'fd --type f --strip-cwd-prefix \
-#	--hidden --follow --exclude .git'
+set -gx FZF_DEFAULT_COMMAND 'fd --type f --strip-cwd-prefix \
+	--hidden --follow --exclude .git '
+set -gx FZF_DEFAULT_OPTS '--ansi --height 40%'
 
 function fz -d "fd+fzf"
 	set command $FZF_DEFAULT_COMMAND
