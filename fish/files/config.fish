@@ -43,11 +43,14 @@ end
 # RIPGREP #
 alias rg='rg -i --color=always'
 
+# SPONGE #
+set sponge_successful_exit_codes 0 130
+
 # FZF #
 set -gx FZF_EDITOR 'vi'
 set -gx FZF_DEFAULT_COMMAND 'fd --type f --strip-cwd-prefix \
 	--hidden --follow --exclude .git '
-set -gx FZF_DEFAULT_OPTS '--ansi --height 40%'
+set -gx FZF_DEFAULT_OPTS '--ansi --height 75%'
 
 function fz -d "fd+fzf"
 	set command $FZF_DEFAULT_COMMAND
@@ -65,7 +68,7 @@ function fz -d "fd+fzf"
 end
 
 function fzps -d "ps+fzf"
-	set command 'ps -ejH --forest'
+	set command 'ps -ef --forest'
 	#set command "ps -eHo \"%p %U %C %t %x %y %z %a\" --forest \
 		# | awk 'NR==1 { print; next } /^\s*[0-9]+/ \
 		# { \$7=int(\$7/1024)\"M\" } { print }' OFS='\t'"
@@ -100,7 +103,7 @@ function fzg -d "ripgrep+fzf"
 		--preview-window ":+{2}+3/3" \
 		--bind "start:reload:$command" \
 		--bind "ctrl-r:reload:$command" \
-		--bind "enter:execute($FZF_EDITOR {1})"
+		--bind "enter:execute($FZF_EDITOR {1} +{2})"
 end
 
 function fzdu -d "du+fzf"
