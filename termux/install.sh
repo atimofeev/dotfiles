@@ -7,6 +7,8 @@ if [[ $HOME != *"com.termux"* ]]; then
     exit 1
 fi
 
+pkg install wget getconf
+
 # Copy the font to Termux configuration directory
 cp $CUR_DIR/../fonts/fonts/DejaVuSansMono-Powerline.ttf  $HOME/.termux/font.ttf
 
