@@ -68,20 +68,18 @@ function fz -d "fd+fzf"
 end
 
 function fzps -d "ps+fzf"
-	set command 'ps -ef --forest'
-	#set command "ps -eHo \"%p %U %C %t %x %y %z %a\" --forest \
-		# | awk 'NR==1 { print; next } /^\s*[0-9]+/ \
-		# { \$7=int(\$7/1024)\"M\" } { print }' OFS='\t'"
-	set header "Press CTRL-R to reload, CTRL-X to kill"
+	set command 'ps -ef --forest | $HOME/.config/fish/ps-colors.py'
+	set header "Press CTRL-R to reload, CTRL-X to kill, Enter to return ID"
 	
 	eval $command | fzf \
 		--header="$header" \
 		--header-lines=1 \
 		--height=70% \
 		--layout=reverse \
-		--bind "start:unbind(enter)" \
+		--bind "start:reload:$command" \
+		--bind "enter:become(echo {2})" \
 		--bind "ctrl-r:reload:$command" \
-		--bind "ctrl-x:execute(kill -9 {1})+reload($command)"
+		--bind "ctrl-x:execute(kill -9 {2})+reload($command)"
 end
 
 function fzg -d "ripgrep+fzf"
@@ -244,7 +242,8 @@ alias rm='rm -i'
 alias dnf='sudo dnf'
 
 # the terminal rickroll
-alias rr='curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash'
+alias rr='curl -s -L \
+	https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash'
 
 ### ABBREVIATIONS ###
 

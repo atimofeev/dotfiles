@@ -9,7 +9,7 @@
 - **Snap app window to 4x4 layout**: `Super` + `⇅`/`⇄`
 - **Move through desktops**: `Super` + `Alt` + `⇄`
 
-### Apps
+### Desktop Apps
 
 - **Run command**: `Super` + `R`
 - **Open terminal**: `Super` + `Enter`
@@ -57,6 +57,6 @@
 - **Autopair**: `()`, `[]`, `{}`, `""`, and `''`
 - **Completion inside pairs**: `Tab` DISABLED
 
-## Apps
+## Applications
 
 [VSCode shortcuts](https://code.visualstudio.com/shortcuts/keyboard-shortcuts-windows.pdf)

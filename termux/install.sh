@@ -1,16 +1,17 @@
 #!/bin/bash
 
-CUR_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+FONT_URL="https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/DejaVuSansMono/Regular/DejaVuSansMNerdFontMono-Regular.ttf"
+DEST_FILE="$HOME/.termux/font.ttf"
 
 if [[ $HOME != *"com.termux"* ]]; then
     echo "The com.termux directory is not found in the HOME path. Exiting..."
     exit 1
 fi
 
+# install dependencies
 pkg install wget getconf
 
-# Copy the font to Termux configuration directory
-cp $CUR_DIR/../fonts/fonts/DejaVuSansMono-Powerline.ttf  $HOME/.termux/font.ttf
+wget -q -O $DEST_FILE $FONT_URL 
 
 # Reload Termux settings
 am broadcast --user 0 -a com.termux.app.reload_style com.termux > /dev/null
