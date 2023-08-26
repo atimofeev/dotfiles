@@ -3,7 +3,6 @@
 # Get current location of this script
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-FORCE_INSTALL=false
 LINKS_ONLY=false
 INSTALLER="Unknown"
 declare -a TARGET_APPS
@@ -28,11 +27,6 @@ detect_package_manager() {
 
 install_app() {
     local app_dir="$1"
-
-    if [ ! $FORCE_INSTALL = true ] && ([ -f "$app_dir/.installed" ] || [ -f "$app_dir/.disabled" ]); then
-        echo "$app_dir is already installed or disabled"
-        return
-    fi
 
     if [ $LINKS_ONLY = true ]; then
         echo "Setting symlinks for $app_dir"
@@ -117,16 +111,8 @@ parse_args() {
 
     while (( "$#" )); do
         case "$1" in
-            -f|--force)
-                FORCE_INSTALL=true
-                shift
-                ;;
             -l|--links)
                 LINKS_ONLY=true
-                shift
-                ;;
-            --all)
-                TARGET_APPS=($(find . -maxdepth 1 -mindepth 1 -type d ! -name '.*' -exec basename {} \;))
                 shift
                 ;;
             *)

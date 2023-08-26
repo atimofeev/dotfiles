@@ -19,7 +19,6 @@ Example directory structure:
 │  ├── requirements.txt
 │  └── symlinks.txt
 ├── hyper
-│  ├── .disabled
 │  ├── files
 │  ├── install.sh
 │  └── symlinks.txt
@@ -33,7 +32,6 @@ Each application directory can contain:
 - `install.sh`: A script that manages the installation of the application.
 - `requirements.txt`: A list of other applications required to be installed prior to the current one. Each list entry should match the name of the app directory.
 - `symlinks.txt`: Specifies symlinks to be created.
-- `.disabled`: Adding this blank file will prevent the app from being installed. However, if the app is listed as a requirement by another app, or if it's explicitly installed with the `-f` flag, it will still get installed.
 
 Remember, none of these are obligatory.
 
@@ -70,21 +68,7 @@ To install multiple apps concurrently:
 ./install.sh git fish
 ```
 
-2. For installing all applications:
-
-```bash
-./install.sh --all
-```
-
-3. If you aim to force an application's re-installation, even if it's already installed:
-
-```bash
-./install.sh -f [application_name]
-```
-
-Note: This command will also override the `.disabled` tagfile and proceed with the installation.
-
-4. If you only want to setup symlinks for an app, use (-l | --links) flag:
+2. If you only want to setup symlinks for an app, use (-l | --links) flag:
 
 ```bash
 ./install.sh -l [application_name]
@@ -94,4 +78,3 @@ Note: This command will also override the `.disabled` tagfile and proceed with t
 
 - Should an application include a `requirements.txt` file, the installer will first confirm that all necessary apps have been installed before moving forward.
 - `symlinks.txt` is employed to generate symbolic links. Each entry in this file depicts a symlink in the format `source=$DIR/... destination=$HOME/...`, with `$DIR` representing the script's directory and `$HOME` the user's home directory.
-- After the successful setup of an app, a `.installed` file will be produced within the app's directory, indicating the completion of its installation. To reinstall an application, use the `-f` (force) flag or manually eliminate the `.installed` file before initiating the script.
