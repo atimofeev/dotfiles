@@ -16,12 +16,14 @@
 - **Open pipes.sh (kitty -e pipes.sh -p10 -s5 -f25)**: `Super` + `Shift` + `P`
 - **Launched apps selector**: `Super` + `Tab`
 
-## Terminal
+## Kitty Terminal
 
 - **Open terminal**: `Super` + `Enter`
 - **New tab**: `Ctrl` + `Shift` + `T`
 - **Tab selector**: `Ctrl` + `Tab`
 - **Close tab**: `Ctrl` + `Shift` + `W`
+- **New window**: `Ctrl` + `Shift` + `Enter`
+- **Resize window**: `Ctrl` + `Shift` + `R`
 
 ## CLI
 
