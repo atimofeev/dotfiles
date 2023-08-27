@@ -2,19 +2,15 @@ if status is-interactive
 
 end
 
-set -U FZF_COMPLETE 2
-
 ### ENV VARS ###
 set GOPATH "$HOME/go"
 set PATH "$GOPATH/bin:$PATH"
 set -x MANPAGER "sh -c 'col -bx | bat -l man -p'"   # man pages -> bat
 set -x MANROFFOPT "-c"                              # bat man pages formatting fix
 
-
 ### APPS ###
 
 # Z #
-#replay "source /usr/local/bin/z"
 set -U Z_DATA "$HOME/.local/share/z/data"
 set -U Z_DATA_DIR "$HOME/.local/share/z"
 set -U Z_EXCLUDE "^$HOME\$"
@@ -36,9 +32,6 @@ end
 function bdiff
     git diff --name-only --relative --diff-filter=d | xargs bat --diff
 end
-function fdb
-    fd $argv -X bat
-end
 
 # RIPGREP #
 alias rg='rg -i --color=always'
@@ -47,6 +40,7 @@ alias rg='rg -i --color=always'
 set sponge_successful_exit_codes 0 130
 
 # FZF #
+set -U FZF_COMPLETE 2
 set -gx FZF_EDITOR 'vi'
 set -gx FZF_DEFAULT_COMMAND 'fd --type f --strip-cwd-prefix \
 	--hidden --follow --exclude .git '
