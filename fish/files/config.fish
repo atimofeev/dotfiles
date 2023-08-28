@@ -35,9 +35,6 @@ alias cat='bat --color=always --style=plain --paging=never'
 function help # help [command] -> bat
     $argv --help 2>&1 | bat --plain --language=help
 end
-function bdiff
-    git diff --name-only --relative --diff-filter=d | xargs bat --diff
-end
 
 # RIPGREP #
 alias rg='rg --color=always --ignore-case '
@@ -48,6 +45,12 @@ set sponge_successful_exit_codes 0 130
 # GIT #
 function mv
     git mv $argv; or command mv --interactive $argv
+end
+function bdiff
+    git diff --name-only --relative --diff-filter=d | xargs bat --diff
+end
+function kdiff
+    git difftool --no-symlinks --dir-diff
 end
 alias addup='git add --update'
 alias addall='git add .'
