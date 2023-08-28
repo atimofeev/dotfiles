@@ -36,7 +36,6 @@ install_app() {
         install_requirements "$app_dir"
         execute_install_script "$app_dir"
         get_symlinks "$app_dir"
-        mark_as_installed "$app_dir"
     fi
 }
 
@@ -96,11 +95,6 @@ create_symlink() {
     mkdir -p $(dirname $dest)
     echo "Creating symlink $src -> $dest"
     ln -s $src $dest
-}
-
-mark_as_installed() {
-    local app_dir="$1"
-    touch "$app_dir/.installed"
 }
 
 parse_args() {
