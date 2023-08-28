@@ -2,15 +2,16 @@ if status is-interactive
 
 end
 
-source $HOME/.config/fish/fzf.fish
-
 ### ENV VARS ###
 set GOPATH "$HOME/go"
 set PATH "$GOPATH/bin:$PATH"
-set -x MANPAGER "sh -c 'col -bx | bat -l man -p'"   # man pages -> bat
-set -x MANROFFOPT "-c"                              # bat man pages formatting fix
+set -x MANPAGER "sh -c 'col -bx | bat -l man -p'" # man pages -> bat
+set -x MANROFFOPT "-c"                            # bat man pages formatting fix
 
 ### APPS ###
+
+# FZF #
+source $HOME/.config/fish/fzf.fish
 
 # KITTY #
 alias s="kitty +kitten ssh"
@@ -29,8 +30,8 @@ alias lt='exa -aT --color=always --group-directories-first --level 2' # tree lis
 alias l.='exa -a | egrep "^\."' # show only dotfiles
 
 # BAT #
-alias less='bat'
-alias cat='bat --style plain --paging=never'
+alias less='bat --color=always --style=auto'
+alias cat='bat --color=always --style=plain --paging=never'
 function help # help [command] -> bat
     $argv --help 2>&1 | bat --plain --language=help
 end
@@ -39,26 +40,26 @@ function bdiff
 end
 
 # RIPGREP #
-alias rg='rg -i --color=always'
+alias rg='rg --color=always --ignore-case '
 
 # SPONGE #
 set sponge_successful_exit_codes 0 130
 
 # GIT #
 function mv
-    git mv $argv; or command mv $argv
+    git mv $argv; or command mv --interactive $argv
 end
-alias addup='git add -u'
+alias addup='git add --update'
 alias addall='git add .'
 alias branch='git branch'
 alias checkout='git checkout'
 alias clone='git clone'
-alias commit='git commit -m'
+alias commit='git commit --message'
 alias fetch='git fetch'
 alias pull='git pull origin'
 alias push='git push origin'
 alias tag='git tag'
-alias newtag='git tag -a'
+alias newtag='git tag --annotate'
 function git_remove_file_history
     set file_path $argv[1]
 
@@ -130,18 +131,17 @@ alias nf='neofetch --backend off --color_blocks off'
 alias chx='chmod +x'
 
 # adding flags
-alias df='df -h'
-alias free='free -h'
-
+alias df='df --human-readable'
+alias free='free --human'
+alias mkdir='mkdir --parents --verbose'
 # Colorize grep output (good for log files)
 alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
-
 # confirm before overwriting something
-alias cp="cp -i"
-#alias mv='mv -i'
-alias rm='rm -i'
+alias cp='cp --interactive'
+alias rm='rm --interactive'
+#alias mv='mv --interactive'
 
 # auto sudo
 abbr dnf 'sudo dnf'
