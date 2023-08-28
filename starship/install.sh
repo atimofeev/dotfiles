@@ -1,1 +1,1 @@
-curl -sS https://starship.rs/install.sh | sh
+curl -sS https://starship.rs/install.sh -f 1>/dev/null | sudo sh
