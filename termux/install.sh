@@ -11,7 +11,7 @@ fi
 # install dependencies
 pkg install wget getconf
 
-wget -q -O $DEST_FILE $FONT_URL 
+wget --quiet -O $DEST_FILE $FONT_URL 
 
 # Reload Termux settings
 am broadcast --user 0 -a com.termux.app.reload_style com.termux > /dev/null

@@ -3,7 +3,7 @@ FILENAME=$(basename $URL)
 TMP_DIR=/tmp/
 FONT_DIR="$HOME/.local/share/fonts"
 
-wget -q -P $TMP_DIR $URL
+wget --quiet -O $TMP_DIR$FILENAME $URL
 
 tar -Jxf $TMP_DIR$FILENAME -C $FONT_DIR
 
