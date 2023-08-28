@@ -33,11 +33,9 @@
 
 ### Fish shell
 
-
 [Fish shell keybindings](https://fishshell.com/docs/current/interactive.html#shared-bindings)
 
-![Alt text](https://pbs.twimg.com/media/FLx2aNAUUAAO1h4?format=jpg&name=medium)
-
+![Bash shell keybindings cheat sheet](https://pbs.twimg.com/media/FLx2aNAUUAAO1h4?format=jpg&name=medium)
 
 ### jethrokuan/fzf
 
