@@ -45,6 +45,9 @@ alias rg='rg -i --color=always'
 set sponge_successful_exit_codes 0 130
 
 # GIT #
+function mv
+    git mv $argv; or command mv $argv
+end
 alias addup='git add -u'
 alias addall='git add .'
 alias branch='git branch'
@@ -113,7 +116,6 @@ alias a=ansible
 alias k=kubectl
 alias rack='cd ~/Rack2Free && ./Rack && cd -'
 
-alias mv='git mv $argv; or mv $argv'
 alias cdtl='cd $(git rev-parse --show-toplevel 2>/dev/null)'
 
 # nvim
@@ -138,7 +140,7 @@ alias fgrep='fgrep --color=auto'
 
 # confirm before overwriting something
 alias cp="cp -i"
-alias mv='mv -i'
+#alias mv='mv -i'
 alias rm='rm -i'
 
 # auto sudo
