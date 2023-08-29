@@ -8,6 +8,7 @@ $git_branch\
 $git_status\
 [](fg:#FCA17D bg:#33658A)\
 $time\
+$cmd_duration\
 [ ](fg:#33658A)\
 """
 
@@ -43,3 +44,13 @@ disabled = false
 time_format = "%R" # Hour:Minute Format
 style = "bg:#33658A"
 format = '[ 󰧼 $time ]($style)'
+
+
+[cmd_duration]
+min_time = 500
+style = "bg:#33658A fg:#F0C674"
+format = '[ $duration ]($style)'
+#Waiting for resolution of this:
+#https://github.com/starship/starship/issues/1933
+#show_notifications = true
+#min_time_to_notify = 45000
