@@ -21,7 +21,7 @@ function fz -d "fd+fzf"
 end
 
 function fzps -d "ps+fzf"
-	set command 'ps -ef --forest | $HOME/.config/fish/ps_colors.py'
+	set command 'ps -ef --forest | ps_colors.py'
 	set header "Press CTRL-R to reload, CTRL-X to kill, Enter to return ID"
 	
 	eval $command | fzf \

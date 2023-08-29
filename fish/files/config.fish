@@ -4,7 +4,9 @@ end
 
 ### ENV VARS ###
 set GOPATH "$HOME/go"
-set PATH "$GOPATH/bin:$PATH"
+set -e fish_user_paths
+set -U fish_user_paths $GOPATH/bin $HOME/.bin $fish_user_paths
+
 set -x MANPAGER "sh -c 'col -bx | bat -l man -p'" # man pages -> bat
 set -x MANROFFOPT "-c"                            # bat man pages formatting fix
 

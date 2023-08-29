@@ -1,10 +1,11 @@
 $INSTALLER fish
 
-FISH_DIR="$HOME/.config/fish/"
+HOME_BIN="$HOME/.bin"
 SCRIPTS_REPO="https://raw.githubusercontent.com/atimofeev/learning-python/main/"
 
 echo "Sourcing scripts..."
-wget --quiet -O $FISH_DIR/ps_colors.py  $SCRIPTS_REPO/projects/ps_colors.py
-wget --quiet -O $FISH_DIR/prompt_gen.py  $SCRIPTS_REPO/chatgpt/prompt_gen.py
+mkdir -p $HOME_BIN
+wget --quiet -O $HOME_BIN/ps_colors.py  $SCRIPTS_REPO/projects/ps_colors.py
+wget --quiet -O $HOME_BIN/pclip  $SCRIPTS_REPO/chatgpt/pclip
 
-chmod +x $FISH_DIR/*.py
+chmod +x $HOME_BIN/*.py
