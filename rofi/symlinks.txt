@@ -1,2 +1,0 @@
-#SRC=DEST
-$DIR/rofi/files/config.rasi=$HOME/.config/rofi/config.rasi

@@ -1,2 +1,0 @@
-#SRC=DEST
-$DIR/htop/files/htoprc=$HOME/.config/htop/htoprc
