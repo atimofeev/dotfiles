@@ -57,18 +57,22 @@ function fzg -d "ripgrep+fzf"
 		--bind "enter:execute($FZF_EDITOR {1} +{2})"
 end
 
+function _du_fzf
+    du -ah (count $argv > 0; and echo $argv; or echo '.') \
+		2>/dev/null | sort -h -r | head -1000
+end
 function fzdu -d "du+fzf"
-	set command 'du -ah . 2>/dev/null | sort -h -r | head -1000'
-	set header 'Press CTRL-R to reload, Enter to advance, CTRL-X to delete'
+	set command '_du_fzf'
+	set header "Press CTRL-R to reload, Enter to advance, \
+CTRL-X to delete, Alt-Enter to go up"
 
-	# TODO: fix 'enter:reload' cmd
 	echo '' | fzf \
 		--header="$header" \
 		--bind "start:reload:$command" \
 		--bind "ctrl-r:reload:$command" \
 		--bind "ctrl-x:execute(rm {2})+reload($command)" \
-		--bind "enter:reload(du -ah (echo {} | awk '{\$1=\"\"; print \$0}' \
-			| sed 's/^ *//') 2>/dev/null | sort -h -r | head -1000)"
+		--bind "enter:reload:$command {2}" \
+		--bind "alt-enter:reload:$command (dirname {2})"
 end
 
 function _count_files
