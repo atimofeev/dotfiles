@@ -17,6 +17,7 @@ source $HOME/.config/fish/fzf.fish
 
 # KITTY #
 alias s="kitty +kitten ssh"
+alias kdiff="kitty +kitten diff"
 
 # Z #
 set -U Z_DATA "$HOME/.local/share/z/data"
@@ -51,7 +52,7 @@ end
 function bdiff
     git diff --name-only --relative --diff-filter=d | xargs bat --diff
 end
-function kdiff
+function kgdiff
     git difftool --no-symlinks --dir-diff
 end
 alias addup='git add --update'
