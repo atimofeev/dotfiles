@@ -5,7 +5,7 @@ end
 ### ENV VARS ###
 set GOPATH "$HOME/go"
 set -e fish_user_paths
-set -U fish_user_paths $GOPATH/bin $HOME/.bin $fish_user_paths
+set -U fish_user_paths $GOPATH/bin $HOME/.bin $HOME/.local/bin $fish_user_paths
 
 set -x MANPAGER "sh -c 'col -bx | bat -l man -p'" # man pages -> bat
 set -x MANROFFOPT "-c"                            # bat man pages formatting fix
@@ -138,6 +138,7 @@ alias chx='chmod +x'
 
 # adding flags
 alias df='df --human-readable'
+alias du='du --human-readable'
 alias free='free --human'
 alias mkdir='mkdir --parents --verbose'
 # Colorize grep output (good for log files)
