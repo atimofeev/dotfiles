@@ -91,3 +91,30 @@ function fzwc -d "count_files+fzf"
 		--delimiter : \
 		--bind "enter:reload:cd {1} && $command" 
 end
+
+function fzsm -d "Session manager for Kitty with FZF"
+	set -l session_file_path "$HOME/.config/kitty/sessions"
+	set selected_servers (cat $session_file_path | \
+		fzf --multi \
+		--header="Press Enter to SSH, TAB to select" \
+		--header-lines=1 \
+		--height=30% \
+		--layout=reverse
+	)
+	
+	for line in $selected_servers
+		set -l parts (string split ":" $line)
+		set -l description $parts[1]
+		set -l ip $parts[2]
+		set -l port $parts[3]
+
+		set tab_id $(kitty @ launch --type tab --tab-title "$description")
+
+		if test (count $parts) -eq 4
+			set -l keypath $parts[4]
+			kitty @ kitten --match id:$tab_id ssh $ip -p $port -i $keypath
+		else
+			kitty @ kitten --match id:$tab_id ssh $ip -p $port
+		end
+	end
+end
