@@ -1,4 +1,5 @@
 # FZF #
+# TODO: decide on default layout
 set -U FZF_COMPLETE 2
 set -gx FZF_EDITOR 'vi'
 set -gx FZF_DEFAULT_COMMAND 'fd --type f --strip-cwd-prefix \
@@ -117,4 +118,16 @@ function fzsm -d "Session manager for Kitty with FZF"
 			kitty @ kitten --match id:$tab_id ssh $ip -p $port
 		end
 	end
+end
+
+function macho -d "Macho, the man command on steroids"
+#https://hiphish.github.io/blog/2020/05/31/macho-man-command-on-steroids/
+	set command "apropos . | \
+		grep -v -E '^.+ \(0\)' | \
+		awk '{print \$2 \"\t\" \$1}' | sort"
+
+	echo '' | fzf \
+		--layout=reverse \
+		--bind "start:reload:$command" \
+		--bind "enter:execute:man {2}" 
 end
