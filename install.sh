@@ -92,7 +92,7 @@ create_symlink() {
         rm -rf $dest
     fi
 
-    mkdir -p $(dirname $dest)
+    mkdir --parents $(dirname $dest)
     echo "Creating symlink $src -> $dest"
     ln -s $src $dest
 }

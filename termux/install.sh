@@ -9,9 +9,9 @@ if [[ $HOME != *"com.termux"* ]]; then
 fi
 
 # install dependencies
-pkg install wget getconf
+pkg install wget getconf -y
 
-wget --quiet -O $DEST_FILE $FONT_URL 
+wget --quiet --output-document $DEST_FILE $FONT_URL
 
 # Reload Termux settings
 am broadcast --user 0 -a com.termux.app.reload_style com.termux > /dev/null

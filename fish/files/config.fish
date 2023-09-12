@@ -27,10 +27,10 @@ set -U Z_EXCLUDE "^$HOME\$"
 # EXA #
 alias ls='exa --color=always --group-directories-first'
 alias ll='exa -l --color=always --group-directories-first'
-alias la='exa -al --color=always --group-directories-first'
-alias ld='exa -ld --color=always --group-directories-first' # list directory info
-alias lt='exa -aT --color=always --group-directories-first --level 2' # tree listing
-alias l.='exa -a | egrep "^\."' # show only dotfiles
+alias la='exa --all -l --color=always --group-directories-first'
+alias ld='exa --list-dirs -l --color=always --group-directories-first' # list exact dir info
+alias lt='exa --tree -all --color=always --group-directories-first --level 2'
+alias l.='exa --all | egrep "^\."' # show only dotfiles
 
 # BAT #
 alias less='bat --color=always --style=auto'
@@ -154,7 +154,7 @@ alias rm='rm --interactive'
 abbr dnf 'sudo dnf'
 
 # the terminal rickroll
-alias rr='curl -s -L \
+alias rr='curl --silent --location \
 	https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash'
 
 
@@ -174,7 +174,7 @@ function list_funcs
 		#echo "Function Name: "$func
 		echo
 		functions $func
-    end | bat -l fish
+    end | bat --language fish
 end
 
 # starship prompt
