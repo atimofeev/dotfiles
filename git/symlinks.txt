@@ -1,2 +1,3 @@
 #SRC=DEST
 $DIR/git/files/gitconfig=$HOME/.gitconfig
+$DIR/git/files/gitignore=$HOME/.gitignore
