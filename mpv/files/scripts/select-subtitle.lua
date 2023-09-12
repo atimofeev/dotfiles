@@ -3,7 +3,7 @@ function on_start(_, _)
     local tracks = mp.get_property_native("track-list")
 
     for _, track in pairs(tracks) do
-        if track["type"] == "sub" and string.match(track["title"], "Full") then
+        if track["type"] == "sub" and string.match(string.lower(track["title"]), string.lower("Full")) then
             mp.set_property("sid", track["id"])
             return
         end
@@ -11,4 +11,3 @@ function on_start(_, _)
 end
 
 mp.register_event("file-loaded", on_start)
-
