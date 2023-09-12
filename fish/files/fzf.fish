@@ -59,7 +59,7 @@ function fzg -d "ripgrep+fzf"
 end
 
 function _du_fzf
-    du --all --human-readable (count $argv > 0; and echo $argv; or echo '.') \
+    du --all --human-readable (test (count $argv) -gt 0; and echo $argv; or echo '.') \
 		2>/dev/null | sort --human-numeric-sort --reverse | head -1000
 end
 function fzdu -d "du+fzf"
