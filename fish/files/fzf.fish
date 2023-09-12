@@ -38,7 +38,7 @@ end
 
 function fzg -d "ripgrep+fzf"
     set command "rg --line-number --no-heading --color=always \
-        --smart-case --fixed-strings '"$argv"'"
+        --smart-case --fixed-strings --hidden '"$argv"'"
 	set header 'Press CTRL-R to reload, Enter to edit'
 	set preview 'bat --color=always --style=numbers	\
 		--line-range=:500 {1} --highlight-line {2}'
