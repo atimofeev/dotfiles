@@ -14,6 +14,7 @@
 - **Run command**: `Super` + `R`
 - **Open terminal**: `Super` + `Enter`
 - **Open pipes.sh (kitty -e pipes.sh -p10 -s5 -f25)**: `Super` + `Shift` + `P`
+- **Open Typon (kitty -e typon)**: `Super` + `Shift` + `T`
 - **Launched apps selector**: `Super` + `Tab`
 
 ## Kitty Terminal
@@ -39,6 +40,7 @@
 
 ### jethrokuan/fzf
 
+- **Tab completion**: `Tab`
 - **Find a file**: `Ctrl` + `O`
 - **Search through command history**: `Ctrl` + `R`
 - **cd into sub-directories (recursively searched)**: `Alt` + `C`
@@ -55,7 +57,7 @@
 ### jorgebucaran/autopair.fish
 
 - **Autopair**: `()`, `[]`, `{}`, `""`, and `''`
-- **Completion inside pairs**: `Tab` DISABLED
+- **Completion inside pairs**: `Tab` DISABLED (in favor of FZF tab completion)
 
 ## Applications
 
