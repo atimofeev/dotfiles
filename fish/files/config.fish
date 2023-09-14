@@ -16,8 +16,10 @@ set -x MANROFFOPT "-c"                            # bat man pages formatting fix
 source $HOME/.config/fish/fzf.fish
 
 # KITTY #
-alias s="kitty +kitten ssh"
-alias kdiff="kitty +kitten diff"
+alias ssh="kitty +kitten ssh"
+alias diff="kitty +kitten diff"
+alias og_ssh='/usr/bin/ssh'
+alias og_diff='/usr/bin/diff'
 
 # Z #
 set -U Z_DATA "$HOME/.local/share/z/data"
@@ -31,10 +33,14 @@ alias la='exa --all -l --color=always --group-directories-first'
 alias ld='exa --list-dirs -l --color=always --group-directories-first' # list exact dir info
 alias lt='exa --tree -all --color=always --group-directories-first --level 2'
 alias l.='exa --all | egrep "^\."' # show only dotfiles
+alias og_ls='/usr/bin/ls --color=auto' 
+alias og_ll='/usr/bin/ls -l --color=auto'
 
 # BAT #
 alias less='bat --color=always --style=auto'
 alias cat='bat --color=always --style=plain --paging=never'
+alias og_less='/usr/bin/less'
+alias og_cat='/usr/bin/cat'
 function help # help [command] -> bat
     $argv --help 2>&1 | bat --plain --language=help
 end
@@ -49,12 +55,14 @@ set sponge_successful_exit_codes 0 130
 function mv
     git mv $argv; or command mv --interactive $argv
 end
-function bdiff
+function gitdiff
     git diff --name-only --relative --diff-filter=d | xargs bat --diff
 end
-function kgdiff
+function gitdiffview
     git difftool --no-symlinks --dir-diff
 end
+alias og_gitdiff='/usr/bin/gitdiff'
+alias og_gitdiffview='/usr/bin/gitdiffview'
 alias addup='git add --update'
 alias addall='git add .'
 alias branch='git branch'
@@ -128,6 +136,8 @@ alias cdtl='cd $(git rev-parse --show-toplevel 2>/dev/null)'
 # nvim
 alias vi='nvim'
 alias vim='nvim'
+alias og_vi='/usr/bin/vi'
+alias og_vim='/usr/bin/vim'
 
 # [command] | tb
 alias tb="nc termbin.com 9999"
