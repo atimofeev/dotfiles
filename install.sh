@@ -46,7 +46,7 @@ install_requirements() {
             if [[ -z "$requirement" ]]; then
                 continue
             fi
-            echo "Installing requirement: $requirement"
+            echo "Found requirement: $requirement"
             install_app "$requirement"
         done < "$app_dir/requirements.txt"
     fi
@@ -55,7 +55,7 @@ install_requirements() {
 execute_install_script() {
     local app_dir="$1"
     if [[ -f "$app_dir/install.sh" ]]; then
-        echo "Installing $app_dir install.sh"
+        echo "Launching $app_dir install.sh"
         ( cd "$app_dir" && bash install.sh )
     fi
 }
