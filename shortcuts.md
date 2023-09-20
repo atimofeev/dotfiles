@@ -13,6 +13,8 @@
 
 - **Run command**: `Super` + `R`
 - **Open terminal**: `Super` + `Enter`
+- **Open Doom Emacs (kitty -e emacs --no-window-system)**: `Super` + `Shift` + `E`
+- **Open htop (kitty -e htop)**: `Super` + `Shift` + `H`
 - **Open pipes.sh (kitty -e pipes.sh -p10 -s5 -f25)**: `Super` + `Shift` + `P`
 - **Open Typon (kitty -e typon)**: `Super` + `Shift` + `T`
 - **Launched apps selector**: `Super` + `Tab`
@@ -25,6 +27,9 @@
 - **Close tab**: `Ctrl` + `Shift` + `W`
 - **New window**: `Ctrl` + `Shift` + `Enter`
 - **Resize window**: `Ctrl` + `Shift` + `R`
+
+## Doom Emacs
+
 
 ## CLI
 
