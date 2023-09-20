@@ -17,3 +17,15 @@ pods() {
     --preview 'kubectl logs --follow --all-containers --tail=10000 --namespace {1} {2}' "$@"
 }
 ```
+
+## TODO
+
+### Add spark pluign and find uses for it
+
+### Cat, but skip first n lines, kinda reverse head
+
+```fish
+function skip --argument n
+    tail +(match 1 + $n)
+end
+```
