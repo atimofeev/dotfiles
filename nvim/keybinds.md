@@ -18,10 +18,10 @@
 ## Navigation
 
 - **Cursor Movements**:
-  - `h`: Move cursor left
-  - `j`: Move cursor down
-  - `k`: Move cursor up
-  - `l`: Move cursor right
+  - `h`: ←
+  - `j`: ↓
+  - `k`: ↑
+  - `l`: →
 
 ## Editing
 
