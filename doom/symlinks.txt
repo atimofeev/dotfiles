@@ -1,2 +1,2 @@
 #SRC=DEST
-$DIR/doom-emacs/files=$HOME/.config/doom
+$DIR/doom/files=$HOME/.config/doom
