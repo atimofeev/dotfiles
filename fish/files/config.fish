@@ -149,7 +149,7 @@ alias nf='neofetch --backend off --color_blocks off'
 alias chx='chmod +x'
 
 # adding flags
-alias df='df --human-readable --print-type'
+alias df='df --human-readable --print-type --exclude-type=tmpfs'
 alias du='du --human-readable'
 alias free='free --human'
 alias mkdir='mkdir --parents --verbose'
