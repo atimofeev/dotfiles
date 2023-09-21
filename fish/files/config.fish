@@ -7,9 +7,6 @@ set GOPATH "$HOME/go"
 set -e fish_user_paths
 set -U fish_user_paths $GOPATH/bin $HOME/.bin $HOME/.local/bin $HOME/.config/emacs/bin $fish_user_paths
 
-set -x MANPAGER "sh -c 'col -bx | bat -l man -p'" # man pages -> bat
-set -x MANROFFOPT "-c"                            # bat man pages formatting fix
-
 ### APPS ###
 
 # DOOM EMACS #
@@ -19,10 +16,10 @@ alias de='emacs --no-window-system'
 source $HOME/.config/fish/fzf.fish
 
 # KITTY #
-alias ssh="kitty +kitten ssh"
-alias diff="kitty +kitten diff"
-alias og_ssh='/usr/bin/ssh'
-alias og_diff='/usr/bin/diff'
+if type -q kitty
+    alias ssh="kitty +kitten ssh"
+    alias diff="kitty +kitten diff"
+end
 
 # Z #
 set -U Z_DATA "$HOME/.local/share/z/data"
@@ -30,22 +27,24 @@ set -U Z_DATA_DIR "$HOME/.local/share/z"
 set -U Z_EXCLUDE "^$HOME\$"
 
 # EXA #
-alias ls='exa --color=always --group-directories-first'
-alias ll='exa -l --color=always --group-directories-first'
-alias la='exa --all -l --color=always --group-directories-first'
-alias ld='exa --list-dirs -l --color=always --group-directories-first' # list exact dir info
-alias lt='exa --tree -all --color=always --group-directories-first --level 2'
-alias l.='exa --all | egrep "^\."' # show only dotfiles
-alias og_ls='/usr/bin/ls --color=auto' 
-alias og_ll='/usr/bin/ls -l --color=auto'
+if type -q exa
+    alias ls='exa --color=always --group-directories-first'
+    alias ll='exa -l --color=always --group-directories-first'
+    alias la='exa --all -l --color=always --group-directories-first'
+    alias ld='exa --list-dirs -l --color=always --group-directories-first' # list exact dir info
+    alias lt='exa --tree -all --color=always --group-directories-first --level 2'
+    alias l.='exa --all | egrep "^\."' # show only dotfiles
+end
 
 # BAT #
-alias less='bat --color=always --style=auto'
-alias cat='bat --color=always --style=plain --paging=never'
-alias og_less='/usr/bin/less'
-alias og_cat='/usr/bin/cat'
-function help # help [command] -> bat
-    $argv --help 2>&1 | bat --plain --language=help
+if type -q bat
+    alias less='bat --color=always --style=auto'
+    alias cat='bat --color=always --style=plain --paging=never'
+    set -x MANPAGER "sh -c 'col -bx | bat -l man -p'" # man pages -> bat
+    set -x MANROFFOPT "-c"                            # bat man pages formatting fix
+    function help # help [command] -> bat
+        $argv --help 2>&1 | bat --plain --language=help
+    end
 end
 
 # RIPGREP #
@@ -54,7 +53,7 @@ alias rg='rg --color=always --ignore-case '
 # SPONGE #
 set sponge_successful_exit_codes 0 130
 
-# GIT #
+# GIT # TODO: Refactor
 function mv
     git mv $argv; or command mv --interactive $argv
 end
@@ -137,10 +136,10 @@ alias rack='cd ~/Rack2Free && ./Rack && cd -'
 alias cdtl='cd $(git rev-parse --show-toplevel 2>/dev/null)'
 
 # nvim
-alias vi='nvim'
-alias vim='nvim'
-alias og_vi='/usr/bin/vi'
-alias og_vim='/usr/bin/vim'
+if type -q nvim
+    alias vi='nvim'
+    alias vim='nvim'
+end
 
 # [command] | tb
 alias tb="nc termbin.com 9999"
