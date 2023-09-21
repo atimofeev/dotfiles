@@ -7,6 +7,7 @@
 
 (setq shell-file-name (executable-find "bash")) ;; use bash shell
 (setq evil-want-fine-undo t) ;; undo in small steps
+(setq company-global-modes '(not text-mode org-mode markdown-mode)) ;; Disable autocomplete for regular typing
 ;; Multiple cursors VSCode-like behavior; C-g to exit
 ;; Had to unbind these:
 ;; gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-up "['']"
@@ -24,9 +25,9 @@
   (setq mouse-drag-copy-region t) ;; mouse select-to-copy
 )
 
+(setq org-startup-folded "content")
 (setq org-support-shift-select t)
 ;;(setq org-startup-with-inline-images t) ;; Render images (only GUI mode)
-(setq company-global-modes '(not text-mode org-mode)) ;; Disable autocomplete for regular typing
 (setq org-blank-before-new-entry (quote ((heading . nil) ;; Disable newlines before new list entries
                                          (plain-list-item . nil))))
 (setq org-log-done 'time) ;; Insert timestamp on TODO completion

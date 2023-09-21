@@ -12,10 +12,12 @@
   - [[#cli-mode][CLI mode]]
   - [[#org-mode][Org-mode]]
 - [[#packagesel][packages.el]]
-- [[#code-snippets][Code snippets]]
+- [[#addons--code-snippets][Addons & Code snippets]]
   - [[#centaur-tabs][Centaur-Tabs]]
+  - [[#auto-format-code-block][Auto format code block]]
 - [[#notes][Notes]]
-  - [[#issues-none][Issues: None]]
+  - [[#important-keybinds][Important keybinds]]
+  - [[#issues][Issues]]
   - [[#to-learn-to-do][To learn/ To do]]
 
 * About this config
@@ -226,6 +228,7 @@ User preferences
 #+begin_src emacs-lisp
 (setq shell-file-name (executable-find "bash")) ;; use bash shell
 (setq evil-want-fine-undo t) ;; undo in small steps
+(setq company-global-modes '(not text-mode org-mode markdown-mode)) ;; Disable autocomplete for regular typing
 ;; Multiple cursors VSCode-like behavior; C-g to exit
 ;; Had to unbind these:
 ;; gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-up "['']"
@@ -251,9 +254,9 @@ Little hacks for Doom in CLI mode
 ** Org-mode
 Org mode specific settings
 #+begin_src emacs-lisp
+(setq org-startup-folded "content")
 (setq org-support-shift-select t)
 ;;(setq org-startup-with-inline-images t) ;; Render images (only GUI mode)
-(setq company-global-modes '(not text-mode org-mode)) ;; Disable autocomplete for regular typing
 (setq org-blank-before-new-entry (quote ((heading . nil) ;; Disable newlines before new list entries
                                          (plain-list-item . nil))))
 (setq org-log-done 'time) ;; Insert timestamp on TODO completion
@@ -273,12 +276,14 @@ Additional packages from emacs repos
 (package! beacon)
 #+end_src
 
-* Code snippets
+* Addons & Code snippets
+Untested and unapplied code or yet resolved issues
 ** Centaur-Tabs
 To be enabled after fix is found..
 - ui :: tabs
 *** TODO FIXME 'Create new tab' opens tab in new group
 Actual for both =centaur-tabs--create-new-tab= and =centaur-tabs--create-new-empty-buffer=
+Root cause: [[https://github.com/ema2159/centaur-tabs#buffer-groups][buffer groups]] logic
 
 *** Doom keymap
 #+begin_src emacs-lisp :tangle no
@@ -318,11 +323,45 @@ https://github.com/ema2159/centaur-tabs/issues/52
   (add-hook 'window-configuration-change-hook 'centaur-tabs-hide-on-window-change))
 #+end_src
 
+** Auto format code block
+Run every 10s
+#+begin_src emacs-lisp :tangle no
+(defun indent-org-block-automatically ()
+  (when (org-in-src-block-p)
+   (org-edit-special)
+    (indent-region (point-min) (point-max))
+    (org-edit-src-exit)))
+
+(run-at-time 1 10 'indent-org-block-automatically)
+#+end_src
 * Notes
-** Issues: None
+** Important keybinds
+*** General
+- M-<up/down> :: Move line
+- C-M-\ :: Format code region
+*** Buffers
+- SPC-b-d :: Kill buffer
+- SPC-b-[ :: Previous buffer
+- SPC-b-] :: Next buffer
+*** Org-mode
+- M-x org-info :: org-mode manual
+- C-c-' :: Edit code block in new buffer. =C-c-'= to return
+- C-m :: Execute code block with results in file
+- C-c C-c :: Execute code block with results in window
+*** Describe
+- M-: {var} :: show variable status
+- M-x describe-variable :: show variable status
+- M-X describe-function :: show function
+** Issues
+- [[Centaur-Tabs]] :: New tab is created in new group instead of same one
+- Multiple cursors :: Not working in Org mode. Possibly due to shortcuts
 ** To learn/ To do
+- Help/Man on functions & variables and how to find them
 - Learn and configure integrated terminal
 - ^ Same with dired -> make it similar to fzf
 - Files manipulation: renaming, moving, creation
 - GIT
 - Window manipulation: scroll through, close
+- [[https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Tips-06.org][Emacs tabs]]
+- [[https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Tips-07.org][Emacs tiling WM]]
+- Close window and kill buffer shortcut
