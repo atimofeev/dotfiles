@@ -1,6 +1,6 @@
 # FZF #
 # TODO: decide on default layout
-set -U FZF_COMPLETE 2
+set -U FZF_COMPLETE 3
 set -gx FZF_EDITOR 'vi'
 set -gx FZF_DEFAULT_COMMAND 'fd --type f --strip-cwd-prefix \
 	--hidden --follow --exclude .git '
