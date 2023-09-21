@@ -85,23 +85,45 @@
 ;; Fine undo
 (setq evil-want-fine-undo t)
 
-;; Force move cursor to EOL ($)
+;; FIXME Force move cursor to EOL ($)
 (define-key evil-normal-state-map (kbd "$") 'evil-end-of-line)
 (define-key evil-visual-state-map (kbd "$") 'evil-end-of-line)
 (define-key evil-motion-state-map (kbd "$") 'evil-end-of-line)
+
+;; FIXME Disable overwrite mode (insert key)
+(define-key global-map [(insert)] nil)
+
+;;(global-set-key (kbd "C-S-a") 'mc/edit-lines)
+
+(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)
+
+;;(map! :n "C-M-<up>" #'mc/mark-previous-like-this)
+;;(map! :n "C-M-<down>" #'mc/mark-next-like-this)
+
 
 ;; Orgmode settings
 ;;(setq org-startup-with-inline-images t) ;; Render images (only works in GUI mode)
 (setq company-global-modes '(not text-mode org-mode)) ;; Disable autocomplete for regular typing
 (setq org-blank-before-new-entry (quote ((heading . nil) ;; Disable newlines before new list entries
                                          (plain-list-item . nil))))
+(setq org-log-done 'time) ;; Insert timestamp on TODO completion
+;;(setq org-log-done 'note) ;; Insert note with timestamp on TODO completion
+
+;; org mode hook to use packages in org files
+(add-hook! 'org-mode-hook
+  (org-autolist-mode) ;; autolist
+  ;;(org-auto-tangle-mode)
+  )
+
+(add-hook! 'after-save-hook
+  (org-babel-tangle))
+;;
+;; ignore code block:
+;; +BEGIN_SRC emacs-lisp :tangle no
+
+
+(setq org-support-shift-select t)
 
 ;; Set bash as shell
 (setq shell-file-name (executable-find "bash"))
-
-;; Disable overwrite mode (not working at the moment)
-(define-key global-map [(insert)] nil)
-
-;; Enable org-autolist in org files
-(add-hook! 'org-mode-hook
-  (org-autolist-mode))

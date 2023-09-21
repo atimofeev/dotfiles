@@ -1,0 +1,45 @@
+#+title: Various notes & info related to Doom Emacs
+#+author: Artem Timofeev
+
+* Code snippets
+** Centaur-Tabs
+*** Hide tabs menu if 1 tab
+https://github.com/ema2159/centaur-tabs/issues/52
+#+begin_src emacs-lisp
+(use-package shut-up)
+
+;; it is possible that 0 is returned which can be ignored
+(defun centaur-tabs-get-total-tab-length ()
+  (length (centaur-tabs-tabs (centaur-tabs-current-tabset))))
+
+(defun centaur-tabs-hide-on-window-change ()
+  ;; run-at-time is required so the tab length is correct on killing a buffer
+  ;; without it, it still returns the old value
+  (run-at-time nil nil
+               (lambda ()
+                 (centaur-tabs-hide-check (centaur-tabs-get-total-tab-length)))))
+
+(defun centaur-tabs-hide-check (len)
+  (shut-up
+    (cond
+     ((and (= len 1) (not (centaur-tabs-local-mode))) (call-interactively #'centaur-tabs-local-mode))
+     ((and (>= len 2) (centaur-tabs-local-mode)) (call-interactively #'centaur-tabs-local-mode)))))
+
+(use-package centaur-tabs
+  :config
+  (centaur-tabs-mode t)
+  (add-hook 'window-configuration-change-hook 'centaur-tabs-hide-on-window-change))
+#+end_src
+
+*** Doom keymap
+#+begin_src emacs-lisp
+;; Tabs keybinds
+(map! :leader
+      "<left>" #'centaur-tabs-backward
+      "<right>" #'centaur-tabs-forward
+      "<up>" #'centaur-tabs-forward-group
+      "<down>" #'centaur-tabs-backward-group)
+#+end_src
+
+*** TODO FIXME 'Create new tab' opens in new group
+Actual for both 'centaur-tabs--create-new-tab' and 'centaur-tabs--create-new-empty-buffer'
