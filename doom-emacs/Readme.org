@@ -2,9 +2,25 @@
 #+author: Artem Timofeev
 #+property: header-args :tangle ~/.config/doom/config.el
 
+* Table of contents :toc:
+- [[#about-this-config][About this config]]
+- [[#initel][init.el]]
+- [[#configel][config.el]]
+  - [[#basics][Basics]]
+  - [[#custom-misc][Custom misc]]
+  - [[#cli-mode][CLI mode]]
+  - [[#org-mode][Org-mode]]
+- [[#packagesel][packages.el]]
+- [[#code-snippets][Code snippets]]
+  - [[#centaur-tabs][Centaur-Tabs]]
+- [[#notes][Notes]]
+  - [[#issues-none][Issues: None]]
+  - [[#to-learn-to-do][To learn/ To do]]
+
 * About this config
 This is my personal Doom Emacs config. Doom Emacs is a distribution of Emacs that uses the “evil” keybindings (Vim keybindings) and includes a number of nice extensions and a bit of configuration out of the box.
 This is an .org file which generates all config files with =org-babel-tangle= from code blocks.
+Inspired by [[https://gitlab.com/dwt1/dotfiles/-/blob/master/.config/doom/config.org][DistroTube configuration]].
 
 * init.el
 Init config with selectable modes/modules
@@ -194,7 +210,7 @@ Init config with selectable modes/modules
 * config.el
 ** Basics
 Essential basic settings for your Doom setup
-#+begin_src emacs-lisp :tangle ~/.config/doom/config.el
+#+begin_src emacs-lisp
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 (setq user-full-name "Artem Timofeev")
 (setq doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 13 :weight 'semi-light))
@@ -205,10 +221,13 @@ Essential basic settings for your Doom setup
 
 ** Custom misc
 User preferences
-#+begin_src emacs-lisp :tangle ~/.config/doom/config.el
+#+begin_src emacs-lisp
 (setq shell-file-name (executable-find "bash")) ;; use bash shell
 (setq evil-want-fine-undo t) ;; undo in small steps
 ;; Multiple cursors VSCode-like behavior; C-g to exit
+;; Had to unbind these:
+;; gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-up "['']"
+;; gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-down "['']"
 (global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)
 ;; Auto update open files which were externally changed
@@ -218,7 +237,7 @@ User preferences
 
 ** CLI mode
 Little hacks for Doom in CLI mode
-#+begin_src emacs-lisp :tangle ~/.config/doom/config.el
+#+begin_src emacs-lisp
 (unless (display-graphic-p)
   (xterm-mouse-mode 1) ;; enable mouse
   (setq mouse-drag-copy-region t) ;; mouse select-to-copy
@@ -227,7 +246,7 @@ Little hacks for Doom in CLI mode
 
 ** Org-mode
 Org mode specific settings
-#+begin_src emacs-lisp :tangle ~/.config/doom/config.el
+#+begin_src emacs-lisp
 (setq org-support-shift-select t)
 ;;(setq org-startup-with-inline-images t) ;; Render images (only GUI mode)
 (setq company-global-modes '(not text-mode org-mode)) ;; Disable autocomplete for regular typing
@@ -295,10 +314,10 @@ https://github.com/ema2159/centaur-tabs/issues/52
 Actual for both =centaur-tabs--create-new-tab= and =centaur-tabs--create-new-empty-buffer=
 
 * Notes
-** Issues
-- Tangle header is not effective in this file: have to specify output file for each code block
-** To learn
+** Issues: None
+** To learn/ To do
 - Learn and configure integrated terminal
 - ^ Same with dired -> make it similar to fzf
-- Files manipulation, renaming
+- Files manipulation: renaming, moving, creation
 - GIT
+- Window manipulation: scroll through, close

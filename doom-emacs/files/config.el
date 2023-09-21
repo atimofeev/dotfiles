@@ -8,6 +8,9 @@
 (setq shell-file-name (executable-find "bash")) ;; use bash shell
 (setq evil-want-fine-undo t) ;; undo in small steps
 ;; Multiple cursors VSCode-like behavior; C-g to exit
+;; Had to unbind these:
+;; gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-up "['']"
+;; gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-down "['']"
 (global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)
 ;; Auto update open files which were externally changed
