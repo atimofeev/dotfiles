@@ -16,6 +16,8 @@
 ;; Auto update open files which were externally changed
 (global-auto-revert-mode 1)
 (setq global-auto-revert-non-file-buffers t)
+;; Enable cursor line highlight
+(beacon-mode 1)
 
 (unless (display-graphic-p)
   (xterm-mouse-mode 1) ;; enable mouse

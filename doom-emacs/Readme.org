@@ -1,6 +1,7 @@
 #+title: My Doom Emacs config and related notes
 #+author: Artem Timofeev
 #+property: header-args :tangle ~/.config/doom/config.el
+#+startup: content
 
 * Table of contents :toc:
 - [[#about-this-config][About this config]]
@@ -19,7 +20,8 @@
 
 * About this config
 This is my personal Doom Emacs config. Doom Emacs is a distribution of Emacs that uses the “evil” keybindings (Vim keybindings) and includes a number of nice extensions and a bit of configuration out of the box.
-This is an .org file which generates all config files with =org-babel-tangle= from code blocks.
+
+This is an =.org= file which generates app configuration with =org-babel-tangle= from code blocks.
 Inspired by [[https://gitlab.com/dwt1/dotfiles/-/blob/master/.config/doom/config.org][DistroTube configuration]].
 
 * init.el
@@ -233,6 +235,8 @@ User preferences
 ;; Auto update open files which were externally changed
 (global-auto-revert-mode 1)
 (setq global-auto-revert-non-file-buffers t)
+;; Enable cursor line highlight
+(beacon-mode 1)
 #+end_src
 
 ** CLI mode
@@ -266,12 +270,16 @@ Additional packages from emacs repos
 ;; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
 (package! org-autolist)
+(package! beacon)
 #+end_src
 
 * Code snippets
 ** Centaur-Tabs
 To be enabled after fix is found..
 - ui :: tabs
+*** TODO FIXME 'Create new tab' opens tab in new group
+Actual for both =centaur-tabs--create-new-tab= and =centaur-tabs--create-new-empty-buffer=
+
 *** Doom keymap
 #+begin_src emacs-lisp :tangle no
 ;; Tabs keybinds
@@ -309,9 +317,6 @@ https://github.com/ema2159/centaur-tabs/issues/52
   (centaur-tabs-mode t)
   (add-hook 'window-configuration-change-hook 'centaur-tabs-hide-on-window-change))
 #+end_src
-
-*** TODO FIXME 'Create new tab' opens tab in new group
-Actual for both =centaur-tabs--create-new-tab= and =centaur-tabs--create-new-empty-buffer=
 
 * Notes
 ** Issues: None
