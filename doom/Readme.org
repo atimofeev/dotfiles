@@ -353,7 +353,7 @@ Run every 10s
 - M-x describe-variable :: show variable status
 - M-X describe-function :: show function
 ** Issues
-- [[Centaur-Tabs]] :: New tab is created in new group instead of same one
+- [[#centaur-tabs][Centaur-Tabs]] :: New tab is created in new group instead of same one
 - Multiple cursors :: Not working in Org mode. Possibly due to shortcuts
 ** To learn/ To do
 - Help/Man on functions & variables and how to find them
