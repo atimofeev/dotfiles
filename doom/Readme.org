@@ -7,27 +7,27 @@
 - [[#about-this-config][About this config]]
 - [[#initel][init.el]]
 - [[#configel][config.el]]
-  - [[#basics][Basics]]
-  - [[#custom-misc][Custom misc]]
-  - [[#cli-mode][CLI mode]]
-  - [[#org-mode][Org-mode]]
+  - [[#general-settings][General settings]]
+  - [[#org-mode][org-mode]]
+  - [[#keymaps][Keymaps]]
 - [[#packagesel][packages.el]]
-- [[#addons--code-snippets][Addons & Code snippets]]
-  - [[#centaur-tabs][Centaur-Tabs]]
-  - [[#auto-format-code-block][Auto format code block]]
 - [[#notes][Notes]]
-  - [[#important-keybinds][Important keybinds]]
+  - [[#keymap-help][Keymap help]]
+  - [[#code-to-implement][Code to implement]]
   - [[#issues][Issues]]
-  - [[#to-learn-to-do][To learn/ To do]]
+  - [[#tasks][Tasks]]
 
 * About this config
 This is my personal Doom Emacs config. Doom Emacs is a distribution of Emacs that uses the “evil” keybindings (Vim keybindings) and includes a number of nice extensions and a bit of configuration out of the box.
+
+This file also includes keymaps help, current tasks related to my journey of learning Emacs, issues with usage and further plans.
 
 This is an =.org= file which generates app configuration with =org-babel-tangle= from code blocks.
 Inspired by [[https://gitlab.com/dwt1/dotfiles/-/blob/master/.config/doom/config.org][DistroTube configuration]].
 
 * init.el
 Init config with selectable modes/modules
+:init_el_src:
 #+begin_src emacs-lisp :tangle ~/.config/doom/init.el
 ;;; init.el -*- lexical-binding: t; -*-
 (doom! :input
@@ -60,7 +60,7 @@ Init config with selectable modes/modules
        ophints           ; highlight the region an operation acts on
        (popup +defaults)   ; tame sudden yet inevitable temporary windows
        ;;tabs              ; a tab bar for Emacs
-       ;;treemacs          ; a project drawer, like neotree but cooler
+       treemacs          ; a project drawer, like neotree but cooler
        unicode           ; extended unicode support for various languages
        (vc-gutter +pretty) ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
@@ -83,9 +83,9 @@ Init config with selectable modes/modules
        ;;word-wrap         ; soft wrapping with language-aware indent
 
        :emacs
-       dired             ; making dired pretty [functional]
+       (dired +icons)            ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
-       ;;ibuffer         ; interactive buffer management
+       (ibuffer +icons)         ; interactive buffer management
        undo              ; persistent, smarter undo for your inevitable mistakes
        vc                ; version-control and Emacs, sitting in a tree
 
@@ -170,7 +170,7 @@ Init config with selectable modes/modules
        ;;nim               ; python + lisp at the speed of c
        nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       org               ; organize your plain life in plain text
+       (org +pretty)               ; organize your plain life in plain text
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
@@ -210,61 +210,143 @@ Init config with selectable modes/modules
        ;;literate
        (default +bindings +smartparens))
 #+end_src
-
+:END:
 * config.el
-** Basics
-Essential basic settings for your Doom setup
+** General settings
 #+begin_src emacs-lisp
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
-(setq user-full-name "Artem Timofeev")
-(setq doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 13 :weight 'semi-light))
-(setq doom-theme 'doom-one)
-(setq display-line-numbers-type t)
-(setq org-directory "~/org/")
-#+end_src
-
-** Custom misc
-User preferences
-#+begin_src emacs-lisp
-(setq shell-file-name (executable-find "bash")) ;; use bash shell
-(setq evil-want-fine-undo t) ;; undo in small steps
-(setq company-global-modes '(not text-mode org-mode markdown-mode)) ;; Disable autocomplete for regular typing
-;; Multiple cursors VSCode-like behavior; C-g to exit
-;; Had to unbind these:
-;; gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-up "['']"
-;; gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-down "['']"
-(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)
-;; Auto update open files which were externally changed
-(global-auto-revert-mode 1)
-(setq global-auto-revert-non-file-buffers t)
-;; Enable cursor line highlight
-(beacon-mode 1)
-#+end_src
-
-** CLI mode
-Little hacks for Doom in CLI mode
-#+begin_src emacs-lisp
+;; == GENERAL SETTINGS ==
+(setq
+ user-full-name "Artem Timofeev"
+ doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 13 :weight 'semi-light)
+ doom-theme 'doom-one
+ display-line-numbers-type t ;; show line numbers
+ mouse-drag-copy-region t ;; select-to-copy with mouse
+ confirm-kill-emacs nil ;; quit without prompt
+ company-global-modes '(not text-mode org-mode markdown-mode) ;; disable autocomplete for plain text
+ global-auto-revert-non-file-buffers t ;; auto-update non-file buffers (e.g. file listing)
+ scroll-margin 3 ;; add margin to cursor while scrolling
+ treemacs-project-follow-mode t ;; treemacs: show currently opened project
+ imenu-list-focus-after-activation t ;; imenu-list: window auto-focus
+ imenu-list-auto-resize t ;; imenu-list: windown auto-size (is it working?)
+ imenu-auto-rescan t ;; imenu-list: auto-refresh
+ imenu-auto-rescan-maxout (* 1024 1024) ;; imenu-list: limit auto-refresh to max filesize
+;; imenu--rescan-item '("" . -99) ;; imenu-list: removes `rescan' item. not sure if this is needed
+)
 (unless (display-graphic-p)
-  (xterm-mouse-mode 1) ;; enable mouse
-  (setq mouse-drag-copy-region t) ;; mouse select-to-copy
+  (xterm-mouse-mode 1) ;; enable mouse in CLI mode
+)
+(beacon-mode 1) ;; cursor highlight on big movements or between windows
+(global-auto-revert-mode 1) ;; auto-update changed files
+#+end_src
+
+** org-mode
+#+begin_src emacs-lisp
+;; == ORG-MODE ==
+(setq
+ org-directory "~/org/" ;; org-agenda and other org tools will work upon this dir
+ org-support-shift-select t ;; enable select with S-<arrows>
+ org-startup-folded "content" ;; startup with everything unfolded except lowest sub-sections
+;; org-startup-with-inline-images t ;; Render images (only GUI mode)
+ org-blank-before-new-entry (quote ((heading . nil) ;; no empty lines on betwen new list entries
+                                    (plain-list-item .nil)))
+)
+(add-hook! 'after-save-hook (org-babel-tangle)) ;; export org code blocks on save
+(add-hook! 'org-mode-hook
+  (display-line-numbers-mode 0) ;; disable lines numbers for org-mode
+  (org-autolist-mode) ;; autolist
 )
 #+end_src
 
-** Org-mode
-Org mode specific settings
+** Keymaps
+*** General keybinds
 #+begin_src emacs-lisp
-(setq org-startup-folded "content")
-(setq org-support-shift-select t)
-;;(setq org-startup-with-inline-images t) ;; Render images (only GUI mode)
-(setq org-blank-before-new-entry (quote ((heading . nil) ;; Disable newlines before new list entries
-                                         (plain-list-item . nil))))
-(setq org-log-done 'time) ;; Insert timestamp on TODO completion
-;;(setq org-log-done 'note) ;; Insert note with timestamp on TODO completion
-(add-hook! 'org-mode-hook
-  (org-autolist-mode)) ;; autolist
-(add-hook! 'after-save-hook
-  (org-babel-tangle)) ;; generate config file from .org on save
+;; == GENERAL KEYMAPS ==
+;; Multiple cursors VSCode-like behavior; C-g to exit
+(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)
+(unbind-key "<insertchar>" overwrite-mode) ;; disable overwrite mode on Insert key
+(map! :leader
+      (:prefix ("t". "toggle")
+       :desc "Treemacs"   "t" #'treemacs ;; open project tree
+       :desc "imenu-list" "i" #'imenu-list-smart-toggle ;; open file overview
+       ))
+#+end_src
+
+*** Files
+Disabled: WIP
+#+begin_src emacs-lisp :tangle no
+;; == FILES KEYMAPS ==
+(map! :leader
+      (:prefix ("f". "file")
+       :desc "New file"                 "n" #'evil-buffer-new
+       :desc "New file as.."            " " #'
+
+       :desc "Save file"                "s" #'save-buffer
+       :desc "Save file as.."           "S" #'write-file
+       :desc "Save file and kill buffer"" " #'
+
+       :desc "Rename file"              " " #'
+       :desc "Move file"                " " #'
+       :desc "Delete file"              " " #'delete-file))
+#+end_src
+
+*** Buffers
+#+begin_src emacs-lisp
+;; == BUFFER KEYMAPS ==
+(map! :leader
+      (:prefix ("b". "buffer")
+       :desc "New buffer"         "n"       #'evil-buffer-new
+       :desc "Save buffer"        "s"       #'save-buffer
+       :desc "Switch buffer"      "b"       #'consult-buffer
+       :desc "Next buffer"        "<right>" #'next-buffer
+       :desc "Previous buffer"    "<left>"  #'previous-buffer
+       :desc "Kill buffer"        "d"       #'kill-current-buffer
+       :desc "Kill other buffers" "k"       #'doom/kill-other-buffers
+       :desc "Kill all buffers"   "K"       #'doom/kill-all-buffers))
+#+end_src
+
+*** Windows
+#+begin_src emacs-lisp
+;; == EVIL-WINDOWS KEYMAPS ==
+(map! :leader
+      (:prefix ("w". "window")
+       :desc "New window, up"           "n"             #'evil-window-new
+       :desc "New window, left"         "N"             #'evil-window-vnew
+
+       :desc "Split view, right"        "s"             #'evil-window-split
+       :desc "Split view, down"         "v"             #'evil-window-vsplit
+       ;; uses same buffer
+
+       :desc "Select LEFT window"       "<left>"        #'evil-window-left
+       :desc "Select DOWN window"       "<down>"        #'evil-window-down
+       :desc "Select UP window"         "<up>"          #'evil-window-up
+       :desc "Select RIGHT window"      "<right>"       #'evil-window-right
+
+       :desc "Move window LEFT"         "S-<left>"      #'+evil/window-move-left
+       :desc "Move window DOWN"         "S-<down>"      #'+evil/window-move-down
+       :desc "Move window UP"           "S-<up>"        #'+evil/window-move-up
+       :desc "Move window RIGHT"        "S-<right>"     #'+evil/window-move-right
+
+       :desc "Maximize window"          "m m"           #'doom/window-maximize-buffer
+       ;; close all other windows
+       :desc "Maximize vertically"      "m v"           #'doom/window-maximize-vertically
+       ;; close all windows UP/DOWN
+       :desc "Maximize horizontally"    "m s"           #'doom/window-maximize-horizontally
+       ;; close all windown LEFT/RIGHT
+
+       :desc "Close window"             "c"             #'evil-window-delete
+       :desc "Kill buffer & window"     "d"             #'kill-buffer-and-window))
+#+end_src
+
+*** org-mode FIXME
+#+begin_src emacs-lisp :tangle no
+;; == ORG-MODE KEYMAPS ==
+;; need to find suitable keymap. C-TAB is intercepted by kitty terminal (cycle through tabs)
+;(after! org
+;  (define-key org-mode-map (kbd "C-\t") #'org-fold-show-subtree))
+;(add-hook! 'org-mode-hook
+;  (define-key org-mode-map (kbd "C-TAB") #'org-fold-show-subtree))
 #+end_src
 
 * packages.el
@@ -272,20 +354,94 @@ Additional packages from emacs repos
 #+begin_src emacs-lisp :tangle ~/.config/doom/packages.el
 ;; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
-(package! org-autolist)
-(package! beacon)
+(package! org-autolist) ;; easier lists in org-mode
+(package! beacon) ;; cursor highlighting
+(package! imenu-list) ;; listing of file structure
 #+end_src
 
-* Addons & Code snippets
-Untested and unapplied code or yet resolved issues
-** Centaur-Tabs
+* Notes
+** Keymap help
+*** Keymap Legend
+Explanation on how to read keymap configuration
+- SPC :: Space bar, =leader= key by default
+- C :: Ctrl
+- S :: Shift
+- M :: Alt
+- RET :: Enter/Return
+- TAB :: Tab
+- [a-z] :: Regular keyboard keys
+- [A-Z] :: Keys passed with Shift
+- <up/down/left/right> :: Arrow keys
+- N: OR I: OR V: :: Only effective in Normal, Insert or Visual states
+
+*** Finding help & docs
+- SPC-h-d-h :: Doom Emacs manual
+- SPC-h-d-s :: Search through Doom Emacs manual headers
+- M-x org-info :: org-mode manual
+- S-k :: Describe function/variable/callable in code
+- M-: {var} :: Show variable status
+- M-x describe-key :: Show description for keybind
+- M-x describe-variable :: Show variable status
+- M-x describe-function :: Show function
+- ? :: Search keybinds and related functions
+
+*** Evil (vi)
+- gg :: Start of file
+- G :: End of file
+- u :: Undo
+- C-r :: Redo
+- d :: Cut (also to clipboard)
+- y :: Copy (also to clipboard)
+- p :: Paste
+- dd :: Delete line
+- dw :: Delete word starting from cursor position
+- :w :: Write file
+- :q :: Exit
+
+*** Text operations
+- Mouse select :: Copy to clipboard
+- S-<arrows> :: Select text
+- M-<arrows> :: Move line (or selected region)
+- C-v OR p :: Paste from clipboard (probably terminal KB)
+
+*** org-mode
+- N:TAB :: Fold/Unfold section =FOLDED -> CHILDREN=
+    To enable =FOLDED -> CHILDREN -> SUBTREE=, add this:
+    #+begin_src emacs-lisp :tangle no
+(setq org-tab-first-hook (delete '+org-cycle-only-current-subtree-h org-tab-first-hook)) ;; enable all 3 states for `org-cycle'
+    #+end_src
+- N:S-TAB :: Fold/Unfold all sections =OVERVIEW -> CONTENTS -> SHOW ALL= (excluding :drawers:)
+- g j :: Go to next section heading (same level)
+- g k :: Go to previous section heading (same level)
+- M-<up/down> :: Move section with subsections
+- S-M-<up/down> :: Move section
+- M-<left/right> OR I:TAB/S-TAB :: Move section (promote/demote)
+- S-M-<left/right> :: Move section with subsections (promote/demote)
+- C-M-\ :: Format code block
+- C-c-' :: Edit code block in new buffer. =C-c-'= to return
+- C-m :: Execute code block with results in file
+- C-c C-c :: Execute code block with results in window
+- dd :: On folded section: delete with children
+
+*** magit
+- g g :: Open magit
+- s :: stage file
+- S :: stage all files
+- u :: unstage file
+- c c :: commit changes
+- C-c C-c :: apply commit
+- p :: push menu
+
+** Code to implement
+*** Centaur-Tabs
 To be enabled after fix is found..
 - ui :: tabs
-*** TODO FIXME 'Create new tab' opens tab in new group
+**** TODO FIXME 'Create new tab'
+It opens tab in new group
 Actual for both =centaur-tabs--create-new-tab= and =centaur-tabs--create-new-empty-buffer=
 Root cause: [[https://github.com/ema2159/centaur-tabs#buffer-groups][buffer groups]] logic
 
-*** Doom keymap
+**** Doom keymap
 #+begin_src emacs-lisp :tangle no
 ;; Tabs keybinds
 (map! :leader
@@ -295,7 +451,7 @@ Root cause: [[https://github.com/ema2159/centaur-tabs#buffer-groups][buffer grou
       "<down>" #'centaur-tabs-backward-group)
 #+end_src
 
-*** Hide tabs menu if 1 tab
+**** Hide tabs menu if 1 tab
 https://github.com/ema2159/centaur-tabs/issues/52
 #+begin_src emacs-lisp :tangle no
 (use-package shut-up)
@@ -323,7 +479,7 @@ https://github.com/ema2159/centaur-tabs/issues/52
   (add-hook 'window-configuration-change-hook 'centaur-tabs-hide-on-window-change))
 #+end_src
 
-** Auto format code block
+*** Auto format code block
 Run every 10s
 #+begin_src emacs-lisp :tangle no
 (defun indent-org-block-automatically ()
@@ -334,34 +490,43 @@ Run every 10s
 
 (run-at-time 1 10 'indent-org-block-automatically)
 #+end_src
-* Notes
-** Important keybinds
-*** General
-- M-<up/down> :: Move line
-- C-M-\ :: Format code region
-*** Buffers
-- SPC-b-d :: Kill buffer
-- SPC-b-[ :: Previous buffer
-- SPC-b-] :: Next buffer
-*** Org-mode
-- M-x org-info :: org-mode manual
-- C-c-' :: Edit code block in new buffer. =C-c-'= to return
-- C-m :: Execute code block with results in file
-- C-c C-c :: Execute code block with results in window
-*** Describe
-- M-: {var} :: show variable status
-- M-x describe-variable :: show variable status
-- M-X describe-function :: show function
 ** Issues
 - [[#centaur-tabs][Centaur-Tabs]] :: New tab is created in new group instead of same one
-- Multiple cursors :: Not working in Org mode. Possibly due to shortcuts
-** To learn/ To do
-- Help/Man on functions & variables and how to find them
-- Learn and configure integrated terminal
-- ^ Same with dired -> make it similar to fzf
-- Files manipulation: renaming, moving, creation
+- Multiple cursors :: Not working in Org mode. Possibly due to broken shortcuts
+- C-Backspace :: Not working in CLI mode, resolves as =C-h=
+- Autolist with description lists :: =RET= always creates new list item, no way to exit this mode
+- Autolist with unordered lists :: =RET= mid text creates new list item, no text is moved
+- TAB in org code block throwing ::
+    [yas] Check your `yas-snippet-dirs': /home/atimofeev/.config/doom/snippets/ is not a directory
+    [yas] Preparied just-in-time loading of snippets with some errors.  Check *Messages*.
+- Keybind leaking :: KB from buffer prefix sometimes are leaking into insert mode without any prefixes
+    i.e. typing =d= in insert mode tries to kill buffer
+- Emojis :: Visual glitches in terminal TTY mode
+
+** Tasks
+*** org-mode tasks
+- Org unfold sections in insert mode
+  - Insert mode: TAB on closed section should open it
+- Exit org code block editing with =:w= if no filename was provided
+- Check if code indentations work as expected
+- Find out how to automatically =tab-indent= whole code block.
+    Not only line starting position, but it's contents too.
+- Try to customize =org-fancy-priorities=
+*** other tasks
+- Try out =prettify-symbols-mode=, at least for org code blocks. [[https://www.reddit.com/r/emacs/comments/o04it0/share_your_prettifysymbolsalist/][reddit link]]
+- Enable LSP. [[https://docs.doomemacs.org/v21.12/modules/tools/lsp/][link]]
+- Customize [[https://github.com/seagle0128/doom-modeline][doom-modeline]]. At least make bigger =vi-mode= markers
+- Enter at the end of line in visual mode -> insert mode -> actual EOL - > RET
+- Looks into modules loading, lazify ones which always load without particular need
+- EOF margin: should not show more than X empty lines when going to end of file
+- Treemacs: enable =treemacs-filewatch-mode= only when it's open
+  - +keybind for adding projects
+  - find way to see into orgfiles(?)
+*** learn
 - GIT
-- Window manipulation: scroll through, close
+- Search by keybind
+- Integrated terminal
+- dired -> make it similar to fzf(?)
 - [[https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Tips-06.org][Emacs tabs]]
 - [[https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Tips-07.org][Emacs tiling WM]]
-- Close window and kill buffer shortcut
+- List keymaps suggestions
