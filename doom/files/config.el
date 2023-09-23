@@ -4,6 +4,8 @@
  user-full-name "Artem Timofeev"
  doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 13 :weight 'semi-light)
  doom-theme 'doom-one
+ shell-file-name (executable-find "bash") ;; use bash shell
+ evil-want-fine-undo t ;; undo in small steps
  display-line-numbers-type t ;; show line numbers
  mouse-drag-copy-region t ;; select-to-copy with mouse
  confirm-kill-emacs nil ;; quit without prompt
