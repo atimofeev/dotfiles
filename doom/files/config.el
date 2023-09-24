@@ -4,7 +4,6 @@
  user-full-name "Artem Timofeev"
  doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 13 :weight 'semi-light)
  doom-theme 'doom-one
- shell-file-name (executable-find "bash") ;; use bash shell
  evil-want-fine-undo t ;; undo in small steps
  display-line-numbers-type t ;; show line numbers
  mouse-drag-copy-region t ;; select-to-copy with mouse
@@ -13,6 +12,7 @@
  global-auto-revert-non-file-buffers t ;; auto-update non-file buffers (e.g. file listing)
  scroll-margin 3 ;; add margin to cursor while scrolling
  treemacs-project-follow-mode t ;; treemacs: show currently opened project
+ treemacs-width 28 ;; treemacs: adjust default width
  imenu-list-focus-after-activation t ;; imenu-list: window auto-focus
  imenu-list-auto-resize t ;; imenu-list: windown auto-size (is it working?)
  imenu-auto-rescan t ;; imenu-list: auto-refresh
@@ -35,10 +35,44 @@
                                     (plain-list-item .nil)))
 )
 (add-hook! 'after-save-hook (org-babel-tangle)) ;; export org code blocks on save
+(add-hook! 'org-src-mode-hook (evil-insert-state)) ;; enter code block editing with insert state
 (add-hook! 'org-mode-hook
   (display-line-numbers-mode 0) ;; disable lines numbers for org-mode
   (org-autolist-mode) ;; autolist
 )
+
+;; == ELFEED ==
+(setq elfeed-goodies/entry-pane-size 0.5)
+(evil-define-key 'normal elfeed-show-mode-map
+  (kbd "S-<down>") 'elfeed-goodies/split-show-next
+  (kbd "S-<up>") 'elfeed-goodies/split-show-prev)
+(evil-define-key 'normal elfeed-search-mode-map
+  (kbd "S-<down>") 'elfeed-goodies/split-show-next
+  (kbd "S-<up>") 'elfeed-goodies/split-show-prev)
+(setq elfeed-feeds  '(("https://www.reddit.com/r/linux.rss" reddit linux)
+                     ("https://www.reddit.com/r/commandline.rss" reddit commandline)
+                     ("https://www.reddit.com/r/emacs.rss" reddit emacs)
+                     ("https://www.gamingonlinux.com/article_rss.php" gaming linux)
+                     ("https://hackaday.com/blog/feed/" hackaday linux)
+                     ("https://opensource.com/feed" opensource linux)
+                     ("https://linux.softpedia.com/backend.xml" softpedia linux)
+                     ("https://itsfoss.com/feed/" itsfoss linux)
+                     ("https://www.zdnet.com/topic/linux/rss.xml" zdnet linux)
+                     ("https://www.phoronix.com/rss.php" phoronix linux)
+                     ("http://feeds.feedburner.com/d0od" omgubuntu linux)
+                     ("https://www.computerworld.com/index.rss" computerworld linux)
+                     ("https://www.networkworld.com/category/linux/index.rss" networkworld linux)
+                     ("https://www.techrepublic.com/rssfeeds/topic/open-source/" techrepublic linux)
+                     ("https://betanews.com/feed" betanews linux)
+                     ("http://lxer.com/module/newswire/headlines.rss" lxer linux)
+                     ("http://highscalability.com/blog/rss.xml" highscal sysdes)
+                     ("https://blog.acolyer.org/feed/" mornpaper sysdes)
+                     ("https://www.infoq.com/architecture-design/rss" infoq sysdes)
+                     ("https://dzone.com/devops-tutorials-tools-news/list.rss" dzone devops)
+                     ("https://devops.com/feed/" devops)
+                     ("https://thenewstack.io/feed/" newstack devops)
+                     ("http://feeds.arstechnica.com/arstechnica/index" arstech tech)
+                     ("https://techcrunch.com/feed/" techcrunch tech)))
 
 ;; == GENERAL KEYMAPS ==
 ;; Multiple cursors VSCode-like behavior; C-g to exit
@@ -47,9 +81,27 @@
 (unbind-key "<insertchar>" overwrite-mode) ;; disable overwrite mode on Insert key
 (map! :leader
       (:prefix ("t". "toggle")
-       :desc "Treemacs"   "t" #'treemacs ;; open project tree
-       :desc "imenu-list" "i" #'imenu-list-smart-toggle ;; open file overview
+       :desc "vterm"            "s"     #'+vterm/toggle ;; open shell
+       :desc "treemacs"         "t"     #'treemacs ;; open project tree
+       :desc "imenu-list"       "i"     #'imenu-list-smart-toggle ;; open file overview
        ))
+
+;; == CUSTOM EVIL CMDs AND FUNCTIONS ==
+(evil-define-command my-write-and-sync (file &optional bang)
+  "Write the current buffer and then execute doom sync."
+  :repeat nil
+  (interactive "<f><!>")
+  (evil-write nil nil nil file bang)
+  (doom/reload))
+(evil-define-command my-write-and-quit (file &optional bang)
+  "Write the current buffer and then execute doom sync."
+  :repeat nil
+  (interactive "<f><!>")
+  (evil-write nil nil nil file bang)
+  (kill-current-buffer))
+(evil-ex-define-cmd "q" 'kill-current-buffer) ;; kill buffer instead of killing emacs
+(evil-ex-define-cmd "ww" 'my-write-and-sync) ;; write file and perform 'doom sync'
+(evil-ex-define-cmd "wq" 'my-write-and-quit) ;; write file and kill buffer
 
 ;; == BUFFER KEYMAPS ==
 (map! :leader

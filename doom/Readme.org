@@ -9,6 +9,7 @@
 - [[#configel][config.el]]
   - [[#general-settings][General settings]]
   - [[#org-mode][org-mode]]
+  - [[#elfeed][elfeed]]
   - [[#keymaps][Keymaps]]
 - [[#packagesel][packages.el]]
 - [[#notes][Notes]]
@@ -93,7 +94,7 @@ Init config with selectable modes/modules
        ;;eshell            ; the elisp shell that works everywhere
        ;;shell             ; simple shell REPL for Emacs
        ;;term              ; basic terminal emulator for Emacs
-       ;;vterm             ; the best terminal emulation in Emacs
+       vterm             ; the best terminal emulation in Emacs
 
        :checkers
        syntax              ; tasing you for every semicolon you forget
@@ -203,7 +204,7 @@ Init config with selectable modes/modules
        ;;emms
        ;;everywhere        ; *leave* Emacs!? You must be joking
        ;;irc               ; how neckbeards socialize
-       ;;(rss +org)        ; emacs as an RSS reader
+       rss        ; emacs as an RSS reader
        ;;twitter           ; twitter client https://twitter.com/vnought
 
        :config
@@ -220,7 +221,6 @@ Init config with selectable modes/modules
  user-full-name "Artem Timofeev"
  doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 13 :weight 'semi-light)
  doom-theme 'doom-one
- shell-file-name (executable-find "bash") ;; use bash shell
  evil-want-fine-undo t ;; undo in small steps
  display-line-numbers-type t ;; show line numbers
  mouse-drag-copy-region t ;; select-to-copy with mouse
@@ -229,6 +229,7 @@ Init config with selectable modes/modules
  global-auto-revert-non-file-buffers t ;; auto-update non-file buffers (e.g. file listing)
  scroll-margin 3 ;; add margin to cursor while scrolling
  treemacs-project-follow-mode t ;; treemacs: show currently opened project
+ treemacs-width 28 ;; treemacs: adjust default width
  imenu-list-focus-after-activation t ;; imenu-list: window auto-focus
  imenu-list-auto-resize t ;; imenu-list: windown auto-size (is it working?)
  imenu-auto-rescan t ;; imenu-list: auto-refresh
@@ -254,10 +255,47 @@ Init config with selectable modes/modules
                                     (plain-list-item .nil)))
 )
 (add-hook! 'after-save-hook (org-babel-tangle)) ;; export org code blocks on save
+(add-hook! 'org-src-mode-hook (evil-insert-state)) ;; enter code block editing with insert state
 (add-hook! 'org-mode-hook
   (display-line-numbers-mode 0) ;; disable lines numbers for org-mode
   (org-autolist-mode) ;; autolist
 )
+#+end_src
+
+** elfeed
+#+begin_src emacs-lisp
+;; == ELFEED ==
+(setq elfeed-goodies/entry-pane-size 0.5)
+(evil-define-key 'normal elfeed-show-mode-map
+  (kbd "S-<down>") 'elfeed-goodies/split-show-next
+  (kbd "S-<up>") 'elfeed-goodies/split-show-prev)
+(evil-define-key 'normal elfeed-search-mode-map
+  (kbd "S-<down>") 'elfeed-goodies/split-show-next
+  (kbd "S-<up>") 'elfeed-goodies/split-show-prev)
+(setq elfeed-feeds  '(("https://www.reddit.com/r/linux.rss" reddit linux)
+                     ("https://www.reddit.com/r/commandline.rss" reddit commandline)
+                     ("https://www.reddit.com/r/emacs.rss" reddit emacs)
+                     ("https://www.gamingonlinux.com/article_rss.php" gaming linux)
+                     ("https://hackaday.com/blog/feed/" hackaday linux)
+                     ("https://opensource.com/feed" opensource linux)
+                     ("https://linux.softpedia.com/backend.xml" softpedia linux)
+                     ("https://itsfoss.com/feed/" itsfoss linux)
+                     ("https://www.zdnet.com/topic/linux/rss.xml" zdnet linux)
+                     ("https://www.phoronix.com/rss.php" phoronix linux)
+                     ("http://feeds.feedburner.com/d0od" omgubuntu linux)
+                     ("https://www.computerworld.com/index.rss" computerworld linux)
+                     ("https://www.networkworld.com/category/linux/index.rss" networkworld linux)
+                     ("https://www.techrepublic.com/rssfeeds/topic/open-source/" techrepublic linux)
+                     ("https://betanews.com/feed" betanews linux)
+                     ("http://lxer.com/module/newswire/headlines.rss" lxer linux)
+                     ("http://highscalability.com/blog/rss.xml" highscal sysdes)
+                     ("https://blog.acolyer.org/feed/" mornpaper sysdes)
+                     ("https://www.infoq.com/architecture-design/rss" infoq sysdes)
+                     ("https://dzone.com/devops-tutorials-tools-news/list.rss" dzone devops)
+                     ("https://devops.com/feed/" devops)
+                     ("https://thenewstack.io/feed/" newstack devops)
+                     ("http://feeds.arstechnica.com/arstechnica/index" arstech tech)
+                     ("https://techcrunch.com/feed/" techcrunch tech)))
 #+end_src
 
 ** Keymaps
@@ -270,9 +308,31 @@ Init config with selectable modes/modules
 (unbind-key "<insertchar>" overwrite-mode) ;; disable overwrite mode on Insert key
 (map! :leader
       (:prefix ("t". "toggle")
-       :desc "Treemacs"   "t" #'treemacs ;; open project tree
-       :desc "imenu-list" "i" #'imenu-list-smart-toggle ;; open file overview
+       :desc "vterm"            "s"     #'+vterm/toggle ;; open shell
+       :desc "treemacs"         "t"     #'treemacs ;; open project tree
+       :desc "imenu-list"       "i"     #'imenu-list-smart-toggle ;; open file overview
        ))
+#+end_src
+
+*** Evil CMDs
+These commands go after entering =:=
+#+begin_src emacs-lisp
+;; == CUSTOM EVIL CMDs AND FUNCTIONS ==
+(evil-define-command my-write-and-sync (file &optional bang)
+  "Write the current buffer and then execute doom sync."
+  :repeat nil
+  (interactive "<f><!>")
+  (evil-write nil nil nil file bang)
+  (doom/reload))
+(evil-define-command my-write-and-quit (file &optional bang)
+  "Write the current buffer and then execute doom sync."
+  :repeat nil
+  (interactive "<f><!>")
+  (evil-write nil nil nil file bang)
+  (kill-current-buffer))
+(evil-ex-define-cmd "q" 'kill-current-buffer) ;; kill buffer instead of killing emacs
+(evil-ex-define-cmd "ww" 'my-write-and-sync) ;; write file and perform 'doom sync'
+(evil-ex-define-cmd "wq" 'my-write-and-quit) ;; write file and kill buffer
 #+end_src
 
 *** Files
@@ -345,6 +405,7 @@ Disabled: WIP
 #+begin_src emacs-lisp :tangle no
 ;; == ORG-MODE KEYMAPS ==
 ;; need to find suitable keymap. C-TAB is intercepted by kitty terminal (cycle through tabs)
+;; 'org-fold-show-subtree unfolds subtree
 ;(after! org
 ;  (define-key org-mode-map (kbd "C-\t") #'org-fold-show-subtree))
 ;(add-hook! 'org-mode-hook
@@ -381,7 +442,7 @@ Explanation on how to read keymap configuration
 - SPC-h-d-s :: Search through Doom Emacs manual headers
 - M-x org-info :: org-mode manual
 - S-k :: Describe function/variable/callable in code
-- M-: {var} :: Show variable status
+- M-x find-library :: Search through libraries
 - M-x describe-key :: Show description for keybind
 - M-x describe-variable :: Show variable status
 - M-x describe-function :: Show function
@@ -433,6 +494,11 @@ Explanation on how to read keymap configuration
 - c c :: commit changes
 - C-c C-c :: apply commit
 - p :: push menu
+
+*** elfeed
+- ? :: Mark as read
+- ? :: Select keyword
+-  ::
 
 ** Code to implement
 *** Centaur-Tabs
@@ -514,21 +580,25 @@ Run every 10s
 - Find out how to automatically =tab-indent= whole code block.
     Not only line starting position, but it's contents too.
 - Try to customize =org-fancy-priorities=
+
 *** other tasks
 - Try out =prettify-symbols-mode=, at least for org code blocks. [[https://www.reddit.com/r/emacs/comments/o04it0/share_your_prettifysymbolsalist/][reddit link]]
 - Enable LSP. [[https://docs.doomemacs.org/v21.12/modules/tools/lsp/][link]]
-- Customize [[https://github.com/seagle0128/doom-modeline][doom-modeline]]. At least make bigger =vi-mode= markers
+- Customize [[https://github.com/seagle0128/doom-modeline][doom-modeline]]. At least make bigger =evil-state= markers
+    [[https://github.com/SwiftyChicken/dotfiles/tree/master/.config/emacs][Example]] of vanilla config with large indicator. [[https://preview.redd.it/42ts6q6cwuua1.png?width=1920&format=png&auto=webp&s=f852078093fd8d67bcb45ee8cf1cd3d5b9cf84d4][pic]]
 - Enter at the end of line in visual mode -> insert mode -> actual EOL - > RET
+    Probably with =evil-insert-state-hook= followed by =evil-end-of-line= cmd.
 - Looks into modules loading, lazify ones which always load without particular need
 - EOF margin: should not show more than X empty lines when going to end of file
 - Treemacs: enable =treemacs-filewatch-mode= only when it's open
   - +keybind for adding projects
   - find way to see into orgfiles(?)
+- Try out [[https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/][mu4e]] email client
+
+*** to disable
+- disable =evil-record-macro= =q= and other related commands
+
 *** learn
-- GIT
 - Search by keybind
-- Integrated terminal
-- dired -> make it similar to fzf(?)
 - [[https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Tips-06.org][Emacs tabs]]
 - [[https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Tips-07.org][Emacs tiling WM]]
-- List keymaps suggestions
