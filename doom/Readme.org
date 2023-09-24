@@ -10,6 +10,7 @@
   - [[#general-settings][General settings]]
   - [[#org-mode][org-mode]]
   - [[#elfeed][elfeed]]
+  - [[#doom-modeline][doom-modeline]]
   - [[#keymaps][Keymaps]]
 - [[#packagesel][packages.el]]
 - [[#notes][Notes]]
@@ -298,6 +299,28 @@ Init config with selectable modes/modules
                      ("https://techcrunch.com/feed/" techcrunch tech)))
 #+end_src
 
+** doom-modeline
+#+begin_src emacs-lisp
+;; == DOOM-MODELINE ==
+;; disable modal icons and set custom evil-state tags to make them more noticeable
+(setq doom-modeline-modal-icon nil
+      evil-normal-state-tag   (propertize "[Normal]")
+      evil-emacs-state-tag    (propertize "[Emacs]" )
+      evil-insert-state-tag   (propertize "[Insert]")
+      evil-motion-state-tag   (propertize "[Motion]")
+      evil-visual-state-tag   (propertize "[Visual]")
+      evil-operator-state-tag (propertize "[Operator]"))
+;; setting up custom FG/BG colors to further increace noticeability
+(defun setup-doom-modeline-evil-states () ;; setting up colors
+  (set-face-attribute 'doom-modeline-evil-normal-state nil   :background "green"  :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-emacs-state nil    :background "orange" :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-insert-state nil   :background "red"    :foreground "white")
+  (set-face-attribute 'doom-modeline-evil-motion-state nil   :background "blue"   :foreground "white")
+  (set-face-attribute 'doom-modeline-evil-visual-state nil   :background "gray80" :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-operator-state nil :background "purple"))
+(add-hook 'doom-modeline-mode-hook 'setup-doom-modeline-evil-states)
+#+end_src
+
 ** Keymaps
 *** General keybinds
 #+begin_src emacs-lisp
@@ -443,10 +466,11 @@ Explanation on how to read keymap configuration
 - M-x org-info :: org-mode manual
 - S-k :: Describe function/variable/callable in code
 - M-x find-library :: Search through libraries
-- M-x describe-key :: Show description for keybind
-- M-x describe-variable :: Show variable status
-- M-x describe-function :: Show function
-- ? :: Search keybinds and related functions
+- SPC-h-k :: Show description for specific keybind
+- M-x describe-bindings :: List all keybinds
+- SPC-h-b-f :: Show full particular keymap
+- SPC-h-v :: Show variable status
+- SPC-h-f :: Show function
 
 *** Evil (vi)
 - gg :: Start of file
@@ -575,7 +599,7 @@ Run every 10s
 *** org-mode tasks
 - Org unfold sections in insert mode
   - Insert mode: TAB on closed section should open it
-- Exit org code block editing with =:w= if no filename was provided
+- Exit org code block editing with =:q= or =:w= (if no filename was provided)
 - Check if code indentations work as expected
 - Find out how to automatically =tab-indent= whole code block.
     Not only line starting position, but it's contents too.
@@ -584,21 +608,16 @@ Run every 10s
 *** other tasks
 - Try out =prettify-symbols-mode=, at least for org code blocks. [[https://www.reddit.com/r/emacs/comments/o04it0/share_your_prettifysymbolsalist/][reddit link]]
 - Enable LSP. [[https://docs.doomemacs.org/v21.12/modules/tools/lsp/][link]]
-- Customize [[https://github.com/seagle0128/doom-modeline][doom-modeline]]. At least make bigger =evil-state= markers
-    [[https://github.com/SwiftyChicken/dotfiles/tree/master/.config/emacs][Example]] of vanilla config with large indicator. [[https://preview.redd.it/42ts6q6cwuua1.png?width=1920&format=png&auto=webp&s=f852078093fd8d67bcb45ee8cf1cd3d5b9cf84d4][pic]]
 - Enter at the end of line in visual mode -> insert mode -> actual EOL - > RET
     Probably with =evil-insert-state-hook= followed by =evil-end-of-line= cmd.
 - Looks into modules loading, lazify ones which always load without particular need
 - EOF margin: should not show more than X empty lines when going to end of file
-- Treemacs: enable =treemacs-filewatch-mode= only when it's open
-  - +keybind for adding projects
-  - find way to see into orgfiles(?)
 - Try out [[https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/][mu4e]] email client
 
 *** to disable
 - disable =evil-record-macro= =q= and other related commands
+- probably bookmarks too?
 
 *** learn
-- Search by keybind
 - [[https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Tips-06.org][Emacs tabs]]
 - [[https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Tips-07.org][Emacs tiling WM]]

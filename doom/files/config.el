@@ -74,6 +74,25 @@
                      ("http://feeds.arstechnica.com/arstechnica/index" arstech tech)
                      ("https://techcrunch.com/feed/" techcrunch tech)))
 
+;; == DOOM-MODELINE ==
+;; disable modal icons and set custom evil-state tags to make them more noticeable
+(setq doom-modeline-modal-icon nil
+      evil-normal-state-tag   (propertize "[Normal]")
+      evil-emacs-state-tag    (propertize "[Emacs]" )
+      evil-insert-state-tag   (propertize "[Insert]")
+      evil-motion-state-tag   (propertize "[Motion]")
+      evil-visual-state-tag   (propertize "[Visual]")
+      evil-operator-state-tag (propertize "[Operator]"))
+;; setting up custom FG/BG colors to further increace noticeability
+(defun setup-doom-modeline-evil-states () ;; setting up colors
+  (set-face-attribute 'doom-modeline-evil-normal-state nil   :background "green"  :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-emacs-state nil    :background "orange" :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-insert-state nil   :background "red"    :foreground "white")
+  (set-face-attribute 'doom-modeline-evil-motion-state nil   :background "blue"   :foreground "white")
+  (set-face-attribute 'doom-modeline-evil-visual-state nil   :background "gray80" :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-operator-state nil :background "purple"))
+(add-hook 'doom-modeline-mode-hook 'setup-doom-modeline-evil-states)
+
 ;; == GENERAL KEYMAPS ==
 ;; Multiple cursors VSCode-like behavior; C-g to exit
 (global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)
