@@ -11,13 +11,19 @@
  company-global-modes '(not text-mode org-mode markdown-mode) ; disable autocomplete for plain text
  global-auto-revert-non-file-buffers t                        ; auto-update non-file buffers (e.g. file listing)
  scroll-margin 3                                              ; add margin to cursor while scrolling
- projectile-project-search-path '("~/repos/")                 ; projectile: set projects path
-)
-(unless (display-graphic-p)
-  (xterm-mouse-mode 1)                                        ; enable mouse in CLI mode
+ projectile-project-search-path '("~/repos/")                 ;
 )
 (beacon-mode 1)                                               ; cursor highlight on big movements or between windows
 (global-auto-revert-mode 1)                                   ; auto-update changed files
+
+;;; == TTY HACKS ==
+(unless (display-graphic-p)
+  (xterm-mouse-mode 1)         ; enable mouse in TTY mode
+;;  (map! :after evil-org        ; TTY resolves 'C-backspace' into 'C-h'
+;;        :map evil-org-mode-map ; if your terminal does not support it
+;;        :i "C-h" nil)          ; enable these lines for hack. define-key too ↴
+;;  (define-key evil-insert-state-map (kbd "C-h") 'aborn/backward-kill-word)
+)
 
 ;;; == DOOM-MODELINE ==
 ;; disable modal icons and set custom evil-state tags to make them more noticeable
@@ -48,7 +54,7 @@
                                     (plain-list-item .nil)))
 )
 (add-hook! 'after-save-hook (org-babel-tangle))     ; export org code blocks on save
-(add-hook! 'org-src-mode-hook (evil-insert-state))  ; enter code block editing with insert state
+(add-hook! 'org-src-mode-hook (evil-insert-state))  ; enter code block editing with insert mode
 (add-hook! 'org-mode-hook
   (display-line-numbers-mode 0)                     ; disable lines numbers for org-mode
   (org-autolist-mode 1)                             ; autolist
@@ -112,11 +118,44 @@
 
 ;;; == CUSTOM FUNCTIONS ==
 
-(defun my-align-comments (beginning end)
+(defun custom/align-comments (beginning end)
   "Align comments within marked region.
 Comment syntax detection is automatic"
   (interactive "*r")
   (align-regexp beginning end (concat "\\(\\s-*\\)" (regexp-quote comment-start))))
+
+(defun aborn/backward-kill-word ()
+  "Customize/Smart backward-kill-word."
+  (interactive)
+  (let* ((cp (point))
+         (backword)
+         (end)
+         (space-pos)
+         (backword-char (if (bobp)
+                            ""           ;; cursor in begin of buffer
+                          (buffer-substring cp (- cp 1)))))
+    (if (equal (length backword-char) (string-width backword-char))
+        (progn
+          (save-excursion
+            (setq backword (buffer-substring (point) (progn (forward-word -1) (point)))))
+          (setq ab/debug backword)
+          (save-excursion
+            (when (and backword          ;; when backword contains space
+                       (s-contains? " " backword))
+              (setq space-pos (ignore-errors (search-backward " ")))))
+          (save-excursion
+            (let* ((pos (ignore-errors (search-backward-regexp "\n")))
+                   (substr (when pos (buffer-substring pos cp))))
+              (when (or (and substr (s-blank? (s-trim substr)))
+                        (s-contains? "\n" backword))
+                (setq end pos))))
+          (if end
+              (kill-region cp end)
+            (if space-pos
+                (kill-region cp space-pos)
+              (backward-kill-word 1))))
+      (kill-region cp (- cp 1)))         ;; word is non-english word
+    ))
 
 ;;; == GENERAL KEYMAPS ==
 (global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)   ; Spawn additional cursor above; C-g to exit
@@ -128,8 +167,9 @@ Comment syntax detection is automatic"
        :desc "vterm window"             "S"     #'+vterm/here   ; open shell in current window
        ))
 
-;; == EVIL-MOTION KEYMAPS ==
-(defun back-to-indentation-or-beginning-of-line ()
+;;; == EVIL-MOTION KEYMAPS ==
+;(defun back-to-indentation-or-beginning-of-line
+(defun custom/beginning-or-indentation ()
   "Move point back to indentation of beginning of line.
 Move point to the first non-whitespace character on this line.
 If point is already there, move to the beginning of the line.
@@ -140,36 +180,36 @@ the beginning of the line."
     (back-to-indentation)
     (when (= orig-point (point))
       (move-beginning-of-line 1))))
-(define-key evil-motion-state-map [home] 'back-to-indentation-or-beginning-of-line)
-(define-key global-map [home] 'back-to-indentation-or-beginning-of-line)
+(define-key evil-motion-state-map [home] 'custom/beginning-or-indentation)
+(define-key global-map [home] 'custom/beginning-or-indentation)
 
 ;;; == CUSTOM EVIL CMDs ==
-(evil-define-command my-write-and-sync (file &optional bang)
+(evil-define-command custom/write-and-sync (file &optional bang)
   "Write the current buffer and then execute doom sync."
   :repeat nil
   (interactive "<f><!>")
   (evil-write nil nil nil file bang)
   (doom/reload))
 
-(evil-define-command my-write-and-quit (file &optional bang)
+(evil-define-command custom/write-and-quit (file &optional bang)
   "Write the current buffer and then kill buffer."
   :repeat nil
   (interactive "<f><!>")
   (evil-write nil nil nil file bang)
   (kill-current-buffer))
 
-(evil-define-command my-kill-buffer (&optional bang)
+(evil-define-command custom/kill-buffer (&optional bang)
   "Kill buffer. With bang '!' - kill without prompt."
   :repeat nil
   (interactive "<!>")
   (if bang
       (progn
-       (set-buffer-modified-p nil)))
+        (set-buffer-modified-p nil)))
   (kill-current-buffer))
 
-(evil-ex-define-cmd "ww" 'my-write-and-sync)   ; write file and perform 'doom sync'
-(evil-ex-define-cmd "wq" 'my-write-and-quit)   ; write file and kill buffer
-(evil-ex-define-cmd "q"  'my-kill-buffer)      ; kill buffer instead of killing emacs; :q! - kill without prompt
+(evil-ex-define-cmd "ww" 'custom/write-and-sync)   ; write file and perform 'doom sync'
+(evil-ex-define-cmd "wq" 'custom/write-and-quit)   ; write file and kill buffer
+(evil-ex-define-cmd "q"  'custom/kill-buffer)      ; kill buffer instead of killing emacs; :q! - kill without prompt
 
 ;;; == BUFFER KEYMAPS ==
 (map! :leader

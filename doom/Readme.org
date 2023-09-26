@@ -8,6 +8,8 @@
 - [[#initel][init.el]]
 - [[#configel][config.el]]
   - [[#general-settings][General settings]]
+  - [[#tty-hacks][TTY hacks]]
+  - [[#evil-modes-hacks-wip][Evil modes hacks (WIP)]]
   - [[#doom-modeline][doom-modeline]]
   - [[#org-mode][org-mode]]
   - [[#treemacs][treemacs]]
@@ -17,10 +19,11 @@
   - [[#keymaps][Keymaps]]
 - [[#packagesel][packages.el]]
 - [[#notes][Notes]]
-  - [[#keymap-help][Keymap help]]
-  - [[#issues][Issues]]
   - [[#tasks][Tasks]]
+  - [[#issues][Issues]]
+  - [[#keymap-help][Keymap help]]
   - [[#code-to-implement][Code to implement]]
+  - [[#useful-links][Useful links]]
 
 * About this config
 :about:
@@ -37,7 +40,7 @@ Inspired by [[https://gitlab.com/dwt1/dotfiles/-/blob/master/.config/doom/config
 :END:
 Init config with selectable modules
 :init_el_src:
-#+begin_src emacs-lisp :tangle ~/.config/doom/init.el
+#+begin_src elisp :tangle ~/.config/doom/init.el
 ;;; init.el -*- lexical-binding: t; -*-
 (doom! :input
        ;;bidi              ; (tfel ot) thgir etirw uoy gnipleh
@@ -223,7 +226,7 @@ Init config with selectable modules
 * config.el
 ** General settings
 Main or uncategorized settings
-#+begin_src emacs-lisp
+#+begin_src elisp
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 ;;; == GENERAL SETTINGS ==
 (setq
@@ -237,18 +240,35 @@ Main or uncategorized settings
  company-global-modes '(not text-mode org-mode markdown-mode) ; disable autocomplete for plain text
  global-auto-revert-non-file-buffers t                        ; auto-update non-file buffers (e.g. file listing)
  scroll-margin 3                                              ; add margin to cursor while scrolling
- projectile-project-search-path '("~/repos/")                 ; projectile: set projects path
-)
-(unless (display-graphic-p)
-  (xterm-mouse-mode 1)                                        ; enable mouse in CLI mode
+ projectile-project-search-path '("~/repos/")                 ;
 )
 (beacon-mode 1)                                               ; cursor highlight on big movements or between windows
 (global-auto-revert-mode 1)                                   ; auto-update changed files
 #+end_src
 
+** TTY hacks
+#+begin_src elisp
+;;; == TTY HACKS ==
+(unless (display-graphic-p)
+  (xterm-mouse-mode 1)         ; enable mouse in TTY mode
+;;  (map! :after evil-org        ; TTY resolves 'C-backspace' into 'C-h'
+;;        :map evil-org-mode-map ; if your terminal does not support it
+;;        :i "C-h" nil)          ; enable these lines for hack. define-key too ↴
+;;  (define-key evil-insert-state-map (kbd "C-h") 'aborn/backward-kill-word)
+)
+#+end_src
+
+** Evil modes hacks (WIP)
+Currently disabled
+#+begin_src elisp :tangle no
+;;; EVIL MODES HACKS
+;(define-key evil-normal-state-map (kbd "DEL") 'evil-insert) ; Backspace -> insert mode
+;(define-key evil-normal-state-map (kbd "C-w") 'evil-insert) ; C-Backspace -> insert mode
+#+end_src
+
 ** doom-modeline
 Status bar module
-#+begin_src emacs-lisp
+#+begin_src elisp
 ;;; == DOOM-MODELINE ==
 ;; disable modal icons and set custom evil-state tags to make them more noticeable
 (setq doom-modeline-modal-icon nil
@@ -271,7 +291,7 @@ Status bar module
 
 ** org-mode
 - .org :: Highly flexible structured plain text file format
-#+begin_src emacs-lisp
+#+begin_src elisp
 ;;; == ORG-MODE ==
 (setq
  org-directory "~/org/"                             ; org-agenda and other org tools will work upon this dir
@@ -282,7 +302,7 @@ Status bar module
                                     (plain-list-item .nil)))
 )
 (add-hook! 'after-save-hook (org-babel-tangle))     ; export org code blocks on save
-(add-hook! 'org-src-mode-hook (evil-insert-state))  ; enter code block editing with insert state
+(add-hook! 'org-src-mode-hook (evil-insert-state))  ; enter code block editing with insert mode
 (add-hook! 'org-mode-hook
   (display-line-numbers-mode 0)                     ; disable lines numbers for org-mode
   (org-autolist-mode 1)                             ; autolist
@@ -291,7 +311,7 @@ Status bar module
 
 ** treemacs
 Module for displaying project file tree
-#+begin_src emacs-lisp
+#+begin_src elisp
 ;;; == TREEMACS ==
 (use-package! treemacs
   :defer t
@@ -305,7 +325,7 @@ Module for displaying project file tree
 
 ** imenu-list
 Module to show file definitions or headings
-#+begin_src emacs-lisp
+#+begin_src elisp
 ;;; == IMENU-LIST ==
 (use-package! imenu-list
   :defer t
@@ -322,7 +342,7 @@ Module to show file definitions or headings
 
 ** elfeed
 Module to read RSS feeds
-#+begin_src emacs-lisp
+#+begin_src elisp
 ;;; == ELFEED ==
 (setq elfeed-goodies/entry-pane-size 0.5)
 (setq elfeed-feeds  '(("https://www.reddit.com/r/linux.rss" reddit linux)
@@ -358,22 +378,58 @@ Module to read RSS feeds
 #+end_src
 
 ** Custom functions
-#+begin_src emacs-lisp
+#+begin_src elisp
 ;;; == CUSTOM FUNCTIONS ==
 #+end_src
 
 *** Auto-tab-align comments
-#+begin_src emacs-lisp
-(defun my-align-comments (beginning end)
+#+begin_src elisp
+(defun custom/align-comments (beginning end)
   "Align comments within marked region.
 Comment syntax detection is automatic"
   (interactive "*r")
   (align-regexp beginning end (concat "\\(\\s-*\\)" (regexp-quote comment-start))))
 #+end_src
 
+*** Smarter backward-kill-word
+#+begin_src elisp
+(defun aborn/backward-kill-word ()
+  "Customize/Smart backward-kill-word."
+  (interactive)
+  (let* ((cp (point))
+         (backword)
+         (end)
+         (space-pos)
+         (backword-char (if (bobp)
+                            ""           ;; cursor in begin of buffer
+                          (buffer-substring cp (- cp 1)))))
+    (if (equal (length backword-char) (string-width backword-char))
+        (progn
+          (save-excursion
+            (setq backword (buffer-substring (point) (progn (forward-word -1) (point)))))
+          (setq ab/debug backword)
+          (save-excursion
+            (when (and backword          ;; when backword contains space
+                       (s-contains? " " backword))
+              (setq space-pos (ignore-errors (search-backward " ")))))
+          (save-excursion
+            (let* ((pos (ignore-errors (search-backward-regexp "\n")))
+                   (substr (when pos (buffer-substring pos cp))))
+              (when (or (and substr (s-blank? (s-trim substr)))
+                        (s-contains? "\n" backword))
+                (setq end pos))))
+          (if end
+              (kill-region cp end)
+            (if space-pos
+                (kill-region cp space-pos)
+              (backward-kill-word 1))))
+      (kill-region cp (- cp 1)))         ;; word is non-english word
+    ))
+#+end_src
+
 ** Keymaps
 *** General keybinds
-#+begin_src emacs-lisp
+#+begin_src elisp
 ;;; == GENERAL KEYMAPS ==
 (global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)   ; Spawn additional cursor above; C-g to exit
 (global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)     ; Spawn additional cursor below
@@ -386,9 +442,10 @@ Comment syntax detection is automatic"
 #+end_src
 
 *** Evil motion
-#+begin_src emacs-lisp
-;; == EVIL-MOTION KEYMAPS ==
-(defun back-to-indentation-or-beginning-of-line ()
+#+begin_src elisp
+;;; == EVIL-MOTION KEYMAPS ==
+;(defun back-to-indentation-or-beginning-of-line
+(defun custom/beginning-or-indentation ()
   "Move point back to indentation of beginning of line.
 Move point to the first non-whitespace character on this line.
 If point is already there, move to the beginning of the line.
@@ -399,45 +456,45 @@ the beginning of the line."
     (back-to-indentation)
     (when (= orig-point (point))
       (move-beginning-of-line 1))))
-(define-key evil-motion-state-map [home] 'back-to-indentation-or-beginning-of-line)
-(define-key global-map [home] 'back-to-indentation-or-beginning-of-line)
+(define-key evil-motion-state-map [home] 'custom/beginning-or-indentation)
+(define-key global-map [home] 'custom/beginning-or-indentation)
 #+end_src
 
 *** Evil CMDs
 These commands go after entering =:=
-#+begin_src emacs-lisp
+#+begin_src elisp
 ;;; == CUSTOM EVIL CMDs ==
-(evil-define-command my-write-and-sync (file &optional bang)
+(evil-define-command custom/write-and-sync (file &optional bang)
   "Write the current buffer and then execute doom sync."
   :repeat nil
   (interactive "<f><!>")
   (evil-write nil nil nil file bang)
   (doom/reload))
 
-(evil-define-command my-write-and-quit (file &optional bang)
+(evil-define-command custom/write-and-quit (file &optional bang)
   "Write the current buffer and then kill buffer."
   :repeat nil
   (interactive "<f><!>")
   (evil-write nil nil nil file bang)
   (kill-current-buffer))
 
-(evil-define-command my-kill-buffer (&optional bang)
+(evil-define-command custom/kill-buffer (&optional bang)
   "Kill buffer. With bang '!' - kill without prompt."
   :repeat nil
   (interactive "<!>")
   (if bang
       (progn
-       (set-buffer-modified-p nil)))
+        (set-buffer-modified-p nil)))
   (kill-current-buffer))
 
-(evil-ex-define-cmd "ww" 'my-write-and-sync)   ; write file and perform 'doom sync'
-(evil-ex-define-cmd "wq" 'my-write-and-quit)   ; write file and kill buffer
-(evil-ex-define-cmd "q"  'my-kill-buffer)      ; kill buffer instead of killing emacs; :q! - kill without prompt
+(evil-ex-define-cmd "ww" 'custom/write-and-sync)   ; write file and perform 'doom sync'
+(evil-ex-define-cmd "wq" 'custom/write-and-quit)   ; write file and kill buffer
+(evil-ex-define-cmd "q"  'custom/kill-buffer)      ; kill buffer instead of killing emacs; :q! - kill without prompt
 #+end_src
 
-*** Files
-Disabled: WIP
-#+begin_src emacs-lisp :tangle no
+*** Files (WIP)
+Currently disabled
+#+begin_src elisp :tangle no
 ;;; == FILES KEYMAPS ==
 (map! :leader
       (:prefix ("f". "file")
@@ -454,7 +511,7 @@ Disabled: WIP
 #+end_src
 
 *** Buffers
-#+begin_src emacs-lisp
+#+begin_src elisp
 ;;; == BUFFER KEYMAPS ==
 (map! :leader
       (:prefix ("b". "buffer")
@@ -469,7 +526,7 @@ Disabled: WIP
 #+end_src
 
 *** Windows
-#+begin_src emacs-lisp
+#+begin_src elisp
 ;;; == EVIL-WINDOWS KEYMAPS ==
 (map! :leader
       (:prefix ("w". "window")
@@ -502,7 +559,7 @@ Disabled: WIP
 #+end_src
 
 *** org-mode FIXME
-#+begin_src emacs-lisp :tangle no
+#+begin_src elisp :tangle no
 ;;; == ORG-MODE KEYMAPS ==
 ;; need to find suitable keymap. C-TAB is intercepted by kitty terminal (cycle through tabs)
 ;; 'org-fold-show-subtree unfolds subtree
@@ -514,7 +571,7 @@ Disabled: WIP
 
 * packages.el
 Additional packages from emacs repos
-#+begin_src emacs-lisp :tangle ~/.config/doom/packages.el
+#+begin_src elisp :tangle ~/.config/doom/packages.el
 ;; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
 (package! org-autolist) ; easier lists in org-mode
@@ -523,6 +580,39 @@ Additional packages from emacs repos
 #+end_src
 
 * Notes
+** Tasks
+*** general tasks
+- Try out =prettify-symbols-mode=, at least for org code blocks. [[https://www.reddit.com/r/emacs/comments/o04it0/share_your_prettifysymbolsalist/][reddit link]]
+- Enable LSP. [[https://docs.doomemacs.org/v21.12/modules/tools/lsp/][link]]
+- Enter at the end of line in visual mode -> insert mode -> actual EOL - > RET
+    Probably with =evil-insert-state-hook= followed by =evil-end-of-line= cmd.
+- Looks into modules loading, lazify ones which always load without particular need
+- EOF margin: should not show more than X empty lines when going to end of file
+- Try out [[https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/][mu4e]] email client
+- Write function to tab-align code in selected region
+  - Ignore comments
+- fzf+grep-like functionality
+
+*** org-mode tasks
+- Org unfold sections in insert mode
+  - Insert mode: TAB on closed section should open it
+- org-scr-mode :: Exit with =:q= or =:w= (if no filename was provided)
+- Try to customize =org-fancy-priorities=
+
+*** to disable
+- disable =evil-record-macro= =q= and other related commands
+- probably bookmarks too?
+
+** Issues
+- [[#centaur-tabs][Centaur-Tabs]] :: New tab is created in new group instead of same one
+- Multiple cursors :: Issues in org-mode
+- Autolist with description lists :: =RET= always creates new list item, no way to exit this mode
+- Autolist with unordered lists :: =RET= mid text creates new list item, no text is moved
+- TAB in org code block throwing ::
+    [yas] Check your `yas-snippet-dirs': /home/atimofeev/.config/doom/snippets/ is not a directory
+    [yas] Preparied just-in-time loading of snippets with some errors.  Check *Messages*.
+- Emojis :: Visual glitches in terminal TTY mode
+
 ** Keymap help
 *** Keymap Legend
 Explanation on how to read keymap configuration
@@ -574,7 +664,7 @@ Explanation on how to read keymap configuration
 - gg C-c C-c :: Refresh local org setup. Use this to fix runtime issues within org-mode
 - N:TAB :: Fold/Unfold section =FOLDED -> CHILDREN=
     To enable =FOLDED -> CHILDREN -> SUBTREE=, add this:
-    #+begin_src emacs-lisp :tangle no
+    #+begin_src elisp :tangle no
 (setq org-tab-first-hook (delete '+org-cycle-only-current-subtree-h org-tab-first-hook)) ; enable all 3 states for `org-cycle'
     #+end_src
 - N:S-TAB :: Fold/Unfold all sections =OVERVIEW -> CONTENTS -> SHOW ALL= (excluding :drawers:)
@@ -604,45 +694,6 @@ Explanation on how to read keymap configuration
 - ? :: Select keyword
 -  ::
 
-** Issues
-- [[#centaur-tabs][Centaur-Tabs]] :: New tab is created in new group instead of same one
-- Multiple cursors :: Issues in org-mode
-- C-Backspace :: Not working in CLI mode, resolves as =C-h=
-- Autolist with description lists :: =RET= always creates new list item, no way to exit this mode
-- Autolist with unordered lists :: =RET= mid text creates new list item, no text is moved
-- TAB in org code block throwing ::
-    [yas] Check your `yas-snippet-dirs': /home/atimofeev/.config/doom/snippets/ is not a directory
-    [yas] Preparied just-in-time loading of snippets with some errors.  Check *Messages*.
-- Keybind leaking :: KB from buffer prefix sometimes are leaking into insert mode without any prefixes
-    i.e. typing =d= in insert mode tries to kill buffer
-- Emojis :: Visual glitches in terminal TTY mode
-
-** Tasks
-*** org-mode tasks
-- Org unfold sections in insert mode
-  - Insert mode: TAB on closed section should open it
-- org-scr-mode :: Exit with =:q= or =:w= (if no filename was provided)
-- Check if code indentations work as expected
-- Try to customize =org-fancy-priorities=
-
-*** other tasks
-- Try out =prettify-symbols-mode=, at least for org code blocks. [[https://www.reddit.com/r/emacs/comments/o04it0/share_your_prettifysymbolsalist/][reddit link]]
-- Enable LSP. [[https://docs.doomemacs.org/v21.12/modules/tools/lsp/][link]]
-- Enter at the end of line in visual mode -> insert mode -> actual EOL - > RET
-    Probably with =evil-insert-state-hook= followed by =evil-end-of-line= cmd.
-- Looks into modules loading, lazify ones which always load without particular need
-- EOF margin: should not show more than X empty lines when going to end of file
-- Try out [[https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/][mu4e]] email client
-- Write function to tab-align code in selected region
-  - Ignore comments
-
-*** to disable
-- disable =evil-record-macro= =q= and other related commands
-- probably bookmarks too?
-
-*** learn
-- [[https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Tips-06.org][Emacs tabs]]
-- [[https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Tips-07.org][Emacs tiling WM]]
 ** Code to implement
 *** Centaur-Tabs
 To be enabled after fix is found..
@@ -653,7 +704,7 @@ Actual for both =centaur-tabs--create-new-tab= and =centaur-tabs--create-new-emp
 Root cause: [[https://github.com/ema2159/centaur-tabs#buffer-groups][buffer groups]] logic
 
 **** Doom keymap
-#+begin_src emacs-lisp :tangle no
+#+begin_src elisp :tangle no
 ;; Tabs keybinds
 (map! :leader
       "<left>" #'centaur-tabs-backward
@@ -664,7 +715,7 @@ Root cause: [[https://github.com/ema2159/centaur-tabs#buffer-groups][buffer grou
 
 **** Hide tabs menu if 1 tab
 https://github.com/ema2159/centaur-tabs/issues/52
-#+begin_src emacs-lisp :tangle no
+#+begin_src elisp :tangle no
 (use-package shut-up)
 
 ;; it is possible that 0 is returned which can be ignored
@@ -690,9 +741,9 @@ https://github.com/ema2159/centaur-tabs/issues/52
   (add-hook 'window-configuration-change-hook 'centaur-tabs-hide-on-window-change))
 #+end_src
 
-*** Auto format code block
+*** Auto indent code block
 Run every 10s
-#+begin_src emacs-lisp :tangle no
+#+begin_src elisp :tangle no
 (defun indent-org-block-automatically ()
   (when (org-in-src-block-p)
    (org-edit-special)
@@ -701,3 +752,8 @@ Run every 10s
 
 (run-at-time 1 10 'indent-org-block-automatically)
 #+end_src
+
+** Useful links
+https://discourse.doomemacs.org/t/how-to-re-bind-keys/56
+https://discourse.doomemacs.org/t/common-config-anti-patterns/119
+https://gitlab.com/dwt1/dotfiles/-/blob/master/.config/doom/config.org
