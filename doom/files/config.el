@@ -1,25 +1,25 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
-;; == GENERAL SETTINGS ==
+;;; == GENERAL SETTINGS ==
 (setq
  user-full-name "Artem Timofeev"
  doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 13 :weight 'semi-light)
  doom-theme 'doom-one
- evil-want-fine-undo t ;; undo in small steps
- display-line-numbers-type t ;; show line numbers
- mouse-drag-copy-region t ;; select-to-copy with mouse
- confirm-kill-emacs nil ;; quit without prompt
- company-global-modes '(not text-mode org-mode markdown-mode) ;; disable autocomplete for plain text
- global-auto-revert-non-file-buffers t ;; auto-update non-file buffers (e.g. file listing)
- scroll-margin 3 ;; add margin to cursor while scrolling
- projectile-project-search-path '("~/repos/")
+ evil-want-fine-undo t                                        ; undo in small steps
+ display-line-numbers-type t                                  ; show line numbers
+ mouse-drag-copy-region t                                     ; select-to-copy with mouse
+ confirm-kill-emacs nil                                       ; quit without prompt
+ company-global-modes '(not text-mode org-mode markdown-mode) ; disable autocomplete for plain text
+ global-auto-revert-non-file-buffers t                        ; auto-update non-file buffers (e.g. file listing)
+ scroll-margin 3                                              ; add margin to cursor while scrolling
+ projectile-project-search-path '("~/repos/")                 ; projectile: set projects path
 )
 (unless (display-graphic-p)
-  (xterm-mouse-mode 1) ;; enable mouse in CLI mode
+  (xterm-mouse-mode 1)                                        ; enable mouse in CLI mode
 )
-(beacon-mode 1) ;; cursor highlight on big movements or between windows
-(global-auto-revert-mode 1) ;; auto-update changed files
+(beacon-mode 1)                                               ; cursor highlight on big movements or between windows
+(global-auto-revert-mode 1)                                   ; auto-update changed files
 
-;; == DOOM-MODELINE ==
+;;; == DOOM-MODELINE ==
 ;; disable modal icons and set custom evil-state tags to make them more noticeable
 (setq doom-modeline-modal-icon nil
       evil-normal-state-tag   (propertize "[Normal]")
@@ -30,61 +30,55 @@
       evil-operator-state-tag (propertize "[Operator]"))
 ;; setting up custom FG/BG colors to further increace noticeability
 (defun setup-doom-modeline-evil-states ()
-  (set-face-attribute 'doom-modeline-evil-normal-state nil   :background "green"  :foreground "black")
-  (set-face-attribute 'doom-modeline-evil-emacs-state nil    :background "orange" :foreground "black")
-  (set-face-attribute 'doom-modeline-evil-insert-state nil   :background "red"    :foreground "white")
-  (set-face-attribute 'doom-modeline-evil-motion-state nil   :background "blue"   :foreground "white")
-  (set-face-attribute 'doom-modeline-evil-visual-state nil   :background "gray80" :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-normal-state   nil :background "green"  :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-emacs-state    nil :background "orange" :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-insert-state   nil :background "red"    :foreground "white")
+  (set-face-attribute 'doom-modeline-evil-motion-state   nil :background "blue"   :foreground "white")
+  (set-face-attribute 'doom-modeline-evil-visual-state   nil :background "gray80" :foreground "black")
   (set-face-attribute 'doom-modeline-evil-operator-state nil :background "purple"))
 (add-hook 'doom-modeline-mode-hook 'setup-doom-modeline-evil-states)
 
-;; == ORG-MODE ==
+;;; == ORG-MODE ==
 (setq
- org-directory "~/org/" ;; org-agenda and other org tools will work upon this dir
- org-support-shift-select t ;; enable select with S-<arrows>
- org-startup-folded "content" ;; startup with everything unfolded except lowest sub-sections
-;; org-startup-with-inline-images t ;; Render images (only GUI mode)
- org-blank-before-new-entry (quote ((heading . nil) ;; no empty lines on betwen new list entries
+ org-directory "~/org/"                             ; org-agenda and other org tools will work upon this dir
+ org-support-shift-select t                         ; enable select with S-<arrows>
+ org-startup-folded "content"                       ; startup with everything unfolded except lowest sub-sections
+;; org-startup-with-inline-images t                   ; Render images (only GUI mode)
+ org-blank-before-new-entry (quote ((heading . nil) ; no empty lines on betwen new list entries
                                     (plain-list-item .nil)))
 )
-(add-hook! 'after-save-hook (org-babel-tangle)) ;; export org code blocks on save
-(add-hook! 'org-src-mode-hook (evil-insert-state)) ;; enter code block editing with insert state
+(add-hook! 'after-save-hook (org-babel-tangle))     ; export org code blocks on save
+(add-hook! 'org-src-mode-hook (evil-insert-state))  ; enter code block editing with insert state
 (add-hook! 'org-mode-hook
-  (display-line-numbers-mode 0) ;; disable lines numbers for org-mode
-  (org-autolist-mode 1) ;; autolist
+  (display-line-numbers-mode 0)                     ; disable lines numbers for org-mode
+  (org-autolist-mode 1)                             ; autolist
 )
 
-;; == TREEMACS ==
+;;; == TREEMACS ==
 (use-package! treemacs
   :defer t
   :config
-  (setq treemacs-width 28) ;; adjust window width
-  (treemacs-follow-mode 1) ;; follow files
-  (treemacs-project-follow-mode 1) ;; follow projects
+  (setq treemacs-width 28)         ; adjust window width
+  (treemacs-follow-mode 1)         ; follow files
+  (treemacs-project-follow-mode 1) ; follow projects
 )
 (map! :leader :desc "treemacs" "t t" #'treemacs)
 
-;; == IMENU-LIST ==
+;;; == IMENU-LIST ==
 (use-package! imenu-list
   :defer t
   :config
   (setq
-   imenu-list-focus-after-activation t ;; window auto-focus
-   imenu-list-auto-resize t ;; windown auto-size (is it working?)
-   imenu-auto-rescan t ;; auto-refresh
-   imenu-auto-rescan-maxout (* 1024 1024) ;; limit auto-refresh to max filesize
+   imenu-list-focus-after-activation t    ; window auto-focus
+   imenu-list-auto-resize t               ; windown auto-size (is it working?)
+   imenu-auto-rescan t                    ; auto-refresh
+   imenu-auto-rescan-maxout (* 1024 1024) ; limit auto-refresh to max filesize
    )
 )
 (map! :leader :desc "imenu-list" "t i" #'imenu-list-smart-toggle)
 
-;; == ELFEED ==
+;;; == ELFEED ==
 (setq elfeed-goodies/entry-pane-size 0.5)
-(evil-define-key 'normal elfeed-show-mode-map
-  (kbd "S-<down>") 'elfeed-goodies/split-show-next
-  (kbd "S-<up>") 'elfeed-goodies/split-show-prev)
-(evil-define-key 'normal elfeed-search-mode-map
-  (kbd "S-<down>") 'elfeed-goodies/split-show-next
-  (kbd "S-<up>") 'elfeed-goodies/split-show-prev)
 (setq elfeed-feeds  '(("https://www.reddit.com/r/linux.rss" reddit linux)
                      ("https://www.reddit.com/r/commandline.rss" reddit commandline)
                      ("https://www.reddit.com/r/emacs.rss" reddit emacs)
@@ -109,15 +103,29 @@
                      ("https://thenewstack.io/feed/" newstack devops)
                      ("http://feeds.arstechnica.com/arstechnica/index" arstech tech)
                      ("https://techcrunch.com/feed/" techcrunch tech)))
+(evil-define-key 'normal elfeed-show-mode-map
+  (kbd "S-<down>") 'elfeed-goodies/split-show-next
+  (kbd "S-<up>") 'elfeed-goodies/split-show-prev)
+(evil-define-key 'normal elfeed-search-mode-map
+  (kbd "S-<down>") 'elfeed-goodies/split-show-next
+  (kbd "S-<up>") 'elfeed-goodies/split-show-prev)
 
-;; == GENERAL KEYMAPS ==
-(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this) ;; Spawn additional cursor above; C-g to exit
-(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this);; Spawn additional cursor below
-(unbind-key "<insertchar>" overwrite-mode) ;; disable overwrite mode on Insert key
+;;; == CUSTOM FUNCTIONS ==
+
+(defun my-align-comments (beginning end)
+  "Align comments within marked region.
+Comment syntax detection is automatic"
+  (interactive "*r")
+  (align-regexp beginning end (concat "\\(\\s-*\\)" (regexp-quote comment-start))))
+
+;;; == GENERAL KEYMAPS ==
+(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)   ; Spawn additional cursor above; C-g to exit
+(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)     ; Spawn additional cursor below
+(unbind-key "<insertchar>" overwrite-mode)                      ; disable overwrite mode on Insert key
 (map! :leader
       (:prefix ("t". "toggle")
-       :desc "vterm popup"              "s"     #'+vterm/toggle ;; open shell popup
-       :desc "vterm window"             "S"     #'+vterm/here ;; open shell in current window
+       :desc "vterm popup"              "s"     #'+vterm/toggle ; open shell popup
+       :desc "vterm window"             "S"     #'+vterm/here   ; open shell in current window
        ))
 
 ;; == EVIL-MOTION KEYMAPS ==
@@ -134,7 +142,7 @@ the beginning of the line."
       (move-beginning-of-line 1))))
 (define-key evil-motion-state-map [home] 'back-to-indentation-or-beginning-of-line)
 
-;; == CUSTOM EVIL CMDs AND FUNCTIONS ==
+;;; == CUSTOM EVIL CMDs AND FUNCTIONS ==
 (evil-define-command my-write-and-sync (file &optional bang)
   "Write the current buffer and then execute doom sync."
   :repeat nil
@@ -147,11 +155,11 @@ the beginning of the line."
   (interactive "<f><!>")
   (evil-write nil nil nil file bang)
   (kill-current-buffer))
-(evil-ex-define-cmd "q" 'kill-current-buffer) ;; kill buffer instead of killing emacs
-(evil-ex-define-cmd "ww" 'my-write-and-sync) ;; write file and perform 'doom sync'
-(evil-ex-define-cmd "wq" 'my-write-and-quit) ;; write file and kill buffer
+(evil-ex-define-cmd "q"  'kill-current-buffer) ; kill buffer instead of killing emacs
+(evil-ex-define-cmd "ww" 'my-write-and-sync)   ; write file and perform 'doom sync'
+(evil-ex-define-cmd "wq" 'my-write-and-quit)   ; write file and kill buffer
 
-;; == BUFFER KEYMAPS ==
+;;; == BUFFER KEYMAPS ==
 (map! :leader
       (:prefix ("b". "buffer")
        :desc "New buffer"         "n"       #'evil-buffer-new
@@ -163,7 +171,7 @@ the beginning of the line."
        :desc "Kill other buffers" "k"       #'doom/kill-other-buffers
        :desc "Kill all buffers"   "K"       #'doom/kill-all-buffers))
 
-;; == EVIL-WINDOWS KEYMAPS ==
+;;; == EVIL-WINDOWS KEYMAPS ==
 (map! :leader
       (:prefix ("w". "window")
        :desc "New window, up"           "n"             #'evil-window-new
