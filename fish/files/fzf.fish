@@ -3,7 +3,7 @@
 set -U FZF_COMPLETE 3
 set -gx FZF_EDITOR 'vi'
 set -gx FZF_DEFAULT_COMMAND 'fd --type f --strip-cwd-prefix \
-	--hidden --follow --exclude .git '
+	--hidden --no-ignore --follow --exclude .git'
 set -gx FZF_DEFAULT_OPTS '--ansi --height 75%'
 
 function fz -d "fd+fzf"
