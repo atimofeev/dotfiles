@@ -141,23 +141,35 @@ the beginning of the line."
     (when (= orig-point (point))
       (move-beginning-of-line 1))))
 (define-key evil-motion-state-map [home] 'back-to-indentation-or-beginning-of-line)
+(define-key global-map [home] 'back-to-indentation-or-beginning-of-line)
 
-;;; == CUSTOM EVIL CMDs AND FUNCTIONS ==
+;;; == CUSTOM EVIL CMDs ==
 (evil-define-command my-write-and-sync (file &optional bang)
   "Write the current buffer and then execute doom sync."
   :repeat nil
   (interactive "<f><!>")
   (evil-write nil nil nil file bang)
   (doom/reload))
+
 (evil-define-command my-write-and-quit (file &optional bang)
-  "Write the current buffer and then execute doom sync."
+  "Write the current buffer and then kill buffer."
   :repeat nil
   (interactive "<f><!>")
   (evil-write nil nil nil file bang)
   (kill-current-buffer))
-(evil-ex-define-cmd "q"  'kill-current-buffer) ; kill buffer instead of killing emacs
+
+(evil-define-command my-kill-buffer (&optional bang)
+  "Kill buffer. With bang '!' - kill without prompt."
+  :repeat nil
+  (interactive "<!>")
+  (if bang
+      (progn
+       (set-buffer-modified-p nil)))
+  (kill-current-buffer))
+
 (evil-ex-define-cmd "ww" 'my-write-and-sync)   ; write file and perform 'doom sync'
 (evil-ex-define-cmd "wq" 'my-write-and-quit)   ; write file and kill buffer
+(evil-ex-define-cmd "q"  'my-kill-buffer)      ; kill buffer instead of killing emacs; :q! - kill without prompt
 
 ;;; == BUFFER KEYMAPS ==
 (map! :leader
