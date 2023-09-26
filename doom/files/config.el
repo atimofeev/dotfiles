@@ -62,7 +62,7 @@
   (treemacs-follow-mode 1) ;; follow files
   (treemacs-project-follow-mode 1) ;; follow projects
 )
-(map! :leader :desc "treemacs" "t t" #'imenu-list-smart-toggle)
+(map! :leader :desc "treemacs" "t t" #'treemacs)
 
 ;; == IMENU-LIST ==
 (use-package! imenu-list
@@ -116,10 +116,23 @@
 (unbind-key "<insertchar>" overwrite-mode) ;; disable overwrite mode on Insert key
 (map! :leader
       (:prefix ("t". "toggle")
-       :desc "vterm"            "s"     #'+vterm/toggle ;; open shell
-;;       :desc "treemacs"         "t"     #'treemacs ;; open project tree
-;;       :desc "imenu-list"       "i"     #'imenu-list-smart-toggle ;; open file overview
+       :desc "vterm popup"              "s"     #'+vterm/toggle ;; open shell popup
+       :desc "vterm window"             "S"     #'+vterm/here ;; open shell in current window
        ))
+
+;; == EVIL-MOTION KEYMAPS ==
+(defun back-to-indentation-or-beginning-of-line ()
+  "Move point back to indentation of beginning of line.
+Move point to the first non-whitespace character on this line.
+If point is already there, move to the beginning of the line.
+Effectively toggle between the first non-whitespace character and
+the beginning of the line."
+  (interactive)
+  (let ((orig-point (point)))
+    (back-to-indentation)
+    (when (= orig-point (point))
+      (move-beginning-of-line 1))))
+(define-key evil-motion-state-map [home] 'back-to-indentation-or-beginning-of-line)
 
 ;; == CUSTOM EVIL CMDs AND FUNCTIONS ==
 (evil-define-command my-write-and-sync (file &optional bang)
