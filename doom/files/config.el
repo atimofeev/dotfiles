@@ -11,19 +11,32 @@
  company-global-modes '(not text-mode org-mode markdown-mode) ;; disable autocomplete for plain text
  global-auto-revert-non-file-buffers t ;; auto-update non-file buffers (e.g. file listing)
  scroll-margin 3 ;; add margin to cursor while scrolling
- treemacs-project-follow-mode t ;; treemacs: show currently opened project
- treemacs-width 28 ;; treemacs: adjust default width
- imenu-list-focus-after-activation t ;; imenu-list: window auto-focus
- imenu-list-auto-resize t ;; imenu-list: windown auto-size (is it working?)
- imenu-auto-rescan t ;; imenu-list: auto-refresh
- imenu-auto-rescan-maxout (* 1024 1024) ;; imenu-list: limit auto-refresh to max filesize
-;; imenu--rescan-item '("" . -99) ;; imenu-list: removes `rescan' item. not sure if this is needed
+ projectile-project-search-path '("~/repos/")
 )
 (unless (display-graphic-p)
   (xterm-mouse-mode 1) ;; enable mouse in CLI mode
 )
 (beacon-mode 1) ;; cursor highlight on big movements or between windows
 (global-auto-revert-mode 1) ;; auto-update changed files
+
+;; == DOOM-MODELINE ==
+;; disable modal icons and set custom evil-state tags to make them more noticeable
+(setq doom-modeline-modal-icon nil
+      evil-normal-state-tag   (propertize "[Normal]")
+      evil-emacs-state-tag    (propertize "[Emacs]" )
+      evil-insert-state-tag   (propertize "[Insert]")
+      evil-motion-state-tag   (propertize "[Motion]")
+      evil-visual-state-tag   (propertize "[Visual]")
+      evil-operator-state-tag (propertize "[Operator]"))
+;; setting up custom FG/BG colors to further increace noticeability
+(defun setup-doom-modeline-evil-states ()
+  (set-face-attribute 'doom-modeline-evil-normal-state nil   :background "green"  :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-emacs-state nil    :background "orange" :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-insert-state nil   :background "red"    :foreground "white")
+  (set-face-attribute 'doom-modeline-evil-motion-state nil   :background "blue"   :foreground "white")
+  (set-face-attribute 'doom-modeline-evil-visual-state nil   :background "gray80" :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-operator-state nil :background "purple"))
+(add-hook 'doom-modeline-mode-hook 'setup-doom-modeline-evil-states)
 
 ;; == ORG-MODE ==
 (setq
@@ -38,8 +51,31 @@
 (add-hook! 'org-src-mode-hook (evil-insert-state)) ;; enter code block editing with insert state
 (add-hook! 'org-mode-hook
   (display-line-numbers-mode 0) ;; disable lines numbers for org-mode
-  (org-autolist-mode) ;; autolist
+  (org-autolist-mode 1) ;; autolist
 )
+
+;; == TREEMACS ==
+(use-package! treemacs
+  :defer t
+  :config
+  (setq treemacs-width 28) ;; adjust window width
+  (treemacs-follow-mode 1) ;; follow files
+  (treemacs-project-follow-mode 1) ;; follow projects
+)
+(map! :leader :desc "treemacs" "t t" #'imenu-list-smart-toggle)
+
+;; == IMENU-LIST ==
+(use-package! imenu-list
+  :defer t
+  :config
+  (setq
+   imenu-list-focus-after-activation t ;; window auto-focus
+   imenu-list-auto-resize t ;; windown auto-size (is it working?)
+   imenu-auto-rescan t ;; auto-refresh
+   imenu-auto-rescan-maxout (* 1024 1024) ;; limit auto-refresh to max filesize
+   )
+)
+(map! :leader :desc "imenu-list" "t i" #'imenu-list-smart-toggle)
 
 ;; == ELFEED ==
 (setq elfeed-goodies/entry-pane-size 0.5)
@@ -74,35 +110,15 @@
                      ("http://feeds.arstechnica.com/arstechnica/index" arstech tech)
                      ("https://techcrunch.com/feed/" techcrunch tech)))
 
-;; == DOOM-MODELINE ==
-;; disable modal icons and set custom evil-state tags to make them more noticeable
-(setq doom-modeline-modal-icon nil
-      evil-normal-state-tag   (propertize "[Normal]")
-      evil-emacs-state-tag    (propertize "[Emacs]" )
-      evil-insert-state-tag   (propertize "[Insert]")
-      evil-motion-state-tag   (propertize "[Motion]")
-      evil-visual-state-tag   (propertize "[Visual]")
-      evil-operator-state-tag (propertize "[Operator]"))
-;; setting up custom FG/BG colors to further increace noticeability
-(defun setup-doom-modeline-evil-states () ;; setting up colors
-  (set-face-attribute 'doom-modeline-evil-normal-state nil   :background "green"  :foreground "black")
-  (set-face-attribute 'doom-modeline-evil-emacs-state nil    :background "orange" :foreground "black")
-  (set-face-attribute 'doom-modeline-evil-insert-state nil   :background "red"    :foreground "white")
-  (set-face-attribute 'doom-modeline-evil-motion-state nil   :background "blue"   :foreground "white")
-  (set-face-attribute 'doom-modeline-evil-visual-state nil   :background "gray80" :foreground "black")
-  (set-face-attribute 'doom-modeline-evil-operator-state nil :background "purple"))
-(add-hook 'doom-modeline-mode-hook 'setup-doom-modeline-evil-states)
-
 ;; == GENERAL KEYMAPS ==
-;; Multiple cursors VSCode-like behavior; C-g to exit
-(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this) ;; Spawn additional cursor above; C-g to exit
+(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this);; Spawn additional cursor below
 (unbind-key "<insertchar>" overwrite-mode) ;; disable overwrite mode on Insert key
 (map! :leader
       (:prefix ("t". "toggle")
        :desc "vterm"            "s"     #'+vterm/toggle ;; open shell
-       :desc "treemacs"         "t"     #'treemacs ;; open project tree
-       :desc "imenu-list"       "i"     #'imenu-list-smart-toggle ;; open file overview
+;;       :desc "treemacs"         "t"     #'treemacs ;; open project tree
+;;       :desc "imenu-list"       "i"     #'imenu-list-smart-toggle ;; open file overview
        ))
 
 ;; == CUSTOM EVIL CMDs AND FUNCTIONS ==

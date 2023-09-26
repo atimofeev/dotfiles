@@ -8,27 +8,33 @@
 - [[#initel][init.el]]
 - [[#configel][config.el]]
   - [[#general-settings][General settings]]
-  - [[#org-mode][org-mode]]
-  - [[#elfeed][elfeed]]
   - [[#doom-modeline][doom-modeline]]
+  - [[#org-mode][org-mode]]
+  - [[#treemacs][treemacs]]
+  - [[#imenu-list][imenu-list]]
+  - [[#elfeed][elfeed]]
   - [[#keymaps][Keymaps]]
 - [[#packagesel][packages.el]]
 - [[#notes][Notes]]
   - [[#keymap-help][Keymap help]]
-  - [[#code-to-implement][Code to implement]]
   - [[#issues][Issues]]
   - [[#tasks][Tasks]]
+  - [[#code-to-implement][Code to implement]]
 
 * About this config
+:about:
 This is my personal Doom Emacs config. Doom Emacs is a distribution of Emacs that uses the “evil” keybindings (Vim keybindings) and includes a number of nice extensions and a bit of configuration out of the box.
 
 This file also includes keymaps help, current tasks related to my journey of learning Emacs, issues with usage and further plans.
 
 This is an =.org= file which generates app configuration with =org-babel-tangle= from code blocks.
 Inspired by [[https://gitlab.com/dwt1/dotfiles/-/blob/master/.config/doom/config.org][DistroTube configuration]].
-
+:end:
 * init.el
-Init config with selectable modes/modules
+:PROPERTIES:
+:HTML_CONTAINER_CLASS:    hsCollapsed
+:END:
+Init config with selectable modules
 :init_el_src:
 #+begin_src emacs-lisp :tangle ~/.config/doom/init.el
 ;;; init.el -*- lexical-binding: t; -*-
@@ -212,9 +218,10 @@ Init config with selectable modes/modules
        ;;literate
        (default +bindings +smartparens))
 #+end_src
-:END:
+:end:
 * config.el
 ** General settings
+Main or uncategorized settings
 #+begin_src emacs-lisp
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 ;; == GENERAL SETTINGS ==
@@ -229,13 +236,7 @@ Init config with selectable modes/modules
  company-global-modes '(not text-mode org-mode markdown-mode) ;; disable autocomplete for plain text
  global-auto-revert-non-file-buffers t ;; auto-update non-file buffers (e.g. file listing)
  scroll-margin 3 ;; add margin to cursor while scrolling
- treemacs-project-follow-mode t ;; treemacs: show currently opened project
- treemacs-width 28 ;; treemacs: adjust default width
- imenu-list-focus-after-activation t ;; imenu-list: window auto-focus
- imenu-list-auto-resize t ;; imenu-list: windown auto-size (is it working?)
- imenu-auto-rescan t ;; imenu-list: auto-refresh
- imenu-auto-rescan-maxout (* 1024 1024) ;; imenu-list: limit auto-refresh to max filesize
-;; imenu--rescan-item '("" . -99) ;; imenu-list: removes `rescan' item. not sure if this is needed
+ projectile-project-search-path '("~/repos/")
 )
 (unless (display-graphic-p)
   (xterm-mouse-mode 1) ;; enable mouse in CLI mode
@@ -244,7 +245,31 @@ Init config with selectable modes/modules
 (global-auto-revert-mode 1) ;; auto-update changed files
 #+end_src
 
+** doom-modeline
+Status bar module
+#+begin_src emacs-lisp
+;; == DOOM-MODELINE ==
+;; disable modal icons and set custom evil-state tags to make them more noticeable
+(setq doom-modeline-modal-icon nil
+      evil-normal-state-tag   (propertize "[Normal]")
+      evil-emacs-state-tag    (propertize "[Emacs]" )
+      evil-insert-state-tag   (propertize "[Insert]")
+      evil-motion-state-tag   (propertize "[Motion]")
+      evil-visual-state-tag   (propertize "[Visual]")
+      evil-operator-state-tag (propertize "[Operator]"))
+;; setting up custom FG/BG colors to further increace noticeability
+(defun setup-doom-modeline-evil-states ()
+  (set-face-attribute 'doom-modeline-evil-normal-state nil   :background "green"  :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-emacs-state nil    :background "orange" :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-insert-state nil   :background "red"    :foreground "white")
+  (set-face-attribute 'doom-modeline-evil-motion-state nil   :background "blue"   :foreground "white")
+  (set-face-attribute 'doom-modeline-evil-visual-state nil   :background "gray80" :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-operator-state nil :background "purple"))
+(add-hook 'doom-modeline-mode-hook 'setup-doom-modeline-evil-states)
+#+end_src
+
 ** org-mode
+- .org :: Highly flexible structured plain text file format
 #+begin_src emacs-lisp
 ;; == ORG-MODE ==
 (setq
@@ -259,11 +284,43 @@ Init config with selectable modes/modules
 (add-hook! 'org-src-mode-hook (evil-insert-state)) ;; enter code block editing with insert state
 (add-hook! 'org-mode-hook
   (display-line-numbers-mode 0) ;; disable lines numbers for org-mode
-  (org-autolist-mode) ;; autolist
+  (org-autolist-mode 1) ;; autolist
 )
 #+end_src
 
+** treemacs
+Module for displaying project file tree
+#+begin_src emacs-lisp
+;; == TREEMACS ==
+(use-package! treemacs
+  :defer t
+  :config
+  (setq treemacs-width 28) ;; adjust window width
+  (treemacs-follow-mode 1) ;; follow files
+  (treemacs-project-follow-mode 1) ;; follow projects
+)
+(map! :leader :desc "treemacs" "t t" #'imenu-list-smart-toggle)
+#+end_src
+
+** imenu-list
+Module to show file definitions or headings
+#+begin_src emacs-lisp
+;; == IMENU-LIST ==
+(use-package! imenu-list
+  :defer t
+  :config
+  (setq
+   imenu-list-focus-after-activation t ;; window auto-focus
+   imenu-list-auto-resize t ;; windown auto-size (is it working?)
+   imenu-auto-rescan t ;; auto-refresh
+   imenu-auto-rescan-maxout (* 1024 1024) ;; limit auto-refresh to max filesize
+   )
+)
+(map! :leader :desc "imenu-list" "t i" #'imenu-list-smart-toggle)
+#+end_src
+
 ** elfeed
+Module to read RSS feeds
 #+begin_src emacs-lisp
 ;; == ELFEED ==
 (setq elfeed-goodies/entry-pane-size 0.5)
@@ -299,41 +356,18 @@ Init config with selectable modes/modules
                      ("https://techcrunch.com/feed/" techcrunch tech)))
 #+end_src
 
-** doom-modeline
-#+begin_src emacs-lisp
-;; == DOOM-MODELINE ==
-;; disable modal icons and set custom evil-state tags to make them more noticeable
-(setq doom-modeline-modal-icon nil
-      evil-normal-state-tag   (propertize "[Normal]")
-      evil-emacs-state-tag    (propertize "[Emacs]" )
-      evil-insert-state-tag   (propertize "[Insert]")
-      evil-motion-state-tag   (propertize "[Motion]")
-      evil-visual-state-tag   (propertize "[Visual]")
-      evil-operator-state-tag (propertize "[Operator]"))
-;; setting up custom FG/BG colors to further increace noticeability
-(defun setup-doom-modeline-evil-states () ;; setting up colors
-  (set-face-attribute 'doom-modeline-evil-normal-state nil   :background "green"  :foreground "black")
-  (set-face-attribute 'doom-modeline-evil-emacs-state nil    :background "orange" :foreground "black")
-  (set-face-attribute 'doom-modeline-evil-insert-state nil   :background "red"    :foreground "white")
-  (set-face-attribute 'doom-modeline-evil-motion-state nil   :background "blue"   :foreground "white")
-  (set-face-attribute 'doom-modeline-evil-visual-state nil   :background "gray80" :foreground "black")
-  (set-face-attribute 'doom-modeline-evil-operator-state nil :background "purple"))
-(add-hook 'doom-modeline-mode-hook 'setup-doom-modeline-evil-states)
-#+end_src
-
 ** Keymaps
 *** General keybinds
 #+begin_src emacs-lisp
 ;; == GENERAL KEYMAPS ==
-;; Multiple cursors VSCode-like behavior; C-g to exit
-(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this) ;; Spawn additional cursor above; C-g to exit
+(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this);; Spawn additional cursor below
 (unbind-key "<insertchar>" overwrite-mode) ;; disable overwrite mode on Insert key
 (map! :leader
       (:prefix ("t". "toggle")
        :desc "vterm"            "s"     #'+vterm/toggle ;; open shell
-       :desc "treemacs"         "t"     #'treemacs ;; open project tree
-       :desc "imenu-list"       "i"     #'imenu-list-smart-toggle ;; open file overview
+;;       :desc "treemacs"         "t"     #'treemacs ;; open project tree
+;;       :desc "imenu-list"       "i"     #'imenu-list-smart-toggle ;; open file overview
        ))
 #+end_src
 
@@ -492,6 +526,7 @@ Explanation on how to read keymap configuration
 - C-v OR p :: Paste from clipboard (probably terminal KB)
 
 *** org-mode
+- gg C-c C-c :: Refresh local org setup. Use this to fix runtime issues within org-mode
 - N:TAB :: Fold/Unfold section =FOLDED -> CHILDREN=
     To enable =FOLDED -> CHILDREN -> SUBTREE=, add this:
     #+begin_src emacs-lisp :tangle no
@@ -524,6 +559,47 @@ Explanation on how to read keymap configuration
 - ? :: Select keyword
 -  ::
 
+** Issues
+- [[#centaur-tabs][Centaur-Tabs]] :: New tab is created in new group instead of same one
+- Multiple cursors :: Issues in org-mode
+- C-Backspace :: Not working in CLI mode, resolves as =C-h=
+- Autolist with description lists :: =RET= always creates new list item, no way to exit this mode
+- Autolist with unordered lists :: =RET= mid text creates new list item, no text is moved
+- TAB in org code block throwing ::
+    [yas] Check your `yas-snippet-dirs': /home/atimofeev/.config/doom/snippets/ is not a directory
+    [yas] Preparied just-in-time loading of snippets with some errors.  Check *Messages*.
+- Keybind leaking :: KB from buffer prefix sometimes are leaking into insert mode without any prefixes
+    i.e. typing =d= in insert mode tries to kill buffer
+- Emojis :: Visual glitches in terminal TTY mode
+
+** Tasks
+*** org-mode tasks
+- Org unfold sections in insert mode
+  - Insert mode: TAB on closed section should open it
+- Exit org code block editing with =:q= or =:w= (if no filename was provided)
+- Check if code indentations work as expected
+- Try to customize =org-fancy-priorities=
+
+*** other tasks
+- Try out =prettify-symbols-mode=, at least for org code blocks. [[https://www.reddit.com/r/emacs/comments/o04it0/share_your_prettifysymbolsalist/][reddit link]]
+- Enable LSP. [[https://docs.doomemacs.org/v21.12/modules/tools/lsp/][link]]
+- Enter at the end of line in visual mode -> insert mode -> actual EOL - > RET
+    Probably with =evil-insert-state-hook= followed by =evil-end-of-line= cmd.
+- Looks into modules loading, lazify ones which always load without particular need
+- EOF margin: should not show more than X empty lines when going to end of file
+- Try out [[https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/][mu4e]] email client
+- Write function to tab-align code in selected region
+  - Ignore comments
+- Write function to tab-align comments in selected region
+- =<home>= to go to last non-whitespace symbol. Second =<home>= goes to start of line
+
+*** to disable
+- disable =evil-record-macro= =q= and other related commands
+- probably bookmarks too?
+
+*** learn
+- [[https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Tips-06.org][Emacs tabs]]
+- [[https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Tips-07.org][Emacs tiling WM]]
 ** Code to implement
 *** Centaur-Tabs
 To be enabled after fix is found..
@@ -582,42 +658,3 @@ Run every 10s
 
 (run-at-time 1 10 'indent-org-block-automatically)
 #+end_src
-** Issues
-- [[#centaur-tabs][Centaur-Tabs]] :: New tab is created in new group instead of same one
-- Multiple cursors :: Not working in Org mode. Possibly due to broken shortcuts
-- C-Backspace :: Not working in CLI mode, resolves as =C-h=
-- Autolist with description lists :: =RET= always creates new list item, no way to exit this mode
-- Autolist with unordered lists :: =RET= mid text creates new list item, no text is moved
-- TAB in org code block throwing ::
-    [yas] Check your `yas-snippet-dirs': /home/atimofeev/.config/doom/snippets/ is not a directory
-    [yas] Preparied just-in-time loading of snippets with some errors.  Check *Messages*.
-- Keybind leaking :: KB from buffer prefix sometimes are leaking into insert mode without any prefixes
-    i.e. typing =d= in insert mode tries to kill buffer
-- Emojis :: Visual glitches in terminal TTY mode
-
-** Tasks
-*** org-mode tasks
-- Org unfold sections in insert mode
-  - Insert mode: TAB on closed section should open it
-- Exit org code block editing with =:q= or =:w= (if no filename was provided)
-- Check if code indentations work as expected
-- Find out how to automatically =tab-indent= whole code block.
-    Not only line starting position, but it's contents too.
-- Try to customize =org-fancy-priorities=
-
-*** other tasks
-- Try out =prettify-symbols-mode=, at least for org code blocks. [[https://www.reddit.com/r/emacs/comments/o04it0/share_your_prettifysymbolsalist/][reddit link]]
-- Enable LSP. [[https://docs.doomemacs.org/v21.12/modules/tools/lsp/][link]]
-- Enter at the end of line in visual mode -> insert mode -> actual EOL - > RET
-    Probably with =evil-insert-state-hook= followed by =evil-end-of-line= cmd.
-- Looks into modules loading, lazify ones which always load without particular need
-- EOF margin: should not show more than X empty lines when going to end of file
-- Try out [[https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/][mu4e]] email client
-
-*** to disable
-- disable =evil-record-macro= =q= and other related commands
-- probably bookmarks too?
-
-*** learn
-- [[https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Tips-06.org][Emacs tabs]]
-- [[https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Tips-07.org][Emacs tiling WM]]
