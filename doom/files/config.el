@@ -9,12 +9,12 @@
  mouse-drag-copy-region t                                     ; select-to-copy with mouse
  confirm-kill-emacs nil                                       ; quit without prompt
  company-global-modes '(not text-mode org-mode markdown-mode) ; disable autocomplete for plain text
- global-auto-revert-non-file-buffers t                        ; auto-update non-file buffers (e.g. file listing)
  scroll-margin 3                                              ; add margin to cursor while scrolling
  projectile-project-search-path '("~/repos/")                 ;
+ global-auto-revert-non-file-buffers t                        ; auto-update non-file buffers (e.g. Dired)
 )
-(beacon-mode 1)                                               ; cursor highlight on big movements or between windows
 (global-auto-revert-mode 1)                                   ; auto-update changed files
+(beacon-mode 1)                                               ; cursor highlight on big movements or between windows
 
 ;;; == TTY HACKS ==
 (unless (display-graphic-p)
@@ -168,20 +168,24 @@ Comment syntax detection is automatic"
        ))
 
 ;;; == EVIL-MOTION KEYMAPS ==
-;(defun back-to-indentation-or-beginning-of-line
-(defun custom/beginning-or-indentation ()
+(defun custom/beginning-or-indentation2 ()
   "Move point back to indentation of beginning of line.
 Move point to the first non-whitespace character on this line.
 If point is already there, move to the beginning of the line.
 Effectively toggle between the first non-whitespace character and
-the beginning of the line."
+the beginning of the line. V2 fixes Shift-select issue"
   (interactive)
   (let ((orig-point (point)))
+    (when this-command-keys-shift-translated
+      (handle-shift-selection))
     (back-to-indentation)
     (when (= orig-point (point))
-      (move-beginning-of-line 1))))
-(define-key evil-motion-state-map [home] 'custom/beginning-or-indentation)
-(define-key global-map [home] 'custom/beginning-or-indentation)
+      (beginning-of-line))
+    (if this-command-keys-shift-translated
+        (handle-shift-selection)
+      (deactivate-mark))))
+(define-key evil-motion-state-map [home] 'custom/beginning-or-indentation2)
+(define-key global-map [home] 'custom/beginning-or-indentation2)
 
 ;;; == CUSTOM EVIL CMDs ==
 (evil-define-command custom/write-and-sync (file &optional bang)
