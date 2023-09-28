@@ -168,24 +168,12 @@ Comment syntax detection is automatic"
        ))
 
 ;;; == EVIL-MOTION KEYMAPS ==
-(defun custom/beginning-or-indentation2 ()
-  "Move point back to indentation of beginning of line.
-Move point to the first non-whitespace character on this line.
-If point is already there, move to the beginning of the line.
-Effectively toggle between the first non-whitespace character and
-the beginning of the line. V2 fixes Shift-select issue"
-  (interactive)
-  (let ((orig-point (point)))
-    (when this-command-keys-shift-translated
-      (handle-shift-selection))
-    (back-to-indentation)
-    (when (= orig-point (point))
-      (beginning-of-line))
-    (if this-command-keys-shift-translated
-        (handle-shift-selection)
-      (deactivate-mark))))
-(define-key evil-motion-state-map [home] 'custom/beginning-or-indentation2)
-(define-key global-map [home] 'custom/beginning-or-indentation2)
+;; go to start of line or start of code (identation)
+(define-key evil-motion-state-map [home] 'mwim-beginning-of-code-or-line)
+(define-key global-map [home] 'mwim-beginning-of-code-or-line)
+;; go to end of code or end of line (comment)
+(define-key evil-motion-state-map [end] 'mwim-end)
+(define-key global-map [end] 'mwim-end)
 
 ;;; == CUSTOM EVIL CMDs ==
 (evil-define-command custom/write-and-sync (file &optional bang)
