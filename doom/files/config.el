@@ -4,19 +4,28 @@
  user-full-name "Artem Timofeev"
  doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 13 :weight 'semi-light)
  doom-theme 'doom-one
- evil-want-fine-undo t                                        ; undo in small steps
- display-line-numbers-type t                                  ; show line numbers
- mouse-drag-copy-region t                                     ; select-to-copy with mouse
- confirm-kill-emacs nil                                       ; quit without prompt
- company-global-modes '(not text-mode org-mode markdown-mode) ; disable autocomplete for plain text
- scroll-margin 3                                              ; add margin to cursor while scrolling
- projectile-project-search-path '("~/repos/")                 ;
- global-auto-revert-non-file-buffers t                        ; auto-update non-file buffers (e.g. Dired)
+ evil-want-fine-undo t                                          ; undo in small steps
+ display-line-numbers-type t                                    ; show line numbers
+ mouse-drag-copy-region t                                       ; select-to-copy with mouse
+ confirm-kill-emacs nil                                         ; quit without prompt
+ company-global-modes '(not text-mode org-mode markdown-mode)   ; disable autocomplete for plain text
+ scroll-margin 3                                                ; add margin to cursor while scrolling
+ projectile-project-search-path '("~/repos/")                   ;
+ global-auto-revert-non-file-buffers t                          ; auto-update non-file buffers (e.g. Dired)
 )
-(global-auto-revert-mode 1)                                   ; auto-update changed files
-(beacon-mode 1)                                               ; cursor highlight on big movements or between windows
+(global-auto-revert-mode 1)                                     ; auto-update changed files
+(beacon-mode 1)                                                 ; cursor highlight on big movements or between windows
 
-;;; == TTY HACKS ==
+(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)   ; Spawn additional cursor above; C-g to exit
+(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)     ; Spawn additional cursor below
+(unbind-key "<insertchar>" overwrite-mode)                      ; disable overwrite mode on Insert key
+(map! :leader
+      (:prefix ("t". "toggle")
+       :desc "vterm popup"              "s"     #'+vterm/toggle ; open shell popup
+       :desc "vterm window"             "S"     #'+vterm/here   ; open shell in current window
+       ))
+
+;;; == EMACS TTY ==
 (unless (display-graphic-p)
   (xterm-mouse-mode 1)         ; enable mouse in TTY mode
 ;;  (map! :after evil-org        ; TTY resolves 'C-backspace' into 'C-h'
@@ -24,6 +33,60 @@
 ;;        :i "C-h" nil)          ; enable these lines for hack. define-key too ↴
 ;;  (define-key evil-insert-state-map (kbd "C-h") 'aborn/backward-kill-word)
 )
+
+;;; == EVIL MODE ==
+;; go to start of line or start of code (identation)
+(define-key evil-motion-state-map [home] 'mwim-beginning-of-code-or-line)
+(define-key global-map [home] 'mwim-beginning-of-code-or-line)
+;; go to end of code or end of line (comment)
+(define-key evil-motion-state-map [end] 'mwim-end)
+(define-key global-map [end] 'mwim-end)
+;; these commands go after ':'
+(evil-ex-define-cmd "ww" 'custom/write-and-sync)   ; write file and perform 'doom sync'
+(evil-ex-define-cmd "wq" 'custom/write-and-quit)   ; write file and kill buffer
+(evil-ex-define-cmd "q"  'custom/kill-buffer)      ; kill buffer instead of killing emacs; :q! - kill without prompt
+
+;;; == BUFFER KEYMAPS ==
+(map! :leader
+      (:prefix ("b". "buffer")
+       :desc "New buffer"         "n"       #'evil-buffer-new
+       :desc "Save buffer"        "s"       #'save-buffer
+       :desc "Switch buffer"      "b"       #'consult-buffer
+       :desc "Next buffer"        "<right>" #'next-buffer
+       :desc "Previous buffer"    "<left>"  #'previous-buffer
+       :desc "Kill buffer"        "d"       #'kill-current-buffer
+       :desc "Kill other buffers" "k"       #'doom/kill-other-buffers
+       :desc "Kill all buffers"   "K"       #'doom/kill-all-buffers))
+
+;;; == EVIL-WINDOWS KEYMAPS ==
+(map! :leader
+      (:prefix ("w". "window")
+       :desc "New window, up"           "n"             #'evil-window-new
+       :desc "New window, left"         "N"             #'evil-window-vnew
+
+       :desc "Split view, right"        "s"             #'evil-window-split
+       :desc "Split view, down"         "v"             #'evil-window-vsplit
+       ;; uses same buffer
+
+       :desc "Select LEFT window"       "<left>"        #'evil-window-left
+       :desc "Select DOWN window"       "<down>"        #'evil-window-down
+       :desc "Select UP window"         "<up>"          #'evil-window-up
+       :desc "Select RIGHT window"      "<right>"       #'evil-window-right
+
+       :desc "Move window LEFT"         "S-<left>"      #'+evil/window-move-left
+       :desc "Move window DOWN"         "S-<down>"      #'+evil/window-move-down
+       :desc "Move window UP"           "S-<up>"        #'+evil/window-move-up
+       :desc "Move window RIGHT"        "S-<right>"     #'+evil/window-move-right
+
+       :desc "Maximize window"          "m m"           #'doom/window-maximize-buffer
+       ;; close all other windows
+       :desc "Maximize vertically"      "m v"           #'doom/window-maximize-vertically
+       ;; close all windows UP/DOWN
+       :desc "Maximize horizontally"    "m s"           #'doom/window-maximize-horizontally
+       ;; close all windown LEFT/RIGHT
+
+       :desc "Close window"             "c"             #'evil-window-delete
+       :desc "Kill buffer & window"     "d"             #'kill-buffer-and-window))
 
 ;;; == DOOM-MODELINE ==
 ;; disable modal icons and set custom evil-state tags to make them more noticeable
@@ -59,6 +122,13 @@
   (display-line-numbers-mode 0)                     ; disable lines numbers for org-mode
   (org-autolist-mode 1)                             ; autolist
 )
+(use-package! org-roam
+  :defer t
+  :config
+  (setq org-roam-directory org-directory
+        org-roam-index-file (concat org-directory "/README.org")
+        )
+  )
 
 ;;; == TREEMACS ==
 (use-package! treemacs
@@ -118,11 +188,29 @@
 
 ;;; == CUSTOM FUNCTIONS ==
 
-(defun custom/align-comments (beginning end)
-  "Align comments within marked region.
-Comment syntax detection is automatic"
-  (interactive "*r")
-  (align-regexp beginning end (concat "\\(\\s-*\\)" (regexp-quote comment-start))))
+;;; ==EVIL-EX-CMD==
+(evil-define-command custom/write-and-sync (file &optional bang)
+  "Write the current buffer and then execute doom sync."
+  :repeat nil
+  (interactive "<f><!>")
+  (evil-write nil nil nil file bang)
+  (doom/reload))
+
+(evil-define-command custom/write-and-quit (file &optional bang)
+  "Write the current buffer and then kill buffer."
+  :repeat nil
+  (interactive "<f><!>")
+  (evil-write nil nil nil file bang)
+  (kill-current-buffer))
+
+(evil-define-command custom/kill-buffer (&optional bang)
+  "Kill buffer. With bang '!' - kill without prompt."
+  :repeat nil
+  (interactive "<!>")
+  (if bang
+      (progn
+        (set-buffer-modified-p nil)))
+  (kill-current-buffer))
 
 (defun aborn/backward-kill-word ()
   "Customize/Smart backward-kill-word."
@@ -157,90 +245,8 @@ Comment syntax detection is automatic"
       (kill-region cp (- cp 1)))         ;; word is non-english word
     ))
 
-;;; == GENERAL KEYMAPS ==
-(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)   ; Spawn additional cursor above; C-g to exit
-(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)     ; Spawn additional cursor below
-(unbind-key "<insertchar>" overwrite-mode)                      ; disable overwrite mode on Insert key
-(map! :leader
-      (:prefix ("t". "toggle")
-       :desc "vterm popup"              "s"     #'+vterm/toggle ; open shell popup
-       :desc "vterm window"             "S"     #'+vterm/here   ; open shell in current window
-       ))
-
-;;; == EVIL-MOTION KEYMAPS ==
-;; go to start of line or start of code (identation)
-(define-key evil-motion-state-map [home] 'mwim-beginning-of-code-or-line)
-(define-key global-map [home] 'mwim-beginning-of-code-or-line)
-;; go to end of code or end of line (comment)
-(define-key evil-motion-state-map [end] 'mwim-end)
-(define-key global-map [end] 'mwim-end)
-
-;;; == CUSTOM EVIL CMDs ==
-(evil-define-command custom/write-and-sync (file &optional bang)
-  "Write the current buffer and then execute doom sync."
-  :repeat nil
-  (interactive "<f><!>")
-  (evil-write nil nil nil file bang)
-  (doom/reload))
-
-(evil-define-command custom/write-and-quit (file &optional bang)
-  "Write the current buffer and then kill buffer."
-  :repeat nil
-  (interactive "<f><!>")
-  (evil-write nil nil nil file bang)
-  (kill-current-buffer))
-
-(evil-define-command custom/kill-buffer (&optional bang)
-  "Kill buffer. With bang '!' - kill without prompt."
-  :repeat nil
-  (interactive "<!>")
-  (if bang
-      (progn
-        (set-buffer-modified-p nil)))
-  (kill-current-buffer))
-
-(evil-ex-define-cmd "ww" 'custom/write-and-sync)   ; write file and perform 'doom sync'
-(evil-ex-define-cmd "wq" 'custom/write-and-quit)   ; write file and kill buffer
-(evil-ex-define-cmd "q"  'custom/kill-buffer)      ; kill buffer instead of killing emacs; :q! - kill without prompt
-
-;;; == BUFFER KEYMAPS ==
-(map! :leader
-      (:prefix ("b". "buffer")
-       :desc "New buffer"         "n"       #'evil-buffer-new
-       :desc "Save buffer"        "s"       #'save-buffer
-       :desc "Switch buffer"      "b"       #'consult-buffer
-       :desc "Next buffer"        "<right>" #'next-buffer
-       :desc "Previous buffer"    "<left>"  #'previous-buffer
-       :desc "Kill buffer"        "d"       #'kill-current-buffer
-       :desc "Kill other buffers" "k"       #'doom/kill-other-buffers
-       :desc "Kill all buffers"   "K"       #'doom/kill-all-buffers))
-
-;;; == EVIL-WINDOWS KEYMAPS ==
-(map! :leader
-      (:prefix ("w". "window")
-       :desc "New window, up"           "n"             #'evil-window-new
-       :desc "New window, left"         "N"             #'evil-window-vnew
-
-       :desc "Split view, right"        "s"             #'evil-window-split
-       :desc "Split view, down"         "v"             #'evil-window-vsplit
-       ;; uses same buffer
-
-       :desc "Select LEFT window"       "<left>"        #'evil-window-left
-       :desc "Select DOWN window"       "<down>"        #'evil-window-down
-       :desc "Select UP window"         "<up>"          #'evil-window-up
-       :desc "Select RIGHT window"      "<right>"       #'evil-window-right
-
-       :desc "Move window LEFT"         "S-<left>"      #'+evil/window-move-left
-       :desc "Move window DOWN"         "S-<down>"      #'+evil/window-move-down
-       :desc "Move window UP"           "S-<up>"        #'+evil/window-move-up
-       :desc "Move window RIGHT"        "S-<right>"     #'+evil/window-move-right
-
-       :desc "Maximize window"          "m m"           #'doom/window-maximize-buffer
-       ;; close all other windows
-       :desc "Maximize vertically"      "m v"           #'doom/window-maximize-vertically
-       ;; close all windows UP/DOWN
-       :desc "Maximize horizontally"    "m s"           #'doom/window-maximize-horizontally
-       ;; close all windown LEFT/RIGHT
-
-       :desc "Close window"             "c"             #'evil-window-delete
-       :desc "Kill buffer & window"     "d"             #'kill-buffer-and-window))
+(defun custom/align-comments (beginning end)
+  "Align comments within marked region.
+Comment syntax detection is automatic"
+  (interactive "*r")
+  (align-regexp beginning end (concat "\\(\\s-*\\)" (regexp-quote comment-start))))

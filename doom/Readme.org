@@ -8,15 +8,17 @@
 - [[#initel][init.el]]
 - [[#configel][config.el]]
   - [[#general-settings][General settings]]
-  - [[#tty-hacks][TTY hacks]]
-  - [[#evil-modes-hacks-wip][Evil modes hacks (WIP)]]
+  - [[#emacs-tty][emacs TTY]]
+  - [[#evil][evil]]
+  - [[#files-wip][Files (WIP)]]
+  - [[#buffers][Buffers]]
+  - [[#windows][Windows]]
   - [[#doom-modeline][doom-modeline]]
   - [[#org-mode][org-mode]]
   - [[#treemacs][treemacs]]
   - [[#imenu-list][imenu-list]]
   - [[#elfeed][elfeed]]
   - [[#custom-functions][Custom functions]]
-  - [[#keymaps][Keymaps]]
 - [[#packagesel][packages.el]]
 - [[#notes][Notes]]
   - [[#tasks][Tasks]]
@@ -128,7 +130,7 @@ Init config with selectable modules
        magit             ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
        ;;pass              ; password manager for nerds
-       ;;pdf               ; pdf enhancements
+       pdf               ; pdf enhancements
        ;;prodigy           ; FIXME managing external services & code builders
        ;;rgb               ; creating color strings
        ;;taskrunner        ; taskrunner for all your projects
@@ -182,7 +184,7 @@ Init config with selectable modules
        ;;nim               ; python + lisp at the speed of c
        nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       (org +pretty)               ; organize your plain life in plain text
+       (org +pretty +roam2)               ; organize your plain life in plain text
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
@@ -233,22 +235,31 @@ Main or uncategorized settings
  user-full-name "Artem Timofeev"
  doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 13 :weight 'semi-light)
  doom-theme 'doom-one
- evil-want-fine-undo t                                        ; undo in small steps
- display-line-numbers-type t                                  ; show line numbers
- mouse-drag-copy-region t                                     ; select-to-copy with mouse
- confirm-kill-emacs nil                                       ; quit without prompt
- company-global-modes '(not text-mode org-mode markdown-mode) ; disable autocomplete for plain text
- scroll-margin 3                                              ; add margin to cursor while scrolling
- projectile-project-search-path '("~/repos/")                 ;
- global-auto-revert-non-file-buffers t                        ; auto-update non-file buffers (e.g. Dired)
+ evil-want-fine-undo t                                          ; undo in small steps
+ display-line-numbers-type t                                    ; show line numbers
+ mouse-drag-copy-region t                                       ; select-to-copy with mouse
+ confirm-kill-emacs nil                                         ; quit without prompt
+ company-global-modes '(not text-mode org-mode markdown-mode)   ; disable autocomplete for plain text
+ scroll-margin 3                                                ; add margin to cursor while scrolling
+ projectile-project-search-path '("~/repos/")                   ;
+ global-auto-revert-non-file-buffers t                          ; auto-update non-file buffers (e.g. Dired)
 )
-(global-auto-revert-mode 1)                                   ; auto-update changed files
-(beacon-mode 1)                                               ; cursor highlight on big movements or between windows
+(global-auto-revert-mode 1)                                     ; auto-update changed files
+(beacon-mode 1)                                                 ; cursor highlight on big movements or between windows
+
+(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)   ; Spawn additional cursor above; C-g to exit
+(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)     ; Spawn additional cursor below
+(unbind-key "<insertchar>" overwrite-mode)                      ; disable overwrite mode on Insert key
+(map! :leader
+      (:prefix ("t". "toggle")
+       :desc "vterm popup"              "s"     #'+vterm/toggle ; open shell popup
+       :desc "vterm window"             "S"     #'+vterm/here   ; open shell in current window
+       ))
 #+end_src
 
-** TTY hacks
+** emacs TTY
 #+begin_src elisp
-;;; == TTY HACKS ==
+;;; == EMACS TTY ==
 (unless (display-graphic-p)
   (xterm-mouse-mode 1)         ; enable mouse in TTY mode
 ;;  (map! :after evil-org        ; TTY resolves 'C-backspace' into 'C-h'
@@ -258,15 +269,94 @@ Main or uncategorized settings
 )
 #+end_src
 
-** Evil modes hacks (WIP)
-Currently disabled
+** evil
+#+begin_src elisp
+;;; == EVIL MODE ==
+;; go to start of line or start of code (identation)
+(define-key evil-motion-state-map [home] 'mwim-beginning-of-code-or-line)
+(define-key global-map [home] 'mwim-beginning-of-code-or-line)
+;; go to end of code or end of line (comment)
+(define-key evil-motion-state-map [end] 'mwim-end)
+(define-key global-map [end] 'mwim-end)
+;; these commands go after ':'
+(evil-ex-define-cmd "ww" 'custom/write-and-sync)   ; write file and perform 'doom sync'
+(evil-ex-define-cmd "wq" 'custom/write-and-quit)   ; write file and kill buffer
+(evil-ex-define-cmd "q"  'custom/kill-buffer)      ; kill buffer instead of killing emacs; :q! - kill without prompt
+#+end_src
+
+TODO:
 #+begin_src elisp :tangle no
-;;; EVIL MODES HACKS
 ;(define-key evil-normal-state-map (kbd "DEL") 'evil-insert) ; Backspace -> insert mode
 ;(define-key evil-normal-state-map (kbd "C-w") 'evil-insert) ; C-Backspace -> insert mode
 ; enter -> insert mode?
 ; ; -> insert mode?
 ; <deletechar> -> insert mode?
+#+end_src
+
+** Files (WIP)
+This code block tangling is currently disabled
+#+begin_src elisp :tangle no
+;;; == FILES KEYMAPS ==
+(map! :leader
+      (:prefix ("f". "file")
+       :desc "New file"                 "n" #'evil-buffer-new
+       :desc "New file as.."            " " #'
+
+       :desc "Save file"                "s" #'save-buffer
+       :desc "Save file as.."           "S" #'write-file
+       :desc "Save file and kill buffer"" " #'
+
+       :desc "Rename file"              " " #'
+       :desc "Move file"                " " #'
+       :desc "Delete file"              " " #'delete-file))
+#+end_src
+
+** Buffers
+#+begin_src elisp
+;;; == BUFFER KEYMAPS ==
+(map! :leader
+      (:prefix ("b". "buffer")
+       :desc "New buffer"         "n"       #'evil-buffer-new
+       :desc "Save buffer"        "s"       #'save-buffer
+       :desc "Switch buffer"      "b"       #'consult-buffer
+       :desc "Next buffer"        "<right>" #'next-buffer
+       :desc "Previous buffer"    "<left>"  #'previous-buffer
+       :desc "Kill buffer"        "d"       #'kill-current-buffer
+       :desc "Kill other buffers" "k"       #'doom/kill-other-buffers
+       :desc "Kill all buffers"   "K"       #'doom/kill-all-buffers))
+#+end_src
+
+** Windows
+#+begin_src elisp
+;;; == EVIL-WINDOWS KEYMAPS ==
+(map! :leader
+      (:prefix ("w". "window")
+       :desc "New window, up"           "n"             #'evil-window-new
+       :desc "New window, left"         "N"             #'evil-window-vnew
+
+       :desc "Split view, right"        "s"             #'evil-window-split
+       :desc "Split view, down"         "v"             #'evil-window-vsplit
+       ;; uses same buffer
+
+       :desc "Select LEFT window"       "<left>"        #'evil-window-left
+       :desc "Select DOWN window"       "<down>"        #'evil-window-down
+       :desc "Select UP window"         "<up>"          #'evil-window-up
+       :desc "Select RIGHT window"      "<right>"       #'evil-window-right
+
+       :desc "Move window LEFT"         "S-<left>"      #'+evil/window-move-left
+       :desc "Move window DOWN"         "S-<down>"      #'+evil/window-move-down
+       :desc "Move window UP"           "S-<up>"        #'+evil/window-move-up
+       :desc "Move window RIGHT"        "S-<right>"     #'+evil/window-move-right
+
+       :desc "Maximize window"          "m m"           #'doom/window-maximize-buffer
+       ;; close all other windows
+       :desc "Maximize vertically"      "m v"           #'doom/window-maximize-vertically
+       ;; close all windows UP/DOWN
+       :desc "Maximize horizontally"    "m s"           #'doom/window-maximize-horizontally
+       ;; close all windown LEFT/RIGHT
+
+       :desc "Close window"             "c"             #'evil-window-delete
+       :desc "Kill buffer & window"     "d"             #'kill-buffer-and-window))
 #+end_src
 
 ** doom-modeline
@@ -310,6 +400,23 @@ Status bar module
   (display-line-numbers-mode 0)                     ; disable lines numbers for org-mode
   (org-autolist-mode 1)                             ; autolist
 )
+(use-package! org-roam
+  :defer t
+  :config
+  (setq org-roam-directory org-directory
+        org-roam-index-file (concat org-directory "/README.org")
+        )
+  )
+#+end_src
+
+TODO:
+#+begin_src elisp :tangle no
+;; need to find suitable keymap. C-TAB is intercepted by kitty terminal (cycle through tabs)
+;; 'org-fold-show-subtree unfolds subtree
+;(after! org
+;  (define-key org-mode-map (kbd "C-\t") #'org-fold-show-subtree))
+;(add-hook! 'org-mode-hook
+;  (define-key org-mode-map (kbd "C-TAB") #'org-fold-show-subtree))
 #+end_src
 
 ** treemacs
@@ -385,13 +492,32 @@ Module to read RSS feeds
 ;;; == CUSTOM FUNCTIONS ==
 #+end_src
 
-*** Auto-tab-align comments
+*** evil-ex-cmd
+These commands go after =:=
 #+begin_src elisp
-(defun custom/align-comments (beginning end)
-  "Align comments within marked region.
-Comment syntax detection is automatic"
-  (interactive "*r")
-  (align-regexp beginning end (concat "\\(\\s-*\\)" (regexp-quote comment-start))))
+;;; ==EVIL-EX-CMD==
+(evil-define-command custom/write-and-sync (file &optional bang)
+  "Write the current buffer and then execute doom sync."
+  :repeat nil
+  (interactive "<f><!>")
+  (evil-write nil nil nil file bang)
+  (doom/reload))
+
+(evil-define-command custom/write-and-quit (file &optional bang)
+  "Write the current buffer and then kill buffer."
+  :repeat nil
+  (interactive "<f><!>")
+  (evil-write nil nil nil file bang)
+  (kill-current-buffer))
+
+(evil-define-command custom/kill-buffer (&optional bang)
+  "Kill buffer. With bang '!' - kill without prompt."
+  :repeat nil
+  (interactive "<!>")
+  (if bang
+      (progn
+        (set-buffer-modified-p nil)))
+  (kill-current-buffer))
 #+end_src
 
 *** Smarter backward-kill-word
@@ -430,138 +556,13 @@ Comment syntax detection is automatic"
     ))
 #+end_src
 
-** Keymaps
-*** General keybinds
+*** Auto-tab-align comments
 #+begin_src elisp
-;;; == GENERAL KEYMAPS ==
-(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)   ; Spawn additional cursor above; C-g to exit
-(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)     ; Spawn additional cursor below
-(unbind-key "<insertchar>" overwrite-mode)                      ; disable overwrite mode on Insert key
-(map! :leader
-      (:prefix ("t". "toggle")
-       :desc "vterm popup"              "s"     #'+vterm/toggle ; open shell popup
-       :desc "vterm window"             "S"     #'+vterm/here   ; open shell in current window
-       ))
-#+end_src
-
-*** Evil motion
-#+begin_src elisp
-;;; == EVIL-MOTION KEYMAPS ==
-;; go to start of line or start of code (identation)
-(define-key evil-motion-state-map [home] 'mwim-beginning-of-code-or-line)
-(define-key global-map [home] 'mwim-beginning-of-code-or-line)
-;; go to end of code or end of line (comment)
-(define-key evil-motion-state-map [end] 'mwim-end)
-(define-key global-map [end] 'mwim-end)
-#+end_src
-
-*** Evil CMDs
-These commands go after entering =:=
-#+begin_src elisp
-;;; == CUSTOM EVIL CMDs ==
-(evil-define-command custom/write-and-sync (file &optional bang)
-  "Write the current buffer and then execute doom sync."
-  :repeat nil
-  (interactive "<f><!>")
-  (evil-write nil nil nil file bang)
-  (doom/reload))
-
-(evil-define-command custom/write-and-quit (file &optional bang)
-  "Write the current buffer and then kill buffer."
-  :repeat nil
-  (interactive "<f><!>")
-  (evil-write nil nil nil file bang)
-  (kill-current-buffer))
-
-(evil-define-command custom/kill-buffer (&optional bang)
-  "Kill buffer. With bang '!' - kill without prompt."
-  :repeat nil
-  (interactive "<!>")
-  (if bang
-      (progn
-        (set-buffer-modified-p nil)))
-  (kill-current-buffer))
-
-(evil-ex-define-cmd "ww" 'custom/write-and-sync)   ; write file and perform 'doom sync'
-(evil-ex-define-cmd "wq" 'custom/write-and-quit)   ; write file and kill buffer
-(evil-ex-define-cmd "q"  'custom/kill-buffer)      ; kill buffer instead of killing emacs; :q! - kill without prompt
-#+end_src
-
-*** Files (WIP)
-Currently disabled
-#+begin_src elisp :tangle no
-;;; == FILES KEYMAPS ==
-(map! :leader
-      (:prefix ("f". "file")
-       :desc "New file"                 "n" #'evil-buffer-new
-       :desc "New file as.."            " " #'
-
-       :desc "Save file"                "s" #'save-buffer
-       :desc "Save file as.."           "S" #'write-file
-       :desc "Save file and kill buffer"" " #'
-
-       :desc "Rename file"              " " #'
-       :desc "Move file"                " " #'
-       :desc "Delete file"              " " #'delete-file))
-#+end_src
-
-*** Buffers
-#+begin_src elisp
-;;; == BUFFER KEYMAPS ==
-(map! :leader
-      (:prefix ("b". "buffer")
-       :desc "New buffer"         "n"       #'evil-buffer-new
-       :desc "Save buffer"        "s"       #'save-buffer
-       :desc "Switch buffer"      "b"       #'consult-buffer
-       :desc "Next buffer"        "<right>" #'next-buffer
-       :desc "Previous buffer"    "<left>"  #'previous-buffer
-       :desc "Kill buffer"        "d"       #'kill-current-buffer
-       :desc "Kill other buffers" "k"       #'doom/kill-other-buffers
-       :desc "Kill all buffers"   "K"       #'doom/kill-all-buffers))
-#+end_src
-
-*** Windows
-#+begin_src elisp
-;;; == EVIL-WINDOWS KEYMAPS ==
-(map! :leader
-      (:prefix ("w". "window")
-       :desc "New window, up"           "n"             #'evil-window-new
-       :desc "New window, left"         "N"             #'evil-window-vnew
-
-       :desc "Split view, right"        "s"             #'evil-window-split
-       :desc "Split view, down"         "v"             #'evil-window-vsplit
-       ;; uses same buffer
-
-       :desc "Select LEFT window"       "<left>"        #'evil-window-left
-       :desc "Select DOWN window"       "<down>"        #'evil-window-down
-       :desc "Select UP window"         "<up>"          #'evil-window-up
-       :desc "Select RIGHT window"      "<right>"       #'evil-window-right
-
-       :desc "Move window LEFT"         "S-<left>"      #'+evil/window-move-left
-       :desc "Move window DOWN"         "S-<down>"      #'+evil/window-move-down
-       :desc "Move window UP"           "S-<up>"        #'+evil/window-move-up
-       :desc "Move window RIGHT"        "S-<right>"     #'+evil/window-move-right
-
-       :desc "Maximize window"          "m m"           #'doom/window-maximize-buffer
-       ;; close all other windows
-       :desc "Maximize vertically"      "m v"           #'doom/window-maximize-vertically
-       ;; close all windows UP/DOWN
-       :desc "Maximize horizontally"    "m s"           #'doom/window-maximize-horizontally
-       ;; close all windown LEFT/RIGHT
-
-       :desc "Close window"             "c"             #'evil-window-delete
-       :desc "Kill buffer & window"     "d"             #'kill-buffer-and-window))
-#+end_src
-
-*** org-mode FIXME
-#+begin_src elisp :tangle no
-;;; == ORG-MODE KEYMAPS ==
-;; need to find suitable keymap. C-TAB is intercepted by kitty terminal (cycle through tabs)
-;; 'org-fold-show-subtree unfolds subtree
-;(after! org
-;  (define-key org-mode-map (kbd "C-\t") #'org-fold-show-subtree))
-;(add-hook! 'org-mode-hook
-;  (define-key org-mode-map (kbd "C-TAB") #'org-fold-show-subtree))
+(defun custom/align-comments (beginning end)
+  "Align comments within marked region.
+Comment syntax detection is automatic"
+  (interactive "*r")
+  (align-regexp beginning end (concat "\\(\\s-*\\)" (regexp-quote comment-start))))
 #+end_src
 
 * packages.el
@@ -609,6 +610,7 @@ Additional packages from emacs repos
     [yas] Check your `yas-snippet-dirs': /home/atimofeev/.config/doom/snippets/ is not a directory
     [yas] Preparied just-in-time loading of snippets with some errors.  Check *Messages*.
 - Emojis :: Visual glitches in terminal TTY mode
+- doom/reload :: Can't use new modules without restart of emacs
 
 ** Keymap help
 *** Keymap Legend
