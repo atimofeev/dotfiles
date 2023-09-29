@@ -4,6 +4,8 @@
 [core]
     excludesFile = ~/.gitignore
     editor = nvim
+[init]
+    defaultBranch = main
 [diff]
     tool = kitty
     guitool = kitty.gui
