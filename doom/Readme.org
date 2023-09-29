@@ -279,6 +279,7 @@ Main or uncategorized settings
 (define-key evil-motion-state-map [end] 'mwim-end)
 (define-key global-map [end] 'mwim-end)
 ;; these commands go after ':'
+(evil-ex-define-cmd "W"  'evil-write)              ; write with sticky shift
 (evil-ex-define-cmd "ww" 'custom/write-and-sync)   ; write file and perform 'doom sync'
 (evil-ex-define-cmd "wq" 'custom/write-and-quit)   ; write file and kill buffer
 (evil-ex-define-cmd "q"  'custom/kill-buffer)      ; kill buffer instead of killing emacs; :q! - kill without prompt
@@ -400,13 +401,33 @@ Status bar module
   (display-line-numbers-mode 0)                     ; disable lines numbers for org-mode
   (org-autolist-mode 1)                             ; autolist
 )
+#+end_src
+
+- org-roam :: plain-text knowledge management system
+#+begin_src elisp
+;;; == ORG-ROAM ==
 (use-package! org-roam
   :defer t
   :config
-  (setq org-roam-directory org-directory
-        org-roam-index-file (concat org-directory "/README.org")
+  (setq org-roam-completion-everywhere t ; ?
+        org-roam-directory org-directory ; org-dir = org-roam-dir
+        org-roam-index-file (concat org-directory "README.org") ; org-roam main file
+        org-template-dir (concat org-directory "templates/") ; templates dir for org-roam nodes
+        org-roam-capture-templates
+        '(("d" "default" plain
+           (file ,(concat org-template-dir "default.org"))
+           :target (file+head "${slug}.org" "#+title: ${title}\n#+filetags: \n")
+           :unnarrowed t)
+          ("t" "tech" plain
+           (file ,(concat org-template-dir "default.org"))
+           :target (file+head "tech/${slug}.org" "#+title: ${title}\n#+filetags: \n")
+           :unnarrowed t)
+          )
         )
   )
+(use-package! org-roam-timestamps
+  :after org-roam
+  :config (org-roam-timestamps-mode 1))
 #+end_src
 
 TODO:
@@ -570,10 +591,11 @@ Additional packages from emacs repos
 #+begin_src elisp :tangle ~/.config/doom/packages.el
 ;; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
-(package! org-autolist) ; easier lists in org-mode
-(package! beacon)       ; cursor highlighting
-(package! imenu-list)   ; listing of file structure
-(package! mwim)         ; ident- and comment-aware cursor movements
+(package! org-autolist)        ; easier lists in org-mode
+(package! beacon)              ; cursor highlighting
+(package! imenu-list)          ; listing of file structure
+(package! mwim)                ; ident/comment-aware cursor movements with <home>/<end>
+(package! org-roam-timestamps) ; +c/mtime to PROPERTIES drawer in org-roam file
 #+end_src
 
 * Notes
@@ -660,7 +682,9 @@ Explanation on how to read keymap configuration
 - C-v OR p :: Paste from clipboard (probably terminal KB)
 
 *** org-mode
+**** General
 - gg C-c C-c :: Refresh local org setup. Use this to fix runtime issues within org-mode
+**** Sections
 - N:TAB :: Fold/Unfold section =FOLDED -> CHILDREN=
     To enable =FOLDED -> CHILDREN -> SUBTREE=, add this:
     #+begin_src elisp :tangle no
@@ -673,15 +697,18 @@ Explanation on how to read keymap configuration
 - S-M-<up/down> :: Move section
 - M-<left/right> OR I:TAB/S-TAB :: Move section (promote/demote)
 - S-M-<left/right> :: Move section with subsections (promote/demote)
+- dd :: On folded section: delete with children
+**** Code blocks
 - C-M-\ :: Format code block
 - C-c-' :: Edit code block in new buffer. =C-c-'= to return
 - C-m :: Execute code block with results in file
 - C-c C-c :: Execute code block with results in window
-- dd :: On folded section: delete with children
-
+**** Roam
+- SPC-n-r-i :: Select or create new node and insert fwd link
+- SPC-m-I :: Add current file to roam nodes, creates ID on cursor
 *** magit
 - g g :: Open magit
-- s :: stage file
+- s :: track & stage file
 - S :: stage all files
 - u :: unstage file
 - c c :: commit changes

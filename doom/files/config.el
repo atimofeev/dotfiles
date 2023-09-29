@@ -42,6 +42,7 @@
 (define-key evil-motion-state-map [end] 'mwim-end)
 (define-key global-map [end] 'mwim-end)
 ;; these commands go after ':'
+(evil-ex-define-cmd "W"  'evil-write)              ; write with sticky shift
 (evil-ex-define-cmd "ww" 'custom/write-and-sync)   ; write file and perform 'doom sync'
 (evil-ex-define-cmd "wq" 'custom/write-and-quit)   ; write file and kill buffer
 (evil-ex-define-cmd "q"  'custom/kill-buffer)      ; kill buffer instead of killing emacs; :q! - kill without prompt
@@ -122,13 +123,30 @@
   (display-line-numbers-mode 0)                     ; disable lines numbers for org-mode
   (org-autolist-mode 1)                             ; autolist
 )
+
+;;; == ORG-ROAM ==
 (use-package! org-roam
   :defer t
   :config
-  (setq org-roam-directory org-directory
-        org-roam-index-file (concat org-directory "/README.org")
+  (setq org-roam-completion-everywhere t ; ?
+        org-roam-directory org-directory ; org-dir = org-roam-dir
+        org-roam-index-file (concat org-directory "README.org") ; org-roam main file
+        org-template-dir (concat org-directory "templates/") ; templates dir for org-roam nodes
+        org-roam-capture-templates
+        '(("d" "default" plain
+           (file ,(concat org-template-dir "default.org"))
+           :target (file+head "${slug}.org" "#+title: ${title}\n#+filetags: \n")
+           :unnarrowed t)
+          ("t" "tech" plain
+           (file ,(concat org-template-dir "default.org"))
+           :target (file+head "tech/${slug}.org" "#+title: ${title}\n#+filetags: \n")
+           :unnarrowed t)
+          )
         )
   )
+(use-package! org-roam-timestamps
+  :after org-roam
+  :config (org-roam-timestamps-mode 1))
 
 ;;; == TREEMACS ==
 (use-package! treemacs
