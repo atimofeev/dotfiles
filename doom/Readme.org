@@ -400,7 +400,9 @@ Status bar module
 (add-hook! 'org-mode-hook
   (display-line-numbers-mode 0)                     ; disable lines numbers for org-mode
   (org-autolist-mode 1)                             ; autolist
-)
+  (map! :leader "TAB" #'org-fold-show-subtree)      ; unfold subsections on SPC-TAB
+  (highlight-regexp ":tangle no" 'error)            ; highlight :tangle no
+  )
 #+end_src
 
 - org-roam :: plain-text knowledge management system
@@ -428,16 +430,6 @@ Status bar module
 (use-package! org-roam-timestamps
   :after org-roam
   :config (org-roam-timestamps-mode 1))
-#+end_src
-
-TODO:
-#+begin_src elisp :tangle no
-;; need to find suitable keymap. C-TAB is intercepted by kitty terminal (cycle through tabs)
-;; 'org-fold-show-subtree unfolds subtree
-;(after! org
-;  (define-key org-mode-map (kbd "C-\t") #'org-fold-show-subtree))
-;(add-hook! 'org-mode-hook
-;  (define-key org-mode-map (kbd "C-TAB") #'org-fold-show-subtree))
 #+end_src
 
 ** treemacs
@@ -601,7 +593,6 @@ Additional packages from emacs repos
 * Notes
 ** Tasks
 *** general tasks
-- Try out =prettify-symbols-mode=, at least for org code blocks. [[https://www.reddit.com/r/emacs/comments/o04it0/share_your_prettifysymbolsalist/][reddit link]]
 - Enable LSP. [[https://docs.doomemacs.org/v21.12/modules/tools/lsp/][link]]
 - Enter at the end of line in visual mode -> insert mode -> actual EOL - > RET
     Probably with =evil-insert-state-hook= followed by =evil-end-of-line= cmd.
@@ -707,14 +698,24 @@ Explanation on how to read keymap configuration
 - SPC-n-r-i :: Select or create new node and insert fwd link
 - SPC-m-I :: Add current file to roam nodes, creates ID on cursor
 *** magit
-- g g :: Open magit
+- SPC-g-g :: open magit
+**** Stage
 - s :: track & stage file
 - S :: stage all files
 - u :: unstage file
+- x :: discard unstaged changes
+- k :: FIXME discard staged changes. conflicts with evil keybinds
+**** Commit
 - c c :: commit changes
 - C-c C-c :: apply commit
+**** Push/Fetch
 - p :: push menu
-
+- f :: fetch menu
+**** Merge/Rebase
+- m :: merge menu
+- r :: rebase menu
+**** Stash
+- ? :: stash staged changes
 *** elfeed
 - ? :: Mark as read
 - ? :: Select keyword

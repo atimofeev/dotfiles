@@ -122,7 +122,9 @@
 (add-hook! 'org-mode-hook
   (display-line-numbers-mode 0)                     ; disable lines numbers for org-mode
   (org-autolist-mode 1)                             ; autolist
-)
+  (map! :leader "TAB" #'org-fold-show-subtree)      ; unfold subsections on SPC-TAB
+  (highlight-regexp ":tangle no" 'error)            ; highlight :tangle no
+  )
 
 ;;; == ORG-ROAM ==
 (use-package! org-roam
