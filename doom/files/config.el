@@ -121,7 +121,6 @@
 (add-hook! 'org-src-mode-hook (evil-insert-state))  ; enter code block editing with insert mode
 (add-hook! 'org-mode-hook
   (display-line-numbers-mode 0)                     ; disable lines numbers for org-mode
-  (org-autolist-mode 1)                             ; autolist
   (map! :leader "TAB" #'org-fold-show-subtree)      ; unfold subsections on SPC-TAB
   (highlight-regexp ":tangle no" 'error)            ; highlight :tangle no
   )
@@ -130,18 +129,17 @@
 (use-package! org-roam
   :defer t
   :config
-  (setq org-roam-completion-everywhere t ; ?
-        org-roam-directory org-directory ; org-dir = org-roam-dir
+  (setq org-roam-directory org-directory ; org-dir = org-roam-dir
         org-roam-index-file (concat org-directory "README.org") ; org-roam main file
-        org-template-dir (concat org-directory "templates/") ; templates dir for org-roam nodes
+        ;org-template-dir (concat org-directory "templates/") ; templates dir for org-roam nodes
         org-roam-capture-templates
         '(("d" "default" plain
-           (file ,(concat org-template-dir "default.org"))
+           "* Overview\n%?"
            :target (file+head "${slug}.org" "#+title: ${title}\n#+filetags: \n")
            :unnarrowed t)
           ("t" "tech" plain
-           (file ,(concat org-template-dir "default.org"))
-           :target (file+head "tech/${slug}.org" "#+title: ${title}\n#+filetags: \n")
+           "* Overview\n%?\n* Main section\n\n* Postscript\n"
+           :target (file+head "tech/${slug}.org" "#+title: ${title}\n#+filetags: tech\n")
            :unnarrowed t)
           )
         )
@@ -149,6 +147,19 @@
 (use-package! org-roam-timestamps
   :after org-roam
   :config (org-roam-timestamps-mode 1))
+(map! :leader :desc "org-roam backlinks" "t o" #'org-roam-buffer-toggle)
+
+(use-package! org-roam-ui
+    :after org-roam ;; or :after org
+;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;         a hookable mode anymore, you're advised to pick something yourself
+;;         if you don't care about startup time, use
+;;  :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
 
 ;;; == TREEMACS ==
 (use-package! treemacs

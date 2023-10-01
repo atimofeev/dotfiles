@@ -55,7 +55,7 @@ Init config with selectable modules
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
        ;;ivy               ; a search engine for love and life
-       vertico           ; the search engine of the future
+       (vertico +icons)           ; the search engine of the future
 
        :ui
        ;;deft              ; notational velocity for Emacs
@@ -399,7 +399,6 @@ Status bar module
 (add-hook! 'org-src-mode-hook (evil-insert-state))  ; enter code block editing with insert mode
 (add-hook! 'org-mode-hook
   (display-line-numbers-mode 0)                     ; disable lines numbers for org-mode
-  (org-autolist-mode 1)                             ; autolist
   (map! :leader "TAB" #'org-fold-show-subtree)      ; unfold subsections on SPC-TAB
   (highlight-regexp ":tangle no" 'error)            ; highlight :tangle no
   )
@@ -411,18 +410,17 @@ Status bar module
 (use-package! org-roam
   :defer t
   :config
-  (setq org-roam-completion-everywhere t ; ?
-        org-roam-directory org-directory ; org-dir = org-roam-dir
+  (setq org-roam-directory org-directory ; org-dir = org-roam-dir
         org-roam-index-file (concat org-directory "README.org") ; org-roam main file
-        org-template-dir (concat org-directory "templates/") ; templates dir for org-roam nodes
+        ;org-template-dir (concat org-directory "templates/") ; templates dir for org-roam nodes
         org-roam-capture-templates
         '(("d" "default" plain
-           (file ,(concat org-template-dir "default.org"))
+           "* Overview\n%?"
            :target (file+head "${slug}.org" "#+title: ${title}\n#+filetags: \n")
            :unnarrowed t)
           ("t" "tech" plain
-           (file ,(concat org-template-dir "default.org"))
-           :target (file+head "tech/${slug}.org" "#+title: ${title}\n#+filetags: \n")
+           "* Overview\n%?\n* Main section\n\n* Postscript\n"
+           :target (file+head "tech/${slug}.org" "#+title: ${title}\n#+filetags: tech\n")
            :unnarrowed t)
           )
         )
@@ -430,8 +428,23 @@ Status bar module
 (use-package! org-roam-timestamps
   :after org-roam
   :config (org-roam-timestamps-mode 1))
+(map! :leader :desc "org-roam backlinks" "t o" #'org-roam-buffer-toggle)
 #+end_src
 
+- org-roam-ui :: interactive web UI for =org-roam=
+#+begin_src elisp
+(use-package! org-roam-ui
+    :after org-roam ;; or :after org
+;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;         a hookable mode anymore, you're advised to pick something yourself
+;;         if you don't care about startup time, use
+;;  :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+#+end_src
 ** treemacs
 Module for displaying project file tree
 #+begin_src elisp
@@ -583,11 +596,11 @@ Additional packages from emacs repos
 #+begin_src elisp :tangle ~/.config/doom/packages.el
 ;; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
-(package! org-autolist)        ; easier lists in org-mode
 (package! beacon)              ; cursor highlighting
 (package! imenu-list)          ; listing of file structure
 (package! mwim)                ; ident/comment-aware cursor movements with <home>/<end>
 (package! org-roam-timestamps) ; +c/mtime to PROPERTIES drawer in org-roam file
+(package! org-roam-ui)         ; web ui for org-roam
 #+end_src
 
 * Notes
@@ -617,8 +630,6 @@ Additional packages from emacs repos
 ** Issues
 - [[#centaur-tabs][Centaur-Tabs]] :: New tab is created in new group instead of same one
 - Multiple cursors :: Issues in org-mode
-- Autolist with description lists :: =RET= always creates new list item, no way to exit this mode
-- Autolist with unordered lists :: =RET= mid text creates new list item, no text is moved
 - TAB in org code block throwing ::
     [yas] Check your `yas-snippet-dirs': /home/atimofeev/.config/doom/snippets/ is not a directory
     [yas] Preparied just-in-time loading of snippets with some errors.  Check *Messages*.
@@ -784,3 +795,5 @@ Run every 10s
 https://discourse.doomemacs.org/t/how-to-re-bind-keys/56
 https://discourse.doomemacs.org/t/common-config-anti-patterns/119
 https://gitlab.com/dwt1/dotfiles/-/blob/master/.config/doom/config.org
+https://github.com/tecosaur/emacs-config/blob/master/config.org
+https://github.com/elken/doom
