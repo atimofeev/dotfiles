@@ -135,32 +135,25 @@
         org-roam-index-file (concat org-directory "README.org") ; org-roam main file
         ;org-template-dir (concat org-directory "templates/") ; templates dir for org-roam nodes
         org-roam-capture-templates
-        '(("d" "default-uncat" plain
-           "* Overview\n%?"
+        '(("d" "default-uncat" plain "* Overview\n%?"
            :target (file+head "uncat/${slug}.org" "#+title: ${title}\n#+filetags: uncat\n")
            :unnarrowed t)
-          ("t" "tech" plain
-           "* Overview\n%?\n* Main section\n\n* Postscript\n"
+          ("t" "tech" plain "* Overview\n%?\n* Main section\n\n* Postscript\n"
            :target (file+head "tech/${slug}.org" "#+title: ${title}\n#+filetags: tech\n")
            :unnarrowed t)
-          ("s" "stash" plain
-           "* Overview\n%?"
+          ("s" "stash" plain "* Overview\n%?"
            :target (file+head "stash/${slug}.org" "#+title: ${title}\n#+filetags: stash\n")
            :unnarrowed t)
-          ("m" "money" plain
-           "* Overview\n%?"
+          ("m" "money" plain "* Overview\n%?"
            :target (file+head "money/${slug}.org" "#+title: ${title}\n#+filetags: money\n")
            :unnarrowed t)
-          ("w" "work" plain
-           "* Overview\n%?"
+          ("w" "work" plain "* Overview\n%?"
            :target (file+head "work/${slug}.org" "#+title: ${title}\n#+filetags: work\n")
            :unnarrowed t)
-          ("h" "health" plain
-           "* Overview\n%?"
+          ("h" "health" plain "* Overview\n%?"
            :target (file+head "health/${slug}.org" "#+title: ${title}\n#+filetags: health\n")
            :unnarrowed t)
-          ("l" "leisure" plain
-           "* Overview\n%?"
+          ("l" "leisure" plain "* Overview\n%?"
            :target (file+head "leisure/${slug}.org" "#+title: ${title}\n#+filetags: leisure\n")
            :unnarrowed t)
           )
@@ -172,11 +165,7 @@
 (map! :leader :desc "org-roam backlinks" "t o" #'org-roam-buffer-toggle)
 
 (use-package! org-roam-ui
-    :after org-roam ;; or :after org
-;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
-;;         a hookable mode anymore, you're advised to pick something yourself
-;;         if you don't care about startup time, use
-;;  :hook (after-init . org-roam-ui-mode)
+    :after org-roam
     :config
     (setq org-roam-ui-sync-theme t
           org-roam-ui-follow t

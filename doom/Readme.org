@@ -127,7 +127,7 @@ Init config with selectable modules
        (eval +overlay)     ; run code, run (also, repls)
        ;;gist              ; interacting with github gists
        lookup              ; navigate your code and its documentation
-       ;;lsp               ; M-x vscode
+       lsp               ; M-x vscode
        magit             ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
        ;;pass              ; password manager for nerds
@@ -189,7 +189,7 @@ Init config with selectable modules
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
-       python            ; beautiful is better than ugly
+       (python +lsp)            ; beautiful is better than ugly
        ;;qt                ; the 'cutest' gui framework ever
        ;;racket            ; a DSL for DSLs
        ;;raku              ; the artist formerly known as perl6
@@ -229,6 +229,7 @@ Init config with selectable modules
 * config.el
 ** General settings
 Main or uncategorized settings
+how about some
 #+begin_src elisp
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 ;;; == GENERAL SETTINGS ==
@@ -425,32 +426,25 @@ Status bar module
         org-roam-index-file (concat org-directory "README.org") ; org-roam main file
         ;org-template-dir (concat org-directory "templates/") ; templates dir for org-roam nodes
         org-roam-capture-templates
-        '(("d" "default-uncat" plain
-           "* Overview\n%?"
+        '(("d" "default-uncat" plain "* Overview\n%?"
            :target (file+head "uncat/${slug}.org" "#+title: ${title}\n#+filetags: uncat\n")
            :unnarrowed t)
-          ("t" "tech" plain
-           "* Overview\n%?\n* Main section\n\n* Postscript\n"
+          ("t" "tech" plain "* Overview\n%?\n* Main section\n\n* Postscript\n"
            :target (file+head "tech/${slug}.org" "#+title: ${title}\n#+filetags: tech\n")
            :unnarrowed t)
-          ("s" "stash" plain
-           "* Overview\n%?"
+          ("s" "stash" plain "* Overview\n%?"
            :target (file+head "stash/${slug}.org" "#+title: ${title}\n#+filetags: stash\n")
            :unnarrowed t)
-          ("m" "money" plain
-           "* Overview\n%?"
+          ("m" "money" plain "* Overview\n%?"
            :target (file+head "money/${slug}.org" "#+title: ${title}\n#+filetags: money\n")
            :unnarrowed t)
-          ("w" "work" plain
-           "* Overview\n%?"
+          ("w" "work" plain "* Overview\n%?"
            :target (file+head "work/${slug}.org" "#+title: ${title}\n#+filetags: work\n")
            :unnarrowed t)
-          ("h" "health" plain
-           "* Overview\n%?"
+          ("h" "health" plain "* Overview\n%?"
            :target (file+head "health/${slug}.org" "#+title: ${title}\n#+filetags: health\n")
            :unnarrowed t)
-          ("l" "leisure" plain
-           "* Overview\n%?"
+          ("l" "leisure" plain "* Overview\n%?"
            :target (file+head "leisure/${slug}.org" "#+title: ${title}\n#+filetags: leisure\n")
            :unnarrowed t)
           )
@@ -465,11 +459,7 @@ Status bar module
 - org-roam-ui :: interactive web UI for =org-roam=
 #+begin_src elisp
 (use-package! org-roam-ui
-    :after org-roam ;; or :after org
-;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
-;;         a hookable mode anymore, you're advised to pick something yourself
-;;         if you don't care about startup time, use
-;;  :hook (after-init . org-roam-ui-mode)
+    :after org-roam
     :config
     (setq org-roam-ui-sync-theme t
           org-roam-ui-follow t
@@ -824,3 +814,4 @@ https://discourse.doomemacs.org/t/common-config-anti-patterns/119
 https://gitlab.com/dwt1/dotfiles/-/blob/master/.config/doom/config.org
 https://github.com/tecosaur/emacs-config/blob/master/config.org
 https://github.com/elken/doom
+https://github.com/ztlevi/doom-config
