@@ -109,20 +109,22 @@
 (add-hook 'doom-modeline-mode-hook 'setup-doom-modeline-evil-states)
 
 ;;; == ORG-MODE ==
-(setq
- org-directory "~/org/"                             ; org-agenda and other org tools will work upon this dir
- org-support-shift-select t                         ; enable select with S-<arrows>
- org-startup-folded "content"                       ; startup with everything unfolded except lowest sub-sections
-;; org-startup-with-inline-images t                   ; Render images (only GUI mode)
- org-blank-before-new-entry (quote ((heading . nil) ; no empty lines on betwen new list entries
-                                    (plain-list-item .nil)))
-)
-(add-hook! 'after-save-hook (org-babel-tangle))     ; export org code blocks on save
-(add-hook! 'org-src-mode-hook (evil-insert-state))  ; enter code block editing with insert mode
-(add-hook! 'org-mode-hook
-  (display-line-numbers-mode 0)                     ; disable lines numbers for org-mode
-  (map! :leader "TAB" #'org-fold-show-subtree)      ; unfold subsections on SPC-TAB
-  (highlight-regexp ":tangle no" 'error)            ; highlight :tangle no
+(use-package! org
+  :defer t
+  :custom
+  (org-directory "~/org")                         ; org-agenda and other org tools will work upon this dir
+  (org-support-shift-select t)                    ; enable select with S-<arrows>
+  (org-startup-folded "content")                  ; startup with everything unfolded except lowest sub-sections
+  :config
+  (set-popup-rule! "^\\*Org Src" :ignore t)       ; delete popup rule for src-edit buffer
+  :hook                                           ; ^ makes popup on side instead of bottom
+  (after-save . org-babel-tangle)                 ; export org code blocks on save
+  (org-src-mode . evil-insert-state)              ; enter code block editing with insert mode
+  (org-mode . (lambda ()
+    (display-line-numbers-mode 0)                 ; disable lines numbers for org-mode
+    (highlight-regexp ":tangle no" 'error)        ; highlight :tangle no
+    (map! :leader "TAB" #'org-fold-show-subtree)  ; unfold subsections on SPC-TAB
+    ))
   )
 
 ;;; == ORG-ROAM ==
@@ -133,13 +135,33 @@
         org-roam-index-file (concat org-directory "README.org") ; org-roam main file
         ;org-template-dir (concat org-directory "templates/") ; templates dir for org-roam nodes
         org-roam-capture-templates
-        '(("d" "default" plain
+        '(("d" "default-uncat" plain
            "* Overview\n%?"
-           :target (file+head "${slug}.org" "#+title: ${title}\n#+filetags: \n")
+           :target (file+head "uncat/${slug}.org" "#+title: ${title}\n#+filetags: uncat\n")
            :unnarrowed t)
           ("t" "tech" plain
            "* Overview\n%?\n* Main section\n\n* Postscript\n"
            :target (file+head "tech/${slug}.org" "#+title: ${title}\n#+filetags: tech\n")
+           :unnarrowed t)
+          ("s" "stash" plain
+           "* Overview\n%?"
+           :target (file+head "stash/${slug}.org" "#+title: ${title}\n#+filetags: stash\n")
+           :unnarrowed t)
+          ("m" "money" plain
+           "* Overview\n%?"
+           :target (file+head "money/${slug}.org" "#+title: ${title}\n#+filetags: money\n")
+           :unnarrowed t)
+          ("w" "work" plain
+           "* Overview\n%?"
+           :target (file+head "work/${slug}.org" "#+title: ${title}\n#+filetags: work\n")
+           :unnarrowed t)
+          ("h" "health" plain
+           "* Overview\n%?"
+           :target (file+head "health/${slug}.org" "#+title: ${title}\n#+filetags: health\n")
+           :unnarrowed t)
+          ("l" "leisure" plain
+           "* Overview\n%?"
+           :target (file+head "leisure/${slug}.org" "#+title: ${title}\n#+filetags: leisure\n")
            :unnarrowed t)
           )
         )

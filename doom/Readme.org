@@ -10,6 +10,7 @@
   - [[#general-settings][General settings]]
   - [[#emacs-tty][emacs TTY]]
   - [[#evil][evil]]
+  - [[#expand-region][expand-region]]
   - [[#files-wip][Files (WIP)]]
   - [[#buffers][Buffers]]
   - [[#windows][Windows]]
@@ -294,6 +295,14 @@ TODO:
 ; <deletechar> -> insert mode?
 #+end_src
 
+** expand-region
+Extension to increase selected region by semantic units
+Todo: figure out working and convenient keybind
+#+begin_src elisp :tangle no
+(map! "C-=" #'er/expand-region
+      "C--" #'er/contract-region)
+#+end_src
+
 ** Files (WIP)
 This code block tangling is currently disabled
 #+begin_src elisp :tangle no
@@ -387,20 +396,22 @@ Status bar module
 - .org :: Highly flexible structured plain text file format
 #+begin_src elisp
 ;;; == ORG-MODE ==
-(setq
- org-directory "~/org/"                             ; org-agenda and other org tools will work upon this dir
- org-support-shift-select t                         ; enable select with S-<arrows>
- org-startup-folded "content"                       ; startup with everything unfolded except lowest sub-sections
-;; org-startup-with-inline-images t                   ; Render images (only GUI mode)
- org-blank-before-new-entry (quote ((heading . nil) ; no empty lines on betwen new list entries
-                                    (plain-list-item .nil)))
-)
-(add-hook! 'after-save-hook (org-babel-tangle))     ; export org code blocks on save
-(add-hook! 'org-src-mode-hook (evil-insert-state))  ; enter code block editing with insert mode
-(add-hook! 'org-mode-hook
-  (display-line-numbers-mode 0)                     ; disable lines numbers for org-mode
-  (map! :leader "TAB" #'org-fold-show-subtree)      ; unfold subsections on SPC-TAB
-  (highlight-regexp ":tangle no" 'error)            ; highlight :tangle no
+(use-package! org
+  :defer t
+  :custom
+  (org-directory "~/org")                         ; org-agenda and other org tools will work upon this dir
+  (org-support-shift-select t)                    ; enable select with S-<arrows>
+  (org-startup-folded "content")                  ; startup with everything unfolded except lowest sub-sections
+  :config
+  (set-popup-rule! "^\\*Org Src" :ignore t)       ; delete popup rule for src-edit buffer
+  :hook                                           ; ^ makes popup on side instead of bottom
+  (after-save . org-babel-tangle)                 ; export org code blocks on save
+  (org-src-mode . evil-insert-state)              ; enter code block editing with insert mode
+  (org-mode . (lambda ()
+    (display-line-numbers-mode 0)                 ; disable lines numbers for org-mode
+    (highlight-regexp ":tangle no" 'error)        ; highlight :tangle no
+    (map! :leader "TAB" #'org-fold-show-subtree)  ; unfold subsections on SPC-TAB
+    ))
   )
 #+end_src
 
@@ -414,13 +425,33 @@ Status bar module
         org-roam-index-file (concat org-directory "README.org") ; org-roam main file
         ;org-template-dir (concat org-directory "templates/") ; templates dir for org-roam nodes
         org-roam-capture-templates
-        '(("d" "default" plain
+        '(("d" "default-uncat" plain
            "* Overview\n%?"
-           :target (file+head "${slug}.org" "#+title: ${title}\n#+filetags: \n")
+           :target (file+head "uncat/${slug}.org" "#+title: ${title}\n#+filetags: uncat\n")
            :unnarrowed t)
           ("t" "tech" plain
            "* Overview\n%?\n* Main section\n\n* Postscript\n"
            :target (file+head "tech/${slug}.org" "#+title: ${title}\n#+filetags: tech\n")
+           :unnarrowed t)
+          ("s" "stash" plain
+           "* Overview\n%?"
+           :target (file+head "stash/${slug}.org" "#+title: ${title}\n#+filetags: stash\n")
+           :unnarrowed t)
+          ("m" "money" plain
+           "* Overview\n%?"
+           :target (file+head "money/${slug}.org" "#+title: ${title}\n#+filetags: money\n")
+           :unnarrowed t)
+          ("w" "work" plain
+           "* Overview\n%?"
+           :target (file+head "work/${slug}.org" "#+title: ${title}\n#+filetags: work\n")
+           :unnarrowed t)
+          ("h" "health" plain
+           "* Overview\n%?"
+           :target (file+head "health/${slug}.org" "#+title: ${title}\n#+filetags: health\n")
+           :unnarrowed t)
+          ("l" "leisure" plain
+           "* Overview\n%?"
+           :target (file+head "leisure/${slug}.org" "#+title: ${title}\n#+filetags: leisure\n")
            :unnarrowed t)
           )
         )
@@ -601,6 +632,7 @@ Additional packages from emacs repos
 (package! mwim)                ; ident/comment-aware cursor movements with <home>/<end>
 (package! org-roam-timestamps) ; +c/mtime to PROPERTIES drawer in org-roam file
 (package! org-roam-ui)         ; web ui for org-roam
+(package! expand-region)
 #+end_src
 
 * Notes
@@ -611,11 +643,7 @@ Additional packages from emacs repos
     Probably with =evil-insert-state-hook= followed by =evil-end-of-line= cmd.
 - Looks into modules loading, lazify ones which always load without particular need
 - EOF margin: should not show more than X empty lines when going to end of file
-- Try out [[https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/][mu4e]] email client
-- Write function to tab-align code in selected region
-  - Ignore comments
 - fzf+grep-like functionality
-- Disable <escape> when =vterm-mode-hook=?
 
 *** org-mode tasks
 - Org unfold sections in insert mode
@@ -628,13 +656,12 @@ Additional packages from emacs repos
 - probably bookmarks too?
 
 ** Issues
-- [[#centaur-tabs][Centaur-Tabs]] :: New tab is created in new group instead of same one
-- Multiple cursors :: Issues in org-mode
+- doom/reload :: Can't use new modules without restart of emacs
+- Emojis :: Visual glitches in terminal TTY mode
+- RET in middle of org list item :: Invalid function: org-element-with-disabled-cache
 - TAB in org code block throwing ::
     [yas] Check your `yas-snippet-dirs': /home/atimofeev/.config/doom/snippets/ is not a directory
     [yas] Preparied just-in-time loading of snippets with some errors.  Check *Messages*.
-- Emojis :: Visual glitches in terminal TTY mode
-- doom/reload :: Can't use new modules without restart of emacs
 
 ** Keymap help
 *** Keymap Legend
