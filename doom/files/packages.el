@@ -5,4 +5,4 @@
 (package! mwim)                ; ident/comment-aware cursor movements with <home>/<end>
 (package! org-roam-timestamps) ; +c/mtime to PROPERTIES drawer in org-roam file
 (package! org-roam-ui)         ; web ui for org-roam
-(package! expand-region)
+(package! expand-region)       ; increase selected region by semantic units

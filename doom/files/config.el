@@ -108,6 +108,9 @@
   (set-face-attribute 'doom-modeline-evil-operator-state nil :background "purple"))
 (add-hook 'doom-modeline-mode-hook 'setup-doom-modeline-evil-states)
 
+;;; == LSP ==
+(setq lsp-headerline-breadcrumb-enable t)  ; enable headerline breadcrumb
+
 ;;; == ORG-MODE ==
 (use-package! org
   :defer t
