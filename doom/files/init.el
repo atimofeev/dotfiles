@@ -33,7 +33,7 @@
         +defaults)         ; reasonable popup rules for buffers
        ;;tabs              ; a tab bar for Emacs
        (treemacs           ; a project drawer, like neotree but cooler
-        +lsp)
+        +lsp)              ; lsp integration for errors, symbols, refs, etc
        unicode             ; extended unicode support for various languages
        (vc-gutter          ; vcs diff in the fringe
         +pretty)
@@ -140,9 +140,7 @@
        (json               ; At least it ain't XML
         +lsp
         +tree-sitter)
-       (java               ; the poster child for carpal tunnel syndrome
-        +lsp
-        +tree-sitter)
+       ;;java              ; the poster child for carpal tunnel syndrome
        (javascript         ; all(hope(abandon(ye(who(enter(here))))))
         +lsp
         +tree-sitter)
@@ -162,7 +160,7 @@
         +tree-sitter)
        ;;ocaml             ; an objective camel
        (org                ; organize your plain life in plain text
-        +pretty
+        ;+pretty           ; unicode bullets and lists; too expensive..
         +roam2)
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
@@ -176,13 +174,11 @@
        ;;rest              ; Emacs as a REST client
        ;;rst               ; ReST in peace
        ;;(ruby +rails)     ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
-       (rust               ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
-        +lsp
-        +tree-sitter)
+       ;;rust              ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        ;;scala             ; java, but good
        ;;(scheme +guile)   ; a fully conniving family of lisps
        (sh                 ; she sells {ba,z,fi}sh shells on the C xor
-        +fish
+        +fish              ; support fish shell syntax
         +lsp
         +tree-sitter
         +powershell)

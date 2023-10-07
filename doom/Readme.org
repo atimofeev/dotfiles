@@ -14,10 +14,10 @@
   - [[#emacs-tty][emacs TTY]]
   - [[#evil][evil]]
   - [[#expand-region][expand-region]]
-  - [[#files-wip][Files (WIP)]]
   - [[#buffers][Buffers]]
   - [[#windows][Windows]]
   - [[#doom-modeline][doom-modeline]]
+  - [[#highlight-indent-guides][highlight-indent-guides]]
   - [[#lsp-1][lsp]]
   - [[#org-mode][org-mode]]
   - [[#treemacs][treemacs]]
@@ -46,34 +46,29 @@ Inspired by [[https://gitlab.com/dwt1/dotfiles/-/blob/master/.config/doom/config
 aspell?
 ** LSP
 *** Docker
-**** Dockerfile Language Server
++ Dockerfile Language Server ::
 *** json
-**** [[https://github.com/vscode-langservers/vscode-json-languageserver][vscode-json-languageserver]]
-*** Java
-**** eclipse.jdt.ls
++ [[https://github.com/vscode-langservers/vscode-json-languageserver][vscode-json-languageserver]] ::
 *** JS
-**** ts-ls
-**** deno-ls
++ ts-ls ::
++ deno-ls ::
 *** LaTeX
-**** digestif
-**** TexLab
++ digestif ::
++ TexLab ::
 *** Lua
-**** EmmyLua
-**** lua-language-server
-**** lua-lsp
++ EmmyLua ::
++ lua-language-server ::
++ lua-lsp ::
 *** Python
-**** mspyls
-**** pyls
++ mspyls ::
++ pyls ::
 =pip install --user "python-lsp-server[all]"=
-**** pyright
++ pyright ::
 Requires =(python +lsp +pyright)=
-*** Rust
-**** [[https://rust-analyzer.github.io/][rust.analyzer]]
-**** rls
 *** Shell
-**** bash-language-server
++ bash-language-server ::
 *** yaml
-**** [[https://github.com/redhat-developer/yaml-language-server][yaml-language-server]]
++ [[https://github.com/redhat-developer/yaml-language-server][yaml-language-server]] ::
 * init.el
 :PROPERTIES:
 :HTML_CONTAINER_CLASS:    hsCollapsed
@@ -116,7 +111,7 @@ Init config with selectable modules
         +defaults)         ; reasonable popup rules for buffers
        ;;tabs              ; a tab bar for Emacs
        (treemacs           ; a project drawer, like neotree but cooler
-        +lsp)
+        +lsp)              ; lsp integration for errors, symbols, refs, etc
        unicode             ; extended unicode support for various languages
        (vc-gutter          ; vcs diff in the fringe
         +pretty)
@@ -223,9 +218,7 @@ Init config with selectable modules
        (json               ; At least it ain't XML
         +lsp
         +tree-sitter)
-       (java               ; the poster child for carpal tunnel syndrome
-        +lsp
-        +tree-sitter)
+       ;;java              ; the poster child for carpal tunnel syndrome
        (javascript         ; all(hope(abandon(ye(who(enter(here))))))
         +lsp
         +tree-sitter)
@@ -245,7 +238,7 @@ Init config with selectable modules
         +tree-sitter)
        ;;ocaml             ; an objective camel
        (org                ; organize your plain life in plain text
-        +pretty
+        ;+pretty           ; unicode bullets and lists; too expensive..
         +roam2)
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
@@ -259,13 +252,11 @@ Init config with selectable modules
        ;;rest              ; Emacs as a REST client
        ;;rst               ; ReST in peace
        ;;(ruby +rails)     ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
-       (rust               ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
-        +lsp
-        +tree-sitter)
+       ;;rust              ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        ;;scala             ; java, but good
        ;;(scheme +guile)   ; a fully conniving family of lisps
        (sh                 ; she sells {ba,z,fi}sh shells on the C xor
-        +fish
+        +fish              ; support fish shell syntax
         +lsp
         +tree-sitter
         +powershell)
@@ -303,62 +294,72 @@ Init config with selectable modules
 * config.el
 ** General settings
 Main or uncategorized settings
-how about some
 #+begin_src elisp
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 ;;; == GENERAL SETTINGS ==
 (setq
  user-full-name "Artem Timofeev"
- doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 13 :weight 'semi-light)
+ doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 15 :weight 'semi-light)
  doom-theme 'doom-one
- evil-want-fine-undo t                                          ; undo in small steps
- display-line-numbers-type t                                    ; show line numbers
- mouse-drag-copy-region t                                       ; select-to-copy with mouse
- confirm-kill-emacs nil                                         ; quit without prompt
- company-global-modes '(not text-mode org-mode markdown-mode)   ; disable autocomplete for plain text
- scroll-margin 3                                                ; add margin to cursor while scrolling
- projectile-project-search-path '("~/repos/")                   ;
- global-auto-revert-non-file-buffers t                          ; auto-update non-file buffers (e.g. Dired)
+ display-line-numbers-type t                                     ; show line numbers
+ mouse-drag-copy-region t                                        ; select-to-copy with mouse
+ confirm-kill-emacs nil                                          ; quit without prompt
+ company-global-modes '(not text-mode org-mode markdown-mode)    ; disable autocomplete for plain text
+ scroll-margin 3                                                 ; add margin to cursor while scrolling
+ projectile-project-search-path '("~/repos/")                    ;
+ global-auto-revert-non-file-buffers t                           ; auto-update non-file buffers (e.g. Dired)
 )
-(global-auto-revert-mode 1)                                     ; auto-update changed files
-(beacon-mode 1)                                                 ; cursor highlight on big movements or between windows
+(global-auto-revert-mode 1)                                      ; auto-update changed files
+(beacon-mode 1)                                                  ; cursor highlight on big movements or between windows
 
-(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)   ; Spawn additional cursor above; C-g to exit
-(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)     ; Spawn additional cursor below
-(unbind-key "<insertchar>" overwrite-mode)                      ; disable overwrite mode on Insert key
+(global-set-key (kbd "C-M-<up>")   'mc/mark-previous-like-this)  ; spawn additional cursor above; C-g to exit
+(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)      ; spawn additional cursor below
+(global-set-key (kbd "<prior>")    'evil-scroll-up)              ; rebind PgUp/PgDn to evil scroll functions
+(global-set-key (kbd "<next>")     'evil-scroll-down)
+(unbind-key "<insertchar>" overwrite-mode)                       ; disable overwrite mode on Insert key
 (map! :leader
       (:prefix ("t". "toggle")
-       :desc "vterm popup"              "s"     #'+vterm/toggle ; open shell popup
-       :desc "vterm window"             "S"     #'+vterm/here   ; open shell in current window
+       :desc "vterm popup"              "s"     #'+vterm/toggle  ; open shell popup
+       :desc "vterm window"             "S"     #'+vterm/here    ; open shell in current window
        ))
 #+end_src
 
 ** emacs TTY
+Various hacks to make Emacs usable in TTY
 #+begin_src elisp
 ;;; == EMACS TTY ==
 (unless (display-graphic-p)
-  (xterm-mouse-mode 1)         ; enable mouse in TTY mode
-;;  (map! :after evil-org        ; TTY resolves 'C-backspace' into 'C-h'
-;;        :map evil-org-mode-map ; if your terminal does not support it
-;;        :i "C-h" nil)          ; enable these lines for hack. define-key too ↴
+  (xterm-mouse-mode 1)                               ; enable mouse in TTY mode
+  (setq lsp-headerline-breadcrumb-icons-enable nil)  ; these icons are PNG
+;;  (map! :after evil-org                            ; TTY resolves 'C-backspace' into 'C-h'
+;;        :map evil-org-mode-map                     ; if your terminal does not support it
+;;        :i "C-h" nil)                              ; enable these lines for hack. define-key too ↴
 ;;  (define-key evil-insert-state-map (kbd "C-h") 'aborn/backward-kill-word)
 )
 #+end_src
 
 ** evil
+Evil mode and general movement
 #+begin_src elisp
 ;;; == EVIL MODE ==
-;; go to start of line or start of code (identation)
+;(define-key evil-motion-state-map ";" #'evil-ex)                          ; swap : and ;
+;(define-key evil-motion-state-map ":" #'evil-snipe-repeat)
+(setq evil-want-fine-undo t)                                              ; undo in small steps
+(global-set-key          (kbd "C-<backspace>") 'aborn/backward-kill-word) ; smarter C-backspace
+(define-key evil-ex-completion-map (kbd "C-v") 'evil-paste-after)         ; C-v to paste
+(define-key evil-ex-search-keymap  (kbd "C-v") 'evil-paste-after)
+(define-key evil-normal-state-map  (kbd "C-v") 'evil-paste-after)
+(define-key evil-insert-state-map  (kbd "C-v") 'yank)
+(define-key evil-emacs-state-map   (kbd "C-v") 'evil-paste-after)
+(define-key global-map            [home] 'mwim-beginning-of-code-or-line) ; go to line beginning or to identation
 (define-key evil-motion-state-map [home] 'mwim-beginning-of-code-or-line)
-(define-key global-map [home] 'mwim-beginning-of-code-or-line)
-;; go to end of code or end of line (comment)
-(define-key evil-motion-state-map [end] 'mwim-end)
-(define-key global-map [end] 'mwim-end)
-;; these commands go after ':'
-(evil-ex-define-cmd "W"  'evil-write)              ; write with sticky shift
-(evil-ex-define-cmd "ww" 'custom/write-and-sync)   ; write file and perform 'doom sync'
-(evil-ex-define-cmd "wq" 'custom/write-and-quit)   ; write file and kill buffer
-(evil-ex-define-cmd "q"  'custom/kill-buffer)      ; kill buffer instead of killing emacs; :q! - kill without prompt
+(define-key global-map            [end]  'mwim-end)                       ; go to end of code or end of line
+(define-key evil-motion-state-map [end]  'mwim-end)
+;; these commands go after ':' (evil-ex)
+(evil-ex-define-cmd "W"  'evil-write)                                     ; write with sticky shift
+(evil-ex-define-cmd "ww" 'custom/write-and-sync)                          ; write file and perform 'doom sync'
+(evil-ex-define-cmd "wq" 'custom/write-and-quit)                          ; write file and kill buffer
+(evil-ex-define-cmd "q"  'custom/kill-buffer)                             ; kill buffer instead of killing emacs; :q! - kill without prompt
 #+end_src
 
 TODO:
@@ -376,24 +377,6 @@ Todo: figure out working and convenient keybind
 #+begin_src elisp :tangle no
 (map! "C-=" #'er/expand-region
       "C--" #'er/contract-region)
-#+end_src
-
-** Files (WIP)
-This code block tangling is currently disabled
-#+begin_src elisp :tangle no
-;;; == FILES KEYMAPS ==
-(map! :leader
-      (:prefix ("f". "file")
-       :desc "New file"                 "n" #'evil-buffer-new
-       :desc "New file as.."            " " #'
-
-       :desc "Save file"                "s" #'save-buffer
-       :desc "Save file as.."           "S" #'write-file
-       :desc "Save file and kill buffer"" " #'
-
-       :desc "Rename file"              " " #'
-       :desc "Move file"                " " #'
-       :desc "Delete file"              " " #'delete-file))
 #+end_src
 
 ** Buffers
@@ -448,29 +431,55 @@ This code block tangling is currently disabled
 Status bar module
 #+begin_src elisp
 ;;; == DOOM-MODELINE ==
-;; disable modal icons and set custom evil-state tags to make them more noticeable
-(setq doom-modeline-modal-icon nil
-      evil-normal-state-tag   (propertize "[Normal]")
-      evil-emacs-state-tag    (propertize "[Emacs]" )
-      evil-insert-state-tag   (propertize "[Insert]")
-      evil-motion-state-tag   (propertize "[Motion]")
-      evil-visual-state-tag   (propertize "[Visual]")
-      evil-operator-state-tag (propertize "[Operator]"))
-;; setting up custom FG/BG colors to further increace noticeability
+(use-package! doom-modeline
+  :config
+  (display-time-mode 1)        ; show time in modeline
+  :custom
+  (display-time-24hr-format t) ; show time in 24h format
+  ;; disable modal icons and set custom evil-state tags to make them more noticeable
+  (doom-modeline-modal-icon nil)
+  (evil-normal-state-tag   (propertize "[Normal]"))
+  (evil-emacs-state-tag    (propertize "[Emacs]" ))
+  (evil-insert-state-tag   (propertize "[Insert]"))
+  (evil-motion-state-tag   (propertize "[Motion]"))
+  (evil-visual-state-tag   (propertize "[Visual]"))
+  (evil-operator-state-tag (propertize "[Operator]"))
+  )
+
+;; setting up custom FG/BG colors to further increace visibility of evil-state
 (defun setup-doom-modeline-evil-states ()
-  (set-face-attribute 'doom-modeline-evil-normal-state   nil :background "green"  :foreground "black")
-  (set-face-attribute 'doom-modeline-evil-emacs-state    nil :background "orange" :foreground "black")
-  (set-face-attribute 'doom-modeline-evil-insert-state   nil :background "red"    :foreground "white")
-  (set-face-attribute 'doom-modeline-evil-motion-state   nil :background "blue"   :foreground "white")
-  (set-face-attribute 'doom-modeline-evil-visual-state   nil :background "gray80" :foreground "black")
-  (set-face-attribute 'doom-modeline-evil-operator-state nil :background "purple"))
+  (set-face-attribute 'doom-modeline-evil-normal-state   nil :background "lawngreen" :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-emacs-state    nil :background "orange"    :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-insert-state   nil :background "red2"      :foreground "white")
+  (set-face-attribute 'doom-modeline-evil-motion-state   nil :background "blue"      :foreground "white")
+  (set-face-attribute 'doom-modeline-evil-visual-state   nil :background "gray80"    :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-operator-state nil :background "blueviolet"))
 (add-hook 'doom-modeline-mode-hook 'setup-doom-modeline-evil-states)
 #+end_src
-
+** highlight-indent-guides
+#+begin_src elisp
+(use-package! highlight-indent-guides
+  :defer t
+  :custom
+  (highlight-indent-guides-auto-odd-face-perc 0)
+  (highlight-indent-guides-auto-even-face-perc 0)
+  :config
+  (highlight-indent-guides-auto-set-faces) ; FIXME indent glitches (not working)
+  )
+#+end_src
 ** lsp
 #+begin_src elisp
 ;;; == LSP ==
-(setq lsp-headerline-breadcrumb-enable t)  ; enable headerline breadcrumb
+(use-package! lsp-mode
+  :defer t
+  :custom
+  (lsp-headerline-breadcrumb-enable t)     ; enable headerline breadcrumb
+  (gc-cons-threshold (* 400 1024 1024))    ; increase GC threshold to improve perf in LSP mode
+  (read-process-output-max (* 1 1024 1024))  ; handle large LSP responses
+  )
+(use-package! lsp-treemacs
+  :after lsp-mode  ;; and treemacs
+  :config (lsp-treemacs-sync-mode 1))
 #+end_src
 
 ** org-mode
@@ -492,6 +501,8 @@ Status bar module
     (display-line-numbers-mode 0)                 ; disable lines numbers for org-mode
     (highlight-regexp ":tangle no" 'error)        ; highlight :tangle no
     (map! :leader "TAB" #'org-fold-show-subtree)  ; unfold subsections on SPC-TAB
+    (sp-local-pair 'org-mode "=" "=" :actions '(insert wrap))
+    (sp-local-pair 'org-mode "~" "~" :actions '(insert wrap))
     ))
   )
 #+end_src
@@ -692,6 +703,37 @@ Comment syntax detection is automatic"
   (align-regexp beginning end (concat "\\(\\s-*\\)" (regexp-quote comment-start))))
 #+end_src
 
+*** Map to several evil-states
+#+begin_src elisp :tangle no
+(defun set-in-all-evil-states (key def &optional maps)
+  (unless maps
+    (setq maps (list evil-normal-state-map
+                     evil-visual-state-map
+                     evil-insert-state-map
+                     evil-emacs-state-map
+		     evil-motion-state-map)))
+  (while maps
+    (lalopmak-evil-define-key (pop maps) key def)))
+
+
+(defun set-in-all-evil-states-but-insert (key def)
+  (set-in-all-evil-states key
+                          def
+                          (list evil-normal-state-map
+                                evil-visual-state-map
+                                evil-emacs-state-map
+                                evil-motion-state-map)))
+
+(defun set-in-all-evil-states-but-insert-and-motion (key def)
+  (set-in-all-evil-states key
+                          def
+                          (list evil-normal-state-map
+                                evil-visual-state-map
+                                evil-emacs-state-map)))
+
+(set-in-all-evil-states (kbd "C-r") 'isearch-backward) ; example usage
+
+#+end_src
 * packages.el
 Additional packages from emacs repos
 #+begin_src elisp :tangle ~/.config/doom/packages.el
@@ -703,6 +745,7 @@ Additional packages from emacs repos
 (package! org-roam-timestamps) ; +c/mtime to PROPERTIES drawer in org-roam file
 (package! org-roam-ui)         ; web ui for org-roam
 (package! expand-region)       ; increase selected region by semantic units
+(unpin! lsp-treemacs)          ; fix lsp-headerline-breadcrumb icons (???why)
 #+end_src
 
 * Notes
@@ -717,6 +760,9 @@ Additional packages from emacs repos
     =fill=, =column=, =character= (current) or =bitmap=
 - Sort sections in ~config.el~
 - Install ~LSP~ for =Terraform=
+- Enable and setup [[https://www.emacswiki.org/emacs/SmoothScrolling][smooth scrolling]]
+- Figure out formatters for langs
+- Exclude some things from =file-name-history=
 
 *** org-mode tasks
 - Org unfold sections in insert mode
@@ -737,6 +783,7 @@ Additional packages from emacs repos
     [yas] Preparied just-in-time loading of snippets with some errors.  Check *Messages*.
 - highlight-indent-guides :: visual bugs
     https://github.com/doomemacs/doomemacs/issues/2666
+- GUI mode :: stuttery scrolling even with =smooth scrolling=
 
 ** Keymap help
 *** Keymap Legend
@@ -778,6 +825,14 @@ Explanation on how to read keymap configuration
 - :q :: Exit
 - :s/find/replace/opts :: Find-replace inline. Opts: =c= - confirm, =g= - all
 - :%s/find/replace/opts :: Find-replace in whole buffer
+
+*** evil-multiedit
+- M-d :: Select word and then next one
+- M-D :: Select word and then prev one
+- V: R :: Select all matches from visual selection
+- C-n :: Move to next match
+- C-p :: Move to previous match
+- RET :: Select/Unselect specific match
 
 *** Text operations
 - Mouse select :: Copy to clipboard
@@ -903,3 +958,6 @@ https://github.com/ztlevi/doom-config
 https://dotdoom.rgoswami.me/
 https://gitlab.com/manueljlin/emacs-config/
 https://github.com/daviwil/emacs-from-scratch/blob/master/Emacs.org
+https://github.com/stfl/doom.d/blob/master/config.org
+https://emacs.stackexchange.com/questions/19578/list-hooks-that-will-run-after-command
+https://stackoverflow.com/questions/34497696/swap-and-to-make-colon-commands-easier-to-type-in-emacs

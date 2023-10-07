@@ -2,50 +2,59 @@
 ;;; == GENERAL SETTINGS ==
 (setq
  user-full-name "Artem Timofeev"
- doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 13 :weight 'semi-light)
+ doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 15 :weight 'semi-light)
  doom-theme 'doom-one
- evil-want-fine-undo t                                          ; undo in small steps
- display-line-numbers-type t                                    ; show line numbers
- mouse-drag-copy-region t                                       ; select-to-copy with mouse
- confirm-kill-emacs nil                                         ; quit without prompt
- company-global-modes '(not text-mode org-mode markdown-mode)   ; disable autocomplete for plain text
- scroll-margin 3                                                ; add margin to cursor while scrolling
- projectile-project-search-path '("~/repos/")                   ;
- global-auto-revert-non-file-buffers t                          ; auto-update non-file buffers (e.g. Dired)
+ display-line-numbers-type t                                     ; show line numbers
+ mouse-drag-copy-region t                                        ; select-to-copy with mouse
+ confirm-kill-emacs nil                                          ; quit without prompt
+ company-global-modes '(not text-mode org-mode markdown-mode)    ; disable autocomplete for plain text
+ scroll-margin 3                                                 ; add margin to cursor while scrolling
+ projectile-project-search-path '("~/repos/")                    ;
+ global-auto-revert-non-file-buffers t                           ; auto-update non-file buffers (e.g. Dired)
 )
-(global-auto-revert-mode 1)                                     ; auto-update changed files
-(beacon-mode 1)                                                 ; cursor highlight on big movements or between windows
+(global-auto-revert-mode 1)                                      ; auto-update changed files
+(beacon-mode 1)                                                  ; cursor highlight on big movements or between windows
 
-(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-like-this)   ; Spawn additional cursor above; C-g to exit
-(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)     ; Spawn additional cursor below
-(unbind-key "<insertchar>" overwrite-mode)                      ; disable overwrite mode on Insert key
+(global-set-key (kbd "C-M-<up>")   'mc/mark-previous-like-this)  ; spawn additional cursor above; C-g to exit
+(global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)      ; spawn additional cursor below
+(global-set-key (kbd "<prior>")    'evil-scroll-up)              ; rebind PgUp/PgDn to evil scroll functions
+(global-set-key (kbd "<next>")     'evil-scroll-down)
+(unbind-key "<insertchar>" overwrite-mode)                       ; disable overwrite mode on Insert key
 (map! :leader
       (:prefix ("t". "toggle")
-       :desc "vterm popup"              "s"     #'+vterm/toggle ; open shell popup
-       :desc "vterm window"             "S"     #'+vterm/here   ; open shell in current window
+       :desc "vterm popup"              "s"     #'+vterm/toggle  ; open shell popup
+       :desc "vterm window"             "S"     #'+vterm/here    ; open shell in current window
        ))
 
 ;;; == EMACS TTY ==
 (unless (display-graphic-p)
-  (xterm-mouse-mode 1)         ; enable mouse in TTY mode
-;;  (map! :after evil-org        ; TTY resolves 'C-backspace' into 'C-h'
-;;        :map evil-org-mode-map ; if your terminal does not support it
-;;        :i "C-h" nil)          ; enable these lines for hack. define-key too ↴
+  (xterm-mouse-mode 1)                               ; enable mouse in TTY mode
+  (setq lsp-headerline-breadcrumb-icons-enable nil)  ; these icons are PNG
+;;  (map! :after evil-org                            ; TTY resolves 'C-backspace' into 'C-h'
+;;        :map evil-org-mode-map                     ; if your terminal does not support it
+;;        :i "C-h" nil)                              ; enable these lines for hack. define-key too ↴
 ;;  (define-key evil-insert-state-map (kbd "C-h") 'aborn/backward-kill-word)
 )
 
 ;;; == EVIL MODE ==
-;; go to start of line or start of code (identation)
+;(define-key evil-motion-state-map ";" #'evil-ex)                          ; swap : and ;
+;(define-key evil-motion-state-map ":" #'evil-snipe-repeat)
+(setq evil-want-fine-undo t)                                              ; undo in small steps
+(global-set-key          (kbd "C-<backspace>") 'aborn/backward-kill-word) ; smarter C-backspace
+(define-key evil-ex-completion-map (kbd "C-v") 'evil-paste-after)         ; C-v to paste
+(define-key evil-ex-search-keymap  (kbd "C-v") 'evil-paste-after)
+(define-key evil-normal-state-map  (kbd "C-v") 'evil-paste-after)
+(define-key evil-insert-state-map  (kbd "C-v") 'yank)
+(define-key evil-emacs-state-map   (kbd "C-v") 'evil-paste-after)
+(define-key global-map            [home] 'mwim-beginning-of-code-or-line) ; go to line beginning or to identation
 (define-key evil-motion-state-map [home] 'mwim-beginning-of-code-or-line)
-(define-key global-map [home] 'mwim-beginning-of-code-or-line)
-;; go to end of code or end of line (comment)
-(define-key evil-motion-state-map [end] 'mwim-end)
-(define-key global-map [end] 'mwim-end)
-;; these commands go after ':'
-(evil-ex-define-cmd "W"  'evil-write)              ; write with sticky shift
-(evil-ex-define-cmd "ww" 'custom/write-and-sync)   ; write file and perform 'doom sync'
-(evil-ex-define-cmd "wq" 'custom/write-and-quit)   ; write file and kill buffer
-(evil-ex-define-cmd "q"  'custom/kill-buffer)      ; kill buffer instead of killing emacs; :q! - kill without prompt
+(define-key global-map            [end]  'mwim-end)                       ; go to end of code or end of line
+(define-key evil-motion-state-map [end]  'mwim-end)
+;; these commands go after ':' (evil-ex)
+(evil-ex-define-cmd "W"  'evil-write)                                     ; write with sticky shift
+(evil-ex-define-cmd "ww" 'custom/write-and-sync)                          ; write file and perform 'doom sync'
+(evil-ex-define-cmd "wq" 'custom/write-and-quit)                          ; write file and kill buffer
+(evil-ex-define-cmd "q"  'custom/kill-buffer)                             ; kill buffer instead of killing emacs; :q! - kill without prompt
 
 ;;; == BUFFER KEYMAPS ==
 (map! :leader
@@ -90,26 +99,51 @@
        :desc "Kill buffer & window"     "d"             #'kill-buffer-and-window))
 
 ;;; == DOOM-MODELINE ==
-;; disable modal icons and set custom evil-state tags to make them more noticeable
-(setq doom-modeline-modal-icon nil
-      evil-normal-state-tag   (propertize "[Normal]")
-      evil-emacs-state-tag    (propertize "[Emacs]" )
-      evil-insert-state-tag   (propertize "[Insert]")
-      evil-motion-state-tag   (propertize "[Motion]")
-      evil-visual-state-tag   (propertize "[Visual]")
-      evil-operator-state-tag (propertize "[Operator]"))
-;; setting up custom FG/BG colors to further increace noticeability
+(use-package! doom-modeline
+  :config
+  (display-time-mode 1)        ; show time in modeline
+  :custom
+  (display-time-24hr-format t) ; show time in 24h format
+  ;; disable modal icons and set custom evil-state tags to make them more noticeable
+  (doom-modeline-modal-icon nil)
+  (evil-normal-state-tag   (propertize "[Normal]"))
+  (evil-emacs-state-tag    (propertize "[Emacs]" ))
+  (evil-insert-state-tag   (propertize "[Insert]"))
+  (evil-motion-state-tag   (propertize "[Motion]"))
+  (evil-visual-state-tag   (propertize "[Visual]"))
+  (evil-operator-state-tag (propertize "[Operator]"))
+  )
+
+;; setting up custom FG/BG colors to further increace visibility of evil-state
 (defun setup-doom-modeline-evil-states ()
-  (set-face-attribute 'doom-modeline-evil-normal-state   nil :background "green"  :foreground "black")
-  (set-face-attribute 'doom-modeline-evil-emacs-state    nil :background "orange" :foreground "black")
-  (set-face-attribute 'doom-modeline-evil-insert-state   nil :background "red"    :foreground "white")
-  (set-face-attribute 'doom-modeline-evil-motion-state   nil :background "blue"   :foreground "white")
-  (set-face-attribute 'doom-modeline-evil-visual-state   nil :background "gray80" :foreground "black")
-  (set-face-attribute 'doom-modeline-evil-operator-state nil :background "purple"))
+  (set-face-attribute 'doom-modeline-evil-normal-state   nil :background "lawngreen" :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-emacs-state    nil :background "orange"    :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-insert-state   nil :background "red2"      :foreground "white")
+  (set-face-attribute 'doom-modeline-evil-motion-state   nil :background "blue"      :foreground "white")
+  (set-face-attribute 'doom-modeline-evil-visual-state   nil :background "gray80"    :foreground "black")
+  (set-face-attribute 'doom-modeline-evil-operator-state nil :background "blueviolet"))
 (add-hook 'doom-modeline-mode-hook 'setup-doom-modeline-evil-states)
 
+(use-package! highlight-indent-guides
+  :defer t
+  :custom
+  (highlight-indent-guides-auto-odd-face-perc 0)
+  (highlight-indent-guides-auto-even-face-perc 0)
+  :config
+  (highlight-indent-guides-auto-set-faces) ; FIXME indent glitches (not working)
+  )
+
 ;;; == LSP ==
-(setq lsp-headerline-breadcrumb-enable t)  ; enable headerline breadcrumb
+(use-package! lsp-mode
+  :defer t
+  :custom
+  (lsp-headerline-breadcrumb-enable t)     ; enable headerline breadcrumb
+  (gc-cons-threshold (* 400 1024 1024))    ; increase GC threshold to improve perf in LSP mode
+  (read-process-output-max (* 1 1024 1024))  ; handle large LSP responses
+  )
+(use-package! lsp-treemacs
+  :after lsp-mode  ;; and treemacs
+  :config (lsp-treemacs-sync-mode 1))
 
 ;;; == ORG-MODE ==
 (use-package! org
@@ -127,6 +161,8 @@
     (display-line-numbers-mode 0)                 ; disable lines numbers for org-mode
     (highlight-regexp ":tangle no" 'error)        ; highlight :tangle no
     (map! :leader "TAB" #'org-fold-show-subtree)  ; unfold subsections on SPC-TAB
+    (sp-local-pair 'org-mode "=" "=" :actions '(insert wrap))
+    (sp-local-pair 'org-mode "~" "~" :actions '(insert wrap))
     ))
   )
 

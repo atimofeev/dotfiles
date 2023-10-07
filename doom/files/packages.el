@@ -6,3 +6,4 @@
 (package! org-roam-timestamps) ; +c/mtime to PROPERTIES drawer in org-roam file
 (package! org-roam-ui)         ; web ui for org-roam
 (package! expand-region)       ; increase selected region by semantic units
+(unpin! lsp-treemacs)          ; fix lsp-headerline-breadcrumb icons (???why)
