@@ -1,0 +1,125 @@
+#+title: Keybind Help
+
+* Table of Contents :toc:
+- [[#overview][Overview]]
+- [[#keymap-legend][Keymap Legend]]
+- [[#finding-help--docs][Finding help & docs]]
+- [[#evil-vi][Evil (vi)]]
+- [[#evil-multiedit][evil-multiedit]]
+- [[#text-operations][Text operations]]
+- [[#org-mode][org-mode]]
+  - [[#general][General]]
+  - [[#sections][Sections]]
+  - [[#code-blocks][Code blocks]]
+  - [[#roam][Roam]]
+- [[#magit][magit]]
+  - [[#stage][Stage]]
+  - [[#commit][Commit]]
+  - [[#pushfetch][Push/Fetch]]
+  - [[#mergerebase][Merge/Rebase]]
+  - [[#stash][Stash]]
+- [[#elfeed][elfeed]]
+
+* Overview
+
+* Keymap Legend
+Explanation on how to read keymap configuration
+- SPC :: Space bar, =leader= key by default
+- C :: Ctrl
+- S :: Shift
+- M :: Alt
+- RET :: Enter/Return
+- TAB :: Tab
+- [a-z] :: Regular keyboard keys
+- [A-Z] :: Keys passed with Shift
+- <up/down/left/right> :: Arrow keys
+- N: OR I: OR V: :: Only effective in Normal, Insert or Visual states
+
+* Finding help & docs
+- SPC-h-d-h :: Doom Emacs manual
+- SPC-h-d-s :: Search through Doom Emacs manual headers
+- M-x org-info :: org-mode manual
+- S-k :: Describe function/variable/callable in code
+- M-x find-library :: Search through libraries
+- SPC-h-k :: Show description for specific keybind
+- M-x describe-bindings :: List all keybinds
+- SPC-h-b-f :: Show full particular keymap
+- SPC-h-v :: Show variable status
+- SPC-h-f :: Show function
+
+* Evil (vi)
+- gg :: Start of file
+- G :: End of file
+- u :: Undo
+- C-r :: Redo
+- d :: Cut (also to clipboard)
+- y :: Copy (also to clipboard)
+- p :: Paste
+- dd :: Delete line
+- dw :: Delete word starting from cursor position
+- :w :: Write file
+- :q :: Exit
+- :s/find/replace/opts :: Find-replace inline. Opts: =c= - confirm, =g= - all
+- :%s/find/replace/opts :: Find-replace in whole buffer
+
+* evil-multiedit
+- M-d :: Select word and then next one
+- M-D :: Select word and then prev one
+- V: R :: Select all matches from visual selection
+- C-n :: Move to next match
+- C-p :: Move to previous match
+- RET :: Select/Unselect specific match
+
+* Text operations
+- Mouse select :: Copy to clipboard
+- S-<arrows> :: Select text
+- M-<arrows> :: Move line (or selected region)
+
+* org-mode
+** General
+- gg C-c C-c :: Refresh local org setup. Use this to fix runtime issues within org-mode
+** Sections
+- N:TAB :: Fold/Unfold section =FOLDED -> CHILDREN=
+    To enable =FOLDED -> CHILDREN -> SUBTREE=, add this:
+#+begin_src elisp :tangle no
+(setq org-tab-first-hook (delete '+org-cycle-only-current-subtree-h org-tab-first-hook)) ; enable all 3 states for `org-cycle'
+#+end_src
+- N:S-TAB :: Fold/Unfold all sections =OVERVIEW -> CONTENTS -> SHOW ALL= (excluding :drawers:)
+- g j :: Go to next section heading (same level)
+- g k :: Go to previous section heading (same level)
+- M-<up/down> :: Move section with subsections
+- S-M-<up/down> :: Move section
+- M-<left/right> OR I:TAB/S-TAB :: Move section (promote/demote)
+- S-M-<left/right> :: Move section with subsections (promote/demote)
+- dd :: On folded section: delete with children
+** Code blocks
+- C-M-\ :: Format code block
+- C-c-' :: Edit code block in new buffer. =C-c-'= to return
+- C-m :: Execute code block with results in file
+- C-c C-c :: Execute code block with results in window
+** Roam
+- SPC-n-r-i :: Select or create new node and insert fwd link
+- SPC-m-I :: Add current file to roam nodes, creates ID on cursor
+* magit
+- SPC-g-g :: open magit
+** Stage
+- s :: track & stage file
+- S :: stage all files
+- u :: unstage file
+- x :: discard unstaged changes
+- k :: FIXME discard staged changes. conflicts with evil keybinds
+** Commit
+- c c :: commit changes
+- C-c C-c :: apply commit
+** Push/Fetch
+- p :: push menu
+- f :: fetch menu
+** Merge/Rebase
+- m :: merge menu
+- r :: rebase menu
+** Stash
+- ? :: stash staged changes
+* elfeed
+- ? :: Mark as read
+- ? :: Select keyword
+-  ::
