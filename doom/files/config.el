@@ -233,6 +233,8 @@ Comment syntax detection is automatic"
   (org-directory "~/org")                                     ; org-agenda and other org tools will work upon this dir
   (org-support-shift-select t)                                ; enable select with S-<arrows>
   (org-startup-folded "content")                              ; startup with everything unfolded except lowest sub-sections
+  (help-at-pt-display-when-idle t)                            ; show tooltips on links
+  (help-at-pt-timer-delay 0.3)                                ; smaller delay before tooltips
   :config
   (set-popup-rule! "^\\*Org Src" :ignore t)                   ; delete popup rule for src-edit buffer
   :hook                                                       ; ^ makes popup on side instead of bottom
@@ -246,6 +248,15 @@ Comment syntax detection is automatic"
     (sp-local-pair 'org-mode "~" "~" :actions '(insert wrap))
     ))
   )
+(defun org-dblock-write:cover-letter (params)                 ; dynamic block to generate CL
+  (let* ((position (plist-get params :position))
+         (company (plist-get params :company))
+         (template (with-temp-buffer
+                     (insert-file-contents "~/org/templates/cover-letter.org")
+                     (buffer-string))))
+    (setq template (replace-regexp-in-string "%position%" position template))
+    (setq template (replace-regexp-in-string "%company%" company template))
+    (insert template)))
 
 ;;; == ORG-ROAM ==
 (use-package! org-roam
@@ -258,7 +269,7 @@ Comment syntax detection is automatic"
         '(("d" "default-uncat" plain "* Overview\n%?"
            :target (file+head "uncat/${slug}.org" "#+title: ${title}\n#+filetags: uncat\n")
            :unnarrowed t)
-          ("t" "tech" plain "* Overview\n%?\n* Main section\n\n* Postscript\n"
+          ("t" "tech" plain "* Overview\n%?"
            :target (file+head "tech/${slug}.org" "#+title: ${title}\n#+filetags: tech\n")
            :unnarrowed t)
           ("s" "stash" plain "* Overview\n%?"
