@@ -22,7 +22,7 @@
         +unicode)          ; include unicode emojis
        hl-todo             ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
        ;;hydra
-       indent-guides       ; highlighted indent columns
+       ;indent-guides      ; highlighted indent columns
        ;;ligatures         ; ligatures and symbols to make your code pretty again
        ;;minimap           ; show a map of the code on the side
        modeline            ; snazzy, Atom-inspired modeline, plus API
@@ -31,7 +31,7 @@
        ophints             ; highlight the region an operation acts on
        (popup              ; tame sudden yet inevitable temporary windows
         +defaults)         ; reasonable popup rules for buffers
-       ;;tabs              ; a tab bar for Emacs
+       tabs                ; a tab bar for Emacs
        (treemacs           ; a project drawer, like neotree but cooler
         +lsp)              ; lsp integration for errors, symbols, refs, etc
        unicode             ; extended unicode support for various languages
@@ -73,7 +73,7 @@
        vterm               ; the best terminal emulation in Emacs
 
        :checkers
-       syntax              ; tasing you for every semicolon you forget
+       ;;syntax              ; tasing you for every semicolon you forget
        ;;(spell +flyspell) ; tasing you for misspelling mispelling
        ;;grammar           ; tasing grammar mistake every you make
 

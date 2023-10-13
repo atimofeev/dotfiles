@@ -100,6 +100,27 @@ Comment syntax detection is automatic"
        :desc "Kill other buffers" "k"       #'doom/kill-other-buffers
        :desc "Kill all buffers"   "K"       #'doom/kill-all-buffers))
 
+;;; ==CENTAUR-TABS==
+(use-package! centaur-tabs
+  :defer t
+  :hook
+  (vterm-mode . centaur-tabs-local-mode)
+  :config
+  (add-to-list 'centaur-tabs-excluded-prefixes "*doom")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*Org")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*Ilist")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*Async-native")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*Native-compile")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*compilation")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*pylsp")
+  (centaur-tabs-group-by-projectile-project)  ; group tabs by projects, include new ones
+  )
+(map! :leader
+      "<left>" #'centaur-tabs-backward
+      "<right>" #'centaur-tabs-forward
+      "<up>" #'centaur-tabs-forward-group
+      "<down>" #'centaur-tabs-backward-group)
+
 ;;; == DOOM-MODELINE ==
 (use-package! doom-modeline
   :config
@@ -193,6 +214,7 @@ Comment syntax detection is automatic"
 (evil-ex-define-cmd "q"  'custom/kill-buffer)                              ; kill buffer instead of killing emacs; :q! - kill without prompt
 
 (use-package! highlight-indent-guides
+  :disabled t
   :defer t
   :custom
   (highlight-indent-guides-auto-odd-face-perc 0)
@@ -213,6 +235,30 @@ Comment syntax detection is automatic"
    )
 )
 (map! :leader :desc "imenu-list" "t i" #'imenu-list-smart-toggle)
+
+(use-package! indent-bars
+  :disabled t
+  :defer t
+  :hook
+  (prog-mode . indent-bars-mode)
+  :custom ; Minimal colorpop theme
+  (indent-bars-color '(highlight :face-bg t :blend 0.15))
+  (indent-bars-pattern ".")
+  (indent-bars-width-frac 0.1)
+  (indent-bars-pad-frac 0.1)
+  (indent-bars-zigzag nil)
+  (indent-bars-color-by-depth '(:regexp "outline-\\([0-9]+\\)" :blend 1)) ; blend=1: blend with BG only
+  (indent-bars-highlight-current-depth '(:blend 0.5)) ; pump up the BG blend on current
+  (indent-bars-display-on-blank-lines t)
+  (indent-bars-treesit-support t) ; treesitter integration
+  (indent-bars-no-descend-string t)
+  (indent-bars-treesit-ignore-blank-lines-types '("module"))
+  (indent-bars-treesit-wrap '((python argument_list parameters
+                               identifier keyword_argument block
+			       list list_comprehension
+			       dictionary dictionary_comprehension
+			       parenthesized_expression subscript)))
+  )
 
 ;;; == LSP ==
 (use-package! lsp-mode
@@ -244,8 +290,8 @@ Comment syntax detection is automatic"
     (display-line-numbers-mode 0)                             ; disable lines numbers for org-mode
     (highlight-regexp ":tangle no" 'error)                    ; highlight :tangle no
     (map! :leader "TAB" #'org-fold-show-subtree)              ; unfold subsections on SPC-TAB
-    (sp-local-pair 'org-mode "=" "=" :actions '(insert wrap)) ; auto-pair = and ~
-    (sp-local-pair 'org-mode "~" "~" :actions '(insert wrap))
+    (sp-local-pair 'org-mode "=" "=" :unless '(sp-point-before-word-p sp-point-before-same-p)) ; auto-pair = and ~
+    (sp-local-pair 'org-mode "~" "~" :unless'(sp-point-before-word-p sp-point-before-same-p))
     ))
   )
 (defun org-dblock-write:cover-letter (params)                 ; dynamic block to generate CL
@@ -301,7 +347,16 @@ Comment syntax detection is automatic"
     (setq org-roam-ui-sync-theme t
           org-roam-ui-follow t
           org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t))
+          org-roam-ui-open-on-start t
+          )
+    )
+
+;;; ==PROG-MODE==
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook 'delete-trailing-whitespace nil t) ; remove whitespace on save
+            )
+          )
 
 ;;; == TREEMACS ==
 (use-package! treemacs

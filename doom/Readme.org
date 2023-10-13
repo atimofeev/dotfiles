@@ -10,6 +10,7 @@
   - [[#general-settings][General settings]]
   - [[#custom-functions][Custom functions]]
   - [[#buffers][Buffers]]
+  - [[#centaur-tabs][centaur-tabs]]
   - [[#doom-modeline][doom-modeline]]
   - [[#elfeed][elfeed]]
   - [[#emacs-tty][emacs TTY]]
@@ -17,8 +18,10 @@
   - [[#expand-region][expand-region]]
   - [[#highlight-indent-guides][highlight-indent-guides]]
   - [[#imenu-list][imenu-list]]
+  - [[#indent-bars][indent-bars]]
   - [[#lsp][lsp]]
   - [[#org-mode][org-mode]]
+  - [[#prog-mode][prog-mode]]
   - [[#treemacs][treemacs]]
   - [[#windows][Windows]]
 - [[#packagesel][packages.el]]
@@ -69,7 +72,7 @@ Init config with selectable modules
         +unicode)          ; include unicode emojis
        hl-todo             ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
        ;;hydra
-       indent-guides       ; highlighted indent columns
+       ;indent-guides      ; highlighted indent columns
        ;;ligatures         ; ligatures and symbols to make your code pretty again
        ;;minimap           ; show a map of the code on the side
        modeline            ; snazzy, Atom-inspired modeline, plus API
@@ -78,7 +81,7 @@ Init config with selectable modules
        ophints             ; highlight the region an operation acts on
        (popup              ; tame sudden yet inevitable temporary windows
         +defaults)         ; reasonable popup rules for buffers
-       ;;tabs              ; a tab bar for Emacs
+       tabs                ; a tab bar for Emacs
        (treemacs           ; a project drawer, like neotree but cooler
         +lsp)              ; lsp integration for errors, symbols, refs, etc
        unicode             ; extended unicode support for various languages
@@ -120,7 +123,7 @@ Init config with selectable modules
        vterm               ; the best terminal emulation in Emacs
 
        :checkers
-       syntax              ; tasing you for every semicolon you forget
+       ;;syntax              ; tasing you for every semicolon you forget
        ;;(spell +flyspell) ; tasing you for misspelling mispelling
        ;;grammar           ; tasing grammar mistake every you make
 
@@ -383,6 +386,30 @@ Comment syntax detection is automatic"
        :desc "Kill all buffers"   "K"       #'doom/kill-all-buffers))
 #+end_src
 
+** centaur-tabs
+#+begin_src elisp
+;;; ==CENTAUR-TABS==
+(use-package! centaur-tabs
+  :defer t
+  :hook
+  (vterm-mode . centaur-tabs-local-mode)
+  :config
+  (add-to-list 'centaur-tabs-excluded-prefixes "*doom")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*Org")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*Ilist")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*Async-native")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*Native-compile")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*compilation")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*pylsp")
+  (centaur-tabs-group-by-projectile-project)  ; group tabs by projects, include new ones
+  )
+(map! :leader
+      "<left>" #'centaur-tabs-backward
+      "<right>" #'centaur-tabs-forward
+      "<up>" #'centaur-tabs-forward-group
+      "<down>" #'centaur-tabs-backward-group)
+#+end_src
+
 ** doom-modeline
 Status bar module
 #+begin_src elisp
@@ -510,6 +537,7 @@ Todo: figure out working and convenient keybind
 ** highlight-indent-guides
 #+begin_src elisp
 (use-package! highlight-indent-guides
+  :disabled t
   :defer t
   :custom
   (highlight-indent-guides-auto-odd-face-perc 0)
@@ -533,6 +561,34 @@ Module to show file definitions or headings
    )
 )
 (map! :leader :desc "imenu-list" "t i" #'imenu-list-smart-toggle)
+#+end_src
+
+** indent-bars
+Faster =indent-highlight-guides=
+#+begin_src elisp
+(use-package! indent-bars
+  :disabled t
+  :defer t
+  :hook
+  (prog-mode . indent-bars-mode)
+  :custom ; Minimal colorpop theme
+  (indent-bars-color '(highlight :face-bg t :blend 0.15))
+  (indent-bars-pattern ".")
+  (indent-bars-width-frac 0.1)
+  (indent-bars-pad-frac 0.1)
+  (indent-bars-zigzag nil)
+  (indent-bars-color-by-depth '(:regexp "outline-\\([0-9]+\\)" :blend 1)) ; blend=1: blend with BG only
+  (indent-bars-highlight-current-depth '(:blend 0.5)) ; pump up the BG blend on current
+  (indent-bars-display-on-blank-lines t)
+  (indent-bars-treesit-support t) ; treesitter integration
+  (indent-bars-no-descend-string t)
+  (indent-bars-treesit-ignore-blank-lines-types '("module"))
+  (indent-bars-treesit-wrap '((python argument_list parameters
+                               identifier keyword_argument block
+			       list list_comprehension
+			       dictionary dictionary_comprehension
+			       parenthesized_expression subscript)))
+  )
 #+end_src
 
 ** lsp
@@ -571,8 +627,8 @@ Module to show file definitions or headings
     (display-line-numbers-mode 0)                             ; disable lines numbers for org-mode
     (highlight-regexp ":tangle no" 'error)                    ; highlight :tangle no
     (map! :leader "TAB" #'org-fold-show-subtree)              ; unfold subsections on SPC-TAB
-    (sp-local-pair 'org-mode "=" "=" :actions '(insert wrap)) ; auto-pair = and ~
-    (sp-local-pair 'org-mode "~" "~" :actions '(insert wrap))
+    (sp-local-pair 'org-mode "=" "=" :unless '(sp-point-before-word-p sp-point-before-same-p)) ; auto-pair = and ~
+    (sp-local-pair 'org-mode "~" "~" :unless'(sp-point-before-word-p sp-point-before-same-p))
     ))
   )
 (defun org-dblock-write:cover-letter (params)                 ; dynamic block to generate CL
@@ -634,8 +690,22 @@ Module to show file definitions or headings
     (setq org-roam-ui-sync-theme t
           org-roam-ui-follow t
           org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t))
+          org-roam-ui-open-on-start t
+          )
+    )
 #+end_src
+
+** prog-mode
+Settings for coding modes, such as =Python-mode=, =c-mode=, etc..
+#+begin_src elisp
+;;; ==PROG-MODE==
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook 'delete-trailing-whitespace nil t) ; remove whitespace on save
+            )
+          )
+#+end_src
+
 ** treemacs
 Module for displaying project file tree
 #+begin_src elisp
@@ -694,6 +764,8 @@ Additional packages from emacs repos
 (package! org-roam-timestamps) ; +c/mtime to PROPERTIES drawer in org-roam file
 (package! org-roam-ui)         ; web ui for org-roam
 (package! expand-region)       ; increase selected region by semantic units
+(package! indent-bars
+  :recipe (:host github :repo "jdtsmith/indent-bars"))
 (unpin! lsp-treemacs)          ; fix lsp-headerline-breadcrumb icons (???why)
 #+end_src
 
@@ -732,27 +804,13 @@ Additional packages from emacs repos
     [yas] Preparied just-in-time loading of snippets with some errors.  Check *Messages*.
 - highlight-indent-guides :: visual bugs
     https://github.com/doomemacs/doomemacs/issues/2666
+- indent-bars :: stipple draw bug in emacs 29, must be fixed somewhere in master branch (30+)
+    https://github.com/jdtsmith/indent-bars/issues/3
+    - Also need to fix python line breaks highlighting
 - GUI mode :: stuttery scrolling even with =smooth scrolling=
 
 ** Code to implement
 *** Centaur-Tabs
-To be enabled after fix is found..
-- ui :: tabs
-**** TODO FIXME 'Create new tab'
-It opens tab in new group
-Actual for both =centaur-tabs--create-new-tab= and =centaur-tabs--create-new-empty-buffer=
-Root cause: [[https://github.com/ema2159/centaur-tabs#buffer-groups][buffer groups]] logic
-
-**** Doom keymap
-#+begin_src elisp :tangle no
-;; Tabs keybinds
-(map! :leader
-      "<left>" #'centaur-tabs-backward
-      "<right>" #'centaur-tabs-forward
-      "<up>" #'centaur-tabs-forward-group
-      "<down>" #'centaur-tabs-backward-group)
-#+end_src
-
 **** Hide tabs menu if 1 tab
 https://github.com/ema2159/centaur-tabs/issues/52
 #+begin_src elisp :tangle no
