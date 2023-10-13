@@ -105,6 +105,7 @@ Comment syntax detection is automatic"
   :defer t
   :hook
   (vterm-mode . centaur-tabs-local-mode)
+  (dired-mode . centaur-tabs-local-mode)
   :config
   (add-to-list 'centaur-tabs-excluded-prefixes "*doom")
   (add-to-list 'centaur-tabs-excluded-prefixes "*Org")
@@ -355,6 +356,7 @@ Comment syntax detection is automatic"
 (add-hook 'prog-mode-hook
           (lambda ()
             (add-hook 'before-save-hook 'delete-trailing-whitespace nil t) ; remove whitespace on save
+            (rainbow-delimiters-mode)                                      ; enable colored delimiters ([{
             )
           )
 
