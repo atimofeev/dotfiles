@@ -7,6 +7,7 @@
 - [[#evil-vi][Evil (vi)]]
 - [[#evil-multiedit][evil-multiedit]]
 - [[#text-operations][Text operations]]
+- [[#dired][Dired]]
 - [[#org-mode][org-mode]]
   - [[#general][General]]
   - [[#sections][Sections]]
@@ -74,6 +75,11 @@ Explanation on how to read keymap configuration
 - Mouse select :: Copy to clipboard
 - S-<arrows> :: Select text
 - M-<arrows> :: Move line (or selected region)
+
+* Dired
+- m :: Mark file
+- R :: Move/Rename files or directory
+- ^ :: Move up directory
 
 * org-mode
 ** General
