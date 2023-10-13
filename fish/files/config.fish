@@ -100,7 +100,7 @@ function git_remove_file_history
     git gc --aggressive --prune=now
 
     echo "Successfully removed $file_path from Git history."
-	# do 'git push origin --force --all' after that
+    # do 'git push origin --force --all' after that
 end
 
 
@@ -167,13 +167,13 @@ abbr dnf 'sudo dnf'
 
 # the terminal rickroll
 alias rr='curl --silent --location \
-	https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash'
+    https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash'
 
 
 function touchx
     for file in $argv
-		touch $file
-		chmod +x $file
+        touch $file
+        chmod +x $file
     end
 end
 
@@ -183,9 +183,9 @@ end
 
 function list_funcs
     for func in (functions)
-		#echo "Function Name: "$func
-		echo
-		functions $func
+        #echo "Function Name: "$func
+        echo
+        functions $func
     end | bat --language fish
 end
 
