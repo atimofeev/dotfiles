@@ -62,6 +62,8 @@ Explanation on how to read keymap configuration
 - :q :: Exit
 - :s/find/replace/opts :: Find-replace inline. Opts: =c= - confirm, =g= - all
 - :%s/find/replace/opts :: Find-replace in whole buffer
+- zc :: Fold code section
+- zo :: Open folded code section
 
 * evil-multiedit
 - M-d :: Select word and then next one
@@ -79,7 +81,10 @@ Explanation on how to read keymap configuration
 * Dired
 - m :: Mark file
 - R :: Move/Rename files or directory
-- ^ :: Move up directory
+- ^ OR - :: Move up directory
+- D :: Delete files or directory
+- ! {command} :: Execute command on selected file
+    e.g. =! mpv= on selected =.mp4= file will start video playback
 
 * org-mode
 ** General

@@ -10,6 +10,7 @@
  company-global-modes '(not text-mode org-mode markdown-mode)    ; disable autocomplete for plain text
  scroll-margin 3                                                 ; add margin to cursor while scrolling
  projectile-project-search-path '("~/repos/")                    ;
+ dired-kill-when-opening-new-dired-buffer t                      ; dired: stop creating buffers for each dir
  global-auto-revert-non-file-buffers t                           ; auto-update non-file buffers (e.g. Dired)
 )
 (global-auto-revert-mode 1)                                      ; auto-update changed files
@@ -88,6 +89,32 @@ Comment syntax detection is automatic"
   (interactive "*r")
   (align-regexp beginning end (concat "\\(\\s-*\\)" (regexp-quote comment-start))))
 
+(defun custom/org-save-clipboard-image ()
+  "Save clipboard image to {project-root}/img/{filename}.png
+Automatically insert link to image relative from current document."
+  (interactive)
+  (let* ((project-root (magit-toplevel))
+         (folder-path (concat project-root "img/"))
+         (image-name (read-string "Enter image name (*.png): "))
+         (image-file (concat folder-path image-name ".png"))
+         (exit-status nil))
+    ;; Create the img directory if it doesn't exist
+    (unless (file-exists-p folder-path)
+      (make-directory folder-path))
+    ;; Run the xclip command to save the image
+    (setq exit-status (call-process-shell-command (format "xclip -selection clipboard -t image/png -o > %s" image-file)))
+    ;; Check if the operation was successful
+    (if (= exit-status 0)
+        (progn
+          (let ((current-file (buffer-file-name)))
+            (if current-file
+                (let* ((relative-path (file-relative-name (expand-file-name image-file) (file-name-directory current-file)))
+                       (image-link (format "[[file:%s]]" relative-path)))
+                  (insert image-link))
+              ))
+          (org-display-inline-images))
+      (message "Failed to save clipboard image."))))
+
 ;;; == BUFFER KEYMAPS ==
 (map! :leader
       (:prefix ("b". "buffer")
@@ -106,6 +133,7 @@ Comment syntax detection is automatic"
   :hook
   (vterm-mode . centaur-tabs-local-mode)
   (dired-mode . centaur-tabs-local-mode)
+  (pdf-view-mode . centaur-tabs-local-mode)
   :config
   (add-to-list 'centaur-tabs-excluded-prefixes "*doom")
   (add-to-list 'centaur-tabs-excluded-prefixes "*Org")
@@ -256,9 +284,9 @@ Comment syntax detection is automatic"
   (indent-bars-treesit-ignore-blank-lines-types '("module"))
   (indent-bars-treesit-wrap '((python argument_list parameters
                                identifier keyword_argument block
-			       list list_comprehension
-			       dictionary dictionary_comprehension
-			       parenthesized_expression subscript)))
+                               list list_comprehension
+                               dictionary dictionary_comprehension
+                               parenthesized_expression subscript)))
   )
 
 ;;; == LSP ==
@@ -344,12 +372,12 @@ Comment syntax detection is automatic"
 
 (use-package! org-roam-ui
     :after org-roam
-    :config
-    (setq org-roam-ui-sync-theme t
-          org-roam-ui-follow t
-          org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t
-          )
+    :custom
+    (org-roam-ui-sync-theme t)
+    (org-roam-ui-follow t)
+    (org-roam-ui-update-on-save t)
+    (org-roam-ui-open-on-start t)
+    ; TODO: write comments for custom options
     )
 
 ;;; ==PROG-MODE==
