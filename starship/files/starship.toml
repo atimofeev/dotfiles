@@ -3,10 +3,10 @@ format = """
 $battery\
 [](bg:#DA627D fg:#9A348E)\
 $directory\
-[](fg:#DA627D bg:#FCA17D)\
+[](fg:#DA627D bg:#eb9675)\
 $git_branch\
 $git_status\
-[](fg:#FCA17D bg:#33658A)\
+[](fg:#eb9675 bg:#33658A)\
 $time\
 $cmd_duration\
 [ ](fg:#33658A)\
@@ -32,11 +32,11 @@ truncation_symbol = "…/"
 
 [git_branch]
 symbol = ""
-style = "bg:#FCA17D"
+ style = "bg:#eb9675"
 format = '[ $symbol $branch ]($style)'
 
 [git_status]
-style = "bg:#FCA17D"
+style = "bg:#eb9675"
 format = '[$all_status$ahead_behind ]($style)'
 
 [time]
