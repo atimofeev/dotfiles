@@ -9,3 +9,5 @@
 (unpin! lsp-treemacs)          ; fix lsp-headerline-breadcrumb icons (???why)
 (package! indent-bars          ; better and faster indentation (still broken in 29.0 GTK)
   :recipe (:host github :repo "jdtsmith/indent-bars"))
+(package! kubel)
+(package! kubel-evil)

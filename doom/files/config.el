@@ -91,29 +91,39 @@ Comment syntax detection is automatic"
 
 (defun custom/org-save-clipboard-image ()
   "Save clipboard image to {project-root}/img/{filename}.png
-Automatically insert link to image relative from current document."
+Automatically insert link to image relative from current document.
+Depends on xclip for clipboard and ImageMagick for conversion to image."
   (interactive)
   (let* ((project-root (magit-toplevel))
          (folder-path (concat project-root "img/"))
          (image-name (read-string "Enter image name (*.png): "))
          (image-file (concat folder-path image-name ".png"))
          (exit-status nil))
-    ;; Create the img directory if it doesn't exist
     (unless (file-exists-p folder-path)
       (make-directory folder-path))
-    ;; Run the xclip command to save the image
     (setq exit-status (call-process-shell-command (format "xclip -selection clipboard -t image/png -o > %s" image-file)))
-    ;; Check if the operation was successful
     (if (= exit-status 0)
         (progn
           (let ((current-file (buffer-file-name)))
             (if current-file
                 (let* ((relative-path (file-relative-name (expand-file-name image-file) (file-name-directory current-file)))
                        (image-link (format "[[file:%s]]" relative-path)))
-                  (insert image-link))
-              ))
-          (org-display-inline-images))
+                  (insert image-link)))))
       (message "Failed to save clipboard image."))))
+
+(defun convert-md-links-to-org ()
+  "Convert Markdown links to Org-mode links within the current selection."
+  (interactive)
+  (if (use-region-p)
+      (let ((begin (region-beginning))
+            (end (region-end)))
+        (save-excursion
+          (goto-char begin)
+          (while (re-search-forward "\\[\\([^\[\]]+\\)\\](\\([^\[\]]+\\))" end t)
+            (let ((new-end (- end (- (match-end 0) (match-beginning 0)))))
+              (replace-match "[[\\2][\\1]]")
+              (setq end new-end)))))
+    (message "No region selected. Please select a region to convert.")))
 
 ;;; == BUFFER KEYMAPS ==
 (map! :leader
@@ -130,11 +140,11 @@ Automatically insert link to image relative from current document."
 ;;; ==CENTAUR-TABS==
 (use-package! centaur-tabs
   :defer t
-  :hook
+  :hook                                                      ; hide tabs in various modes
   (vterm-mode . centaur-tabs-local-mode)
   (dired-mode . centaur-tabs-local-mode)
   (pdf-view-mode . centaur-tabs-local-mode)
-  :config
+  :config                                                    ; hide tabs in various buffers
   (add-to-list 'centaur-tabs-excluded-prefixes "*doom")
   (add-to-list 'centaur-tabs-excluded-prefixes "*Org")
   (add-to-list 'centaur-tabs-excluded-prefixes "*Ilist")
@@ -142,7 +152,10 @@ Automatically insert link to image relative from current document."
   (add-to-list 'centaur-tabs-excluded-prefixes "*Native-compile")
   (add-to-list 'centaur-tabs-excluded-prefixes "*compilation")
   (add-to-list 'centaur-tabs-excluded-prefixes "*pylsp")
-  (centaur-tabs-group-by-projectile-project)  ; group tabs by projects, include new ones
+  (centaur-tabs-group-by-projectile-project)                 ; group tabs by projects, include new ones
+  (unbind-key "<tab-line> <mouse-1>" centaur-tabs-close-map) ; disable tab closing with LMB
+  (define-key centaur-tabs-default-map
+   (vector centaur-tabs-display-line 'mouse-2) 'centaur-tabs-do-select)
   )
 (map! :leader
       "<left>" #'centaur-tabs-backward
@@ -229,6 +242,7 @@ Automatically insert link to image relative from current document."
 (define-key evil-normal-state-map  (kbd "C-v")     'evil-paste-after)
 (define-key evil-insert-state-map  (kbd "C-v")     'yank)
 (define-key evil-emacs-state-map   (kbd "C-v")     'evil-paste-after)
+(define-key evil-insert-state-map  (kbd "C-y")     'evil-yank)                       ; C-y to copy in Insert state
 (define-key global-map             [home]          'mwim-beginning-of-code-or-line)  ; go to line beginning or to identation
 (define-key evil-motion-state-map  [home]          'mwim-beginning-of-code-or-line)
 (define-key global-map             [end]           'mwim-end)                        ; go to end of code or end of line
@@ -288,6 +302,15 @@ Automatically insert link to image relative from current document."
                                dictionary dictionary_comprehension
                                parenthesized_expression subscript)))
   )
+
+(use-package! kubel
+  :defer t
+  :after vterm
+  :config
+  (kubel-vterm-setup)
+  )
+(use-package! kubel-evil
+  :after kubel)
 
 ;;; == LSP ==
 (use-package! lsp-mode

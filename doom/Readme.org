@@ -3,7 +3,7 @@
 #+property: header-args :tangle ~/.config/doom/config.el
 #+startup: content
 
-* Table of contents :toc:
+* Table of Contents :toc:
 - [[#about-this-config][About this config]]
 - [[#initel][init.el]]
 - [[#configel][config.el]]
@@ -19,6 +19,7 @@
   - [[#highlight-indent-guides][highlight-indent-guides]]
   - [[#imenu-list][imenu-list]]
   - [[#indent-bars][indent-bars]]
+  - [[#kubel][kubel]]
   - [[#lsp][lsp]]
   - [[#org-mode][org-mode]]
   - [[#prog-mode][prog-mode]]
@@ -376,30 +377,43 @@ Comment syntax detection is automatic"
 #+begin_src elisp
 (defun custom/org-save-clipboard-image ()
   "Save clipboard image to {project-root}/img/{filename}.png
-Automatically insert link to image relative from current document."
+Automatically insert link to image relative from current document.
+Depends on xclip for clipboard and ImageMagick for conversion to image."
   (interactive)
   (let* ((project-root (magit-toplevel))
          (folder-path (concat project-root "img/"))
          (image-name (read-string "Enter image name (*.png): "))
          (image-file (concat folder-path image-name ".png"))
          (exit-status nil))
-    ;; Create the img directory if it doesn't exist
     (unless (file-exists-p folder-path)
       (make-directory folder-path))
-    ;; Run the xclip command to save the image
     (setq exit-status (call-process-shell-command (format "xclip -selection clipboard -t image/png -o > %s" image-file)))
-    ;; Check if the operation was successful
     (if (= exit-status 0)
         (progn
           (let ((current-file (buffer-file-name)))
             (if current-file
                 (let* ((relative-path (file-relative-name (expand-file-name image-file) (file-name-directory current-file)))
                        (image-link (format "[[file:%s]]" relative-path)))
-                  (insert image-link))
-              ))
-          (org-display-inline-images))
+                  (insert image-link)))))
       (message "Failed to save clipboard image."))))
 
+#+end_src
+
+*** MD to Org links
+#+begin_src elisp
+(defun convert-md-links-to-org ()
+  "Convert Markdown links to Org-mode links within the current selection."
+  (interactive)
+  (if (use-region-p)
+      (let ((begin (region-beginning))
+            (end (region-end)))
+        (save-excursion
+          (goto-char begin)
+          (while (re-search-forward "\\[\\([^\[\]]+\\)\\](\\([^\[\]]+\\))" end t)
+            (let ((new-end (- end (- (match-end 0) (match-beginning 0)))))
+              (replace-match "[[\\2][\\1]]")
+              (setq end new-end)))))
+    (message "No region selected. Please select a region to convert.")))
 #+end_src
 
 ** Buffers
@@ -422,11 +436,11 @@ Automatically insert link to image relative from current document."
 ;;; ==CENTAUR-TABS==
 (use-package! centaur-tabs
   :defer t
-  :hook
+  :hook                                                      ; hide tabs in various modes
   (vterm-mode . centaur-tabs-local-mode)
   (dired-mode . centaur-tabs-local-mode)
   (pdf-view-mode . centaur-tabs-local-mode)
-  :config
+  :config                                                    ; hide tabs in various buffers
   (add-to-list 'centaur-tabs-excluded-prefixes "*doom")
   (add-to-list 'centaur-tabs-excluded-prefixes "*Org")
   (add-to-list 'centaur-tabs-excluded-prefixes "*Ilist")
@@ -434,7 +448,10 @@ Automatically insert link to image relative from current document."
   (add-to-list 'centaur-tabs-excluded-prefixes "*Native-compile")
   (add-to-list 'centaur-tabs-excluded-prefixes "*compilation")
   (add-to-list 'centaur-tabs-excluded-prefixes "*pylsp")
-  (centaur-tabs-group-by-projectile-project)  ; group tabs by projects, include new ones
+  (centaur-tabs-group-by-projectile-project)                 ; group tabs by projects, include new ones
+  (unbind-key "<tab-line> <mouse-1>" centaur-tabs-close-map) ; disable tab closing with LMB
+  (define-key centaur-tabs-default-map
+   (vector centaur-tabs-display-line 'mouse-2) 'centaur-tabs-do-select)
   )
 (map! :leader
       "<left>" #'centaur-tabs-backward
@@ -536,6 +553,7 @@ Evil mode and general movement
 (define-key evil-normal-state-map  (kbd "C-v")     'evil-paste-after)
 (define-key evil-insert-state-map  (kbd "C-v")     'yank)
 (define-key evil-emacs-state-map   (kbd "C-v")     'evil-paste-after)
+(define-key evil-insert-state-map  (kbd "C-y")     'evil-yank)                       ; C-y to copy in Insert state
 (define-key global-map             [home]          'mwim-beginning-of-code-or-line)  ; go to line beginning or to identation
 (define-key evil-motion-state-map  [home]          'mwim-beginning-of-code-or-line)
 (define-key global-map             [end]           'mwim-end)                        ; go to end of code or end of line
@@ -622,6 +640,19 @@ Faster =indent-highlight-guides=
                                dictionary dictionary_comprehension
                                parenthesized_expression subscript)))
   )
+#+end_src
+
+** kubel
+Control Kubernetes
+#+begin_src elisp
+(use-package! kubel
+  :defer t
+  :after vterm
+  :config
+  (kubel-vterm-setup)
+  )
+(use-package! kubel-evil
+  :after kubel)
 #+end_src
 
 ** lsp
@@ -801,6 +832,8 @@ Additional packages from emacs repos
 (unpin! lsp-treemacs)          ; fix lsp-headerline-breadcrumb icons (???why)
 (package! indent-bars          ; better and faster indentation (still broken in 29.0 GTK)
   :recipe (:host github :repo "jdtsmith/indent-bars"))
+(package! kubel)
+(package! kubel-evil)
 #+end_src
 
 * Notes
@@ -840,8 +873,15 @@ Additional packages from emacs repos
     https://github.com/doomemacs/doomemacs/issues/2666
 - indent-bars :: stipple draw bug in emacs 29, must be fixed somewhere in master branch (30+)
     https://github.com/jdtsmith/indent-bars/issues/3
-    - Also need to fix python line breaks highlighting
+  - Also need to fix python line breaks highlighting
 - GUI mode :: stuttery scrolling even with =smooth scrolling=
+- Centaur-tabs :: org-roam weird keybind behavior:
+  1. Disable <mouse-1> tab closing
+  2. <mouse-1> click a roam link, it opens a new tab
+  3. <mouse-1> click on original tab, it goes to original tab
+  4. from original tab <mouse-1> click on second roam tab, it get recognized as <mouse-2> and closes tab.
+     - When you unbind ~centaur-tabs-do-close~ from both ~centaur-tabs-close-map~ (mouse-1 and mouse-2), and ~centaur-tabs-default-map~ (mouse-2),
+in reproduced scenario you can't go to second roam tab with <mouse-1>, it says =<tab-line> <mouse-2> is undefined=.
 
 ** Code to implement
 *** Centaur-Tabs
