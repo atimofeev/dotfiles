@@ -11,6 +11,7 @@
   - [[#custom-functions][Custom functions]]
   - [[#buffers][Buffers]]
   - [[#centaur-tabs][centaur-tabs]]
+  - [[#gptel][gptel]]
   - [[#doom-modeline][doom-modeline]]
   - [[#elfeed][elfeed]]
   - [[#emacs-tty][emacs TTY]]
@@ -24,6 +25,7 @@
   - [[#org-mode][org-mode]]
   - [[#prog-mode][prog-mode]]
   - [[#treemacs][treemacs]]
+  - [[#vterm][vterm]]
   - [[#windows][Windows]]
 - [[#packagesel][packages.el]]
 - [[#notes][Notes]]
@@ -274,6 +276,7 @@ Main or uncategorized settings
  user-full-name "Artem Timofeev"
  doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 15 :weight 'semi-light)
  doom-theme 'doom-one
+ shell-file-name (executable-find "bash")                        ; use bash shell for internal needs
  display-line-numbers-type t                                     ; show line numbers
  mouse-drag-copy-region t                                        ; select-to-copy with mouse
  confirm-kill-emacs nil                                          ; quit without prompt
@@ -285,15 +288,12 @@ Main or uncategorized settings
 )
 (global-auto-revert-mode 1)                                      ; auto-update changed files
 (beacon-mode 1)                                                  ; cursor highlight on big movements or between windows
+(set-frame-parameter nil 'alpha-background 90)                   ; should add true transparency..
+(add-to-list 'default-frame-alist '(alpha-background . 90))
 
 (global-set-key (kbd "C-M-<up>")   'mc/mark-previous-like-this)  ; spawn additional cursor above; C-g to exit
 (global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)      ; spawn additional cursor below
 (unbind-key "<insertchar>" overwrite-mode)                       ; disable overwrite mode on Insert key
-(map! :leader
-      (:prefix ("t". "toggle")
-       :desc "vterm popup"              "s"     #'+vterm/toggle  ; open shell popup
-       :desc "vterm window"             "S"     #'+vterm/here    ; open shell in current window
-       ))
 #+end_src
 
 ** Custom functions
@@ -435,7 +435,6 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 #+begin_src elisp
 ;;; ==CENTAUR-TABS==
 (use-package! centaur-tabs
-  :defer t
   :hook                                                      ; hide tabs in various modes
   (vterm-mode . centaur-tabs-local-mode)
   (dired-mode . centaur-tabs-local-mode)
@@ -458,6 +457,27 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
       "<right>" #'centaur-tabs-forward
       "<up>" #'centaur-tabs-forward-group
       "<down>" #'centaur-tabs-backward-group)
+#+end_src
+
+** gptel
+#+begin_src elisp
+;;; == GPTEL ==
+(defvar openai-api-key nil "Variable to hold OpenAI API key.")
+(defun read-openai-api-key ()
+  "Read API key from file and set `openai-api-key`."
+  (with-temp-buffer
+    (insert-file-contents "~/repos/dotfiles/doom/api.key")
+    (setq openai-api-key (string-trim (buffer-string)))))
+
+(use-package! gptel
+  :defer t
+  :init
+  (read-openai-api-key)
+  :custom
+  (gptel-api-key openai-api-key)
+  (gptel-default-mode 'org-mode)
+  (gptel-model "gpt-4")
+  )
 #+end_src
 
 ** doom-modeline
@@ -554,6 +574,8 @@ Evil mode and general movement
 (define-key evil-insert-state-map  (kbd "C-v")     'yank)
 (define-key evil-emacs-state-map   (kbd "C-v")     'evil-paste-after)
 (define-key evil-insert-state-map  (kbd "C-y")     'evil-yank)                       ; C-y to copy in Insert state
+(define-key evil-insert-state-map  (kbd "C-u")     'evil-undo)                       ; C-u to undo in Insert state
+(define-key evil-insert-state-map  (kbd "C-r")     'evil-redo)                       ; C-u to undo in Insert state
 (define-key global-map             [home]          'mwim-beginning-of-code-or-line)  ; go to line beginning or to identation
 (define-key evil-motion-state-map  [home]          'mwim-beginning-of-code-or-line)
 (define-key global-map             [end]           'mwim-end)                        ; go to end of code or end of line
@@ -597,6 +619,7 @@ Todo: figure out working and convenient keybind
   (highlight-indent-guides-auto-set-faces) ; FIXME indent glitches (not working)
   )
 #+end_src
+
 ** imenu-list
 Module to show file definitions or headings
 #+begin_src elisp
@@ -617,6 +640,7 @@ Module to show file definitions or headings
 ** indent-bars
 Faster =indent-highlight-guides=
 #+begin_src elisp
+;;; == INDENT-BARS ==
 (use-package! indent-bars
   :disabled t
   :defer t
@@ -645,6 +669,7 @@ Faster =indent-highlight-guides=
 ** kubel
 Control Kubernetes
 #+begin_src elisp
+;;; == KUBEL ==
 (use-package! kubel
   :defer t
   :after vterm
@@ -748,6 +773,7 @@ Control Kubernetes
 
 - org-roam-ui :: Interactive web UI for =org-roam=
 #+begin_src elisp
+;;; == ORG ROAM UI ==
 (use-package! org-roam-ui
     :after org-roam
     :custom
@@ -783,6 +809,21 @@ Module for displaying project file tree
   (treemacs-project-follow-mode 1) ; follow projects
 )
 (map! :leader :desc "treemacs" "t t" #'treemacs)
+#+end_src
+
+** vterm
+#+begin_src elisp
+;;; == VTERM ==
+(use-package! vterm
+  :defer t
+  :config
+  (setq-default vterm-shell (executable-find "fish"))             ; set fish shell as default
+  )
+(map! :leader
+      (:prefix ("t". "toggle")
+       :desc "vterm popup"              "s"     #'+vterm/toggle  ; open popup
+       :desc "vterm window"             "S"     #'+vterm/here    ; open in current window
+       ))
 #+end_src
 
 ** Windows
@@ -832,8 +873,11 @@ Additional packages from emacs repos
 (unpin! lsp-treemacs)          ; fix lsp-headerline-breadcrumb icons (???why)
 (package! indent-bars          ; better and faster indentation (still broken in 29.0 GTK)
   :recipe (:host github :repo "jdtsmith/indent-bars"))
-(package! kubel)
-(package! kubel-evil)
+(package! kubel-evil)          ; control k8s, with evil KB
+(package! gptel)               ; chatgpt interface via API
+(package! gptel-extensions     ; extended functionality
+  :recipe (:host github :repo "kamushadenes/gptel-extensions.el"
+                 :files ("gptel-extensions.el")))
 #+end_src
 
 * Notes
@@ -938,3 +982,5 @@ https://github.com/daviwil/emacs-from-scratch/blob/master/Emacs.org
 https://github.com/stfl/doom.d/blob/master/config.org
 https://emacs.stackexchange.com/questions/19578/list-hooks-that-will-run-after-command
 https://stackoverflow.com/questions/34497696/swap-and-to-make-colon-commands-easier-to-type-in-emacs
+https://github.com/larstvei/dot-emacs
+https://github.com/Remedan/dotfiles

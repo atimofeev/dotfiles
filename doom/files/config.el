@@ -4,6 +4,7 @@
  user-full-name "Artem Timofeev"
  doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 15 :weight 'semi-light)
  doom-theme 'doom-one
+ shell-file-name (executable-find "bash")                        ; use bash shell for internal needs
  display-line-numbers-type t                                     ; show line numbers
  mouse-drag-copy-region t                                        ; select-to-copy with mouse
  confirm-kill-emacs nil                                          ; quit without prompt
@@ -15,15 +16,12 @@
 )
 (global-auto-revert-mode 1)                                      ; auto-update changed files
 (beacon-mode 1)                                                  ; cursor highlight on big movements or between windows
+(set-frame-parameter nil 'alpha-background 90)                   ; should add true transparency..
+(add-to-list 'default-frame-alist '(alpha-background . 90))
 
 (global-set-key (kbd "C-M-<up>")   'mc/mark-previous-like-this)  ; spawn additional cursor above; C-g to exit
 (global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)      ; spawn additional cursor below
 (unbind-key "<insertchar>" overwrite-mode)                       ; disable overwrite mode on Insert key
-(map! :leader
-      (:prefix ("t". "toggle")
-       :desc "vterm popup"              "s"     #'+vterm/toggle  ; open shell popup
-       :desc "vterm window"             "S"     #'+vterm/here    ; open shell in current window
-       ))
 
 ;;; == CUSTOM FUNCTIONS ==
 
@@ -139,7 +137,6 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 
 ;;; ==CENTAUR-TABS==
 (use-package! centaur-tabs
-  :defer t
   :hook                                                      ; hide tabs in various modes
   (vterm-mode . centaur-tabs-local-mode)
   (dired-mode . centaur-tabs-local-mode)
@@ -162,6 +159,24 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
       "<right>" #'centaur-tabs-forward
       "<up>" #'centaur-tabs-forward-group
       "<down>" #'centaur-tabs-backward-group)
+
+;;; == GPTEL ==
+(defvar openai-api-key nil "Variable to hold OpenAI API key.")
+(defun read-openai-api-key ()
+  "Read API key from file and set `openai-api-key`."
+  (with-temp-buffer
+    (insert-file-contents "~/repos/dotfiles/doom/api.key")
+    (setq openai-api-key (string-trim (buffer-string)))))
+
+(use-package! gptel
+  :defer t
+  :init
+  (read-openai-api-key)
+  :custom
+  (gptel-api-key openai-api-key)
+  (gptel-default-mode 'org-mode)
+  (gptel-model "gpt-4")
+  )
 
 ;;; == DOOM-MODELINE ==
 (use-package! doom-modeline
@@ -243,6 +258,8 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 (define-key evil-insert-state-map  (kbd "C-v")     'yank)
 (define-key evil-emacs-state-map   (kbd "C-v")     'evil-paste-after)
 (define-key evil-insert-state-map  (kbd "C-y")     'evil-yank)                       ; C-y to copy in Insert state
+(define-key evil-insert-state-map  (kbd "C-u")     'evil-undo)                       ; C-u to undo in Insert state
+(define-key evil-insert-state-map  (kbd "C-r")     'evil-redo)                       ; C-u to undo in Insert state
 (define-key global-map             [home]          'mwim-beginning-of-code-or-line)  ; go to line beginning or to identation
 (define-key evil-motion-state-map  [home]          'mwim-beginning-of-code-or-line)
 (define-key global-map             [end]           'mwim-end)                        ; go to end of code or end of line
@@ -279,6 +296,7 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 )
 (map! :leader :desc "imenu-list" "t i" #'imenu-list-smart-toggle)
 
+;;; == INDENT-BARS ==
 (use-package! indent-bars
   :disabled t
   :defer t
@@ -303,6 +321,7 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
                                parenthesized_expression subscript)))
   )
 
+;;; == KUBEL ==
 (use-package! kubel
   :defer t
   :after vterm
@@ -393,6 +412,7 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   :config (org-roam-timestamps-mode 1))
 (map! :leader :desc "org-roam backlinks" "t o" #'org-roam-buffer-toggle)
 
+;;; == ORG ROAM UI ==
 (use-package! org-roam-ui
     :after org-roam
     :custom
@@ -420,6 +440,18 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   (treemacs-project-follow-mode 1) ; follow projects
 )
 (map! :leader :desc "treemacs" "t t" #'treemacs)
+
+;;; == VTERM ==
+(use-package! vterm
+  :defer t
+  :config
+  (setq-default vterm-shell (executable-find "fish"))             ; set fish shell as default
+  )
+(map! :leader
+      (:prefix ("t". "toggle")
+       :desc "vterm popup"              "s"     #'+vterm/toggle  ; open popup
+       :desc "vterm window"             "S"     #'+vterm/here    ; open in current window
+       ))
 
 ;;; == EVIL-WINDOWS KEYMAPS ==
 (map! :leader
