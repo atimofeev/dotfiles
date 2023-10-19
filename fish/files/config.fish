@@ -162,9 +162,6 @@ alias cp='cp --interactive'
 alias rm='rm --interactive'
 #alias mv='mv --interactive'
 
-# auto sudo
-abbr dnf 'sudo dnf'
-
 # the terminal rickroll
 alias rr='curl --silent --location \
     https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash'
