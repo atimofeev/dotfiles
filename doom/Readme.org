@@ -439,7 +439,11 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   (vterm-mode . centaur-tabs-local-mode)
   (dired-mode . centaur-tabs-local-mode)
   (pdf-view-mode . centaur-tabs-local-mode)
+  :custom
+  (centaur-tabs-height 14)                                   ; reduce tab height
+  (centaur-tabs-set-close-button nil)                        ; remove close button
   :config                                                    ; hide tabs in various buffers
+  (centaur-tabs-group-by-projectile-project)                 ; group tabs by projects
   (add-to-list 'centaur-tabs-excluded-prefixes "*doom")
   (add-to-list 'centaur-tabs-excluded-prefixes "*Org")
   (add-to-list 'centaur-tabs-excluded-prefixes "*Ilist")
@@ -447,7 +451,6 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   (add-to-list 'centaur-tabs-excluded-prefixes "*Native-compile")
   (add-to-list 'centaur-tabs-excluded-prefixes "*compilation")
   (add-to-list 'centaur-tabs-excluded-prefixes "*pylsp")
-  (centaur-tabs-group-by-projectile-project)                 ; group tabs by projects, include new ones
   (unbind-key "<tab-line> <mouse-1>" centaur-tabs-close-map) ; disable tab closing with LMB
   (define-key centaur-tabs-default-map
    (vector centaur-tabs-display-line 'mouse-2) 'centaur-tabs-do-select)
