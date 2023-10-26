@@ -4,8 +4,9 @@ end
 
 ### ENV VARS ###
 set GOPATH "$HOME/go"
+set HASKELL_PATHS "$HOME/.cabal/bin $HOME/.ghcup/bin"
 set -e fish_user_paths
-set -U fish_user_paths $GOPATH/bin $HOME/.bin $HOME/.local/bin $HOME/.config/emacs/bin $fish_user_paths
+set -U fish_user_paths $GOPATH/bin $HOME/.bin $HOME/.local/bin $HOME/.config/emacs/bin $HASKELL_PATHS $fish_user_paths
 
 ### APPS ###
 
