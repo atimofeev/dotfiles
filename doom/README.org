@@ -17,6 +17,7 @@
   - [[#emacs-tty][emacs TTY]]
   - [[#evil][evil]]
   - [[#expand-region][expand-region]]
+  - [[#flycheck][flycheck]]
   - [[#highlight-indent-guides][highlight-indent-guides]]
   - [[#imenu-list][imenu-list]]
   - [[#indent-bars][indent-bars]]
@@ -46,7 +47,7 @@ Inspired by [[https://gitlab.com/dwt1/dotfiles/-/blob/master/.config/doom/config
 See [[file:keybinds.org][Keybind Help]] for useful and mostly default keybinds in Doom Emacs.
 * init.el
 :PROPERTIES:
-:HTML_CONTAINER_CLASS:    hsCollapsed
+:HTML_CONTAINER_CLASS: hsCollapsed
 :END:
 Init config with selectable modules
 :init_el_src:
@@ -126,7 +127,7 @@ Init config with selectable modules
        vterm               ; the best terminal emulation in Emacs
 
        :checkers
-       ;;syntax              ; tasing you for every semicolon you forget
+       syntax              ; tasing you for every semicolon you forget
        ;;(spell +flyspell) ; tasing you for misspelling mispelling
        ;;grammar           ; tasing grammar mistake every you make
 
@@ -280,7 +281,7 @@ Main or uncategorized settings
  display-line-numbers-type t                                     ; show line numbers
  mouse-drag-copy-region t                                        ; select-to-copy with mouse
  confirm-kill-emacs nil                                          ; quit without prompt
- company-global-modes '(not text-mode org-mode markdown-mode)    ; disable autocomplete for plain text
+; company-global-modes '(not text-mode org-mode markdown-mode)    ; disable autocomplete for plain text
  scroll-margin 3                                                 ; add margin to cursor while scrolling
  projectile-project-search-path '("~/repos/")                    ;
  dired-kill-when-opening-new-dired-buffer t                      ; dired: stop creating buffers for each dir
@@ -401,7 +402,7 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 
 *** MD to Org links
 #+begin_src elisp
-(defun convert-md-links-to-org ()
+(defun custom/convert-md-links-to-org ()
   "Convert Markdown links to Org-mode links within the current selection."
   (interactive)
   (if (use-region-p)
@@ -414,6 +415,19 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
               (replace-match "[[\\2][\\1]]")
               (setq end new-end)))))
     (message "No region selected. Please select a region to convert.")))
+#+end_src
+
+*** Find subproject root
+#+begin_src elisp
+(defun custom/find-subproject-root (pattern)
+  "Finds the subproject root upon checking the top occurrence of PATTERN going up from a current dir."
+  (let* ((file-dir (file-name-directory (buffer-file-name)))
+         (closest-root
+          (locate-dominating-file file-dir
+                                  (lambda (dir)
+                                    (file-exists-p (expand-file-name pattern dir))))))
+    closest-root)
+  )
 #+end_src
 
 ** Buffers
@@ -433,14 +447,14 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 
 ** centaur-tabs
 #+begin_src elisp
-;;; ==CENTAUR-TABS==
+;;; == CENTAUR-TABS ==
 (use-package! centaur-tabs
   :hook                                                      ; hide tabs in various modes
   (vterm-mode . centaur-tabs-local-mode)
   (dired-mode . centaur-tabs-local-mode)
   (pdf-view-mode . centaur-tabs-local-mode)
   :custom
-  (centaur-tabs-height 14)                                   ; reduce tab height
+  (centaur-tabs-height 13)                                   ; reduce tab height
   (centaur-tabs-set-close-button nil)                        ; remove close button
   :config                                                    ; hide tabs in various buffers
   (centaur-tabs-group-by-projectile-project)                 ; group tabs by projects
@@ -451,6 +465,8 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   (add-to-list 'centaur-tabs-excluded-prefixes "*Native-compile")
   (add-to-list 'centaur-tabs-excluded-prefixes "*compilation")
   (add-to-list 'centaur-tabs-excluded-prefixes "*pylsp")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*Messages")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*scratch")
   (unbind-key "<tab-line> <mouse-1>" centaur-tabs-close-map) ; disable tab closing with LMB
   (define-key centaur-tabs-default-map
    (vector centaur-tabs-display-line 'mouse-2) 'centaur-tabs-do-select)
@@ -501,7 +517,6 @@ Status bar module
   (evil-visual-state-tag   (propertize "[Visual]"))
   (evil-operator-state-tag (propertize "[Operator]"))
   )
-
 ;; setting up custom FG/BG colors to further increace visibility of evil-state
 (defun setup-doom-modeline-evil-states ()
   (set-face-attribute 'doom-modeline-evil-normal-state   nil :background "lawngreen" :foreground "black")
@@ -512,6 +527,7 @@ Status bar module
   (set-face-attribute 'doom-modeline-evil-operator-state nil :background "blueviolet"))
 (add-hook 'doom-modeline-mode-hook 'setup-doom-modeline-evil-states)
 #+end_src
+
 ** elfeed
 Module to read RSS feeds
 #+begin_src elisp
@@ -593,25 +609,147 @@ Evil mode and general movement
 (evil-ex-define-cmd "q"  'custom/kill-buffer)                              ; kill buffer instead of killing emacs; :q! - kill without prompt
 #+end_src
 
-TODO:
-#+begin_src elisp :tangle no
-;(define-key evil-normal-state-map (kbd "DEL") 'evil-insert) ; Backspace -> insert mode
-;(define-key evil-normal-state-map (kbd "C-w") 'evil-insert) ; C-Backspace -> insert mode
-; enter -> insert mode?
-; ; -> insert mode?
-; <deletechar> -> insert mode?
-#+end_src
-
 ** expand-region
 Extension to increase selected region by semantic units
 Todo: figure out working and convenient keybind
 #+begin_src elisp :tangle no
+;;; == EXPAND-REGION ==
 (map! "C-=" #'er/expand-region
       "C--" #'er/contract-region)
 #+end_src
 
+** flycheck
+*** Main configuration
+On the fly syntax checking
+#+begin_src elisp
+;;; == FLYCHECK ==
+(use-package! flycheck
+  :defer t
+  :custom
+  (flycheck-relevant-error-other-file-minimum-level nil)  ; show errors from all related files
+  (flycheck-dockerfile-hadolint-executable "~/.config/doom/scripts/hadolint-container.sh")
+  (flycheck-markdown-markdownlint-cli-executable "~/.config/doom/scripts/markdownlintcli-container.sh")
+  (flycheck-markdown-markdownlint-cli-config "~/.config/doom/.markdownlint.yaml")
+  (flycheck-sh-shellcheck-executable "~/.config/doom/scripts/shellcheck-container.sh")
+  (tflint-custom-config "~/.config/doom/.tflint.hcl")
+  :config
+  (flycheck-add-next-checker 'markdown-markdownlint-cli 'textlint)
+  (flycheck-add-next-checker 'textlint 'proselint)
+  ;(flycheck-display-errors-funct ion #'flycheck-display-error-messages-unless-error-list) ; i need reverse of this
+  :hook
+  (lsp-managed-mode-hook . (lambda ()                     ; setup checkers chaining with LSP
+    (when (derived-mode-p 'dockerfile-mode)(flycheck-add-next-checker 'lsp 'dockerfile-hadolint))
+    (when (derived-mode-p 'sh-mode)        (flycheck-add-next-checker 'lsp 'sh-bash))  ; next one is sh-shellcheck
+    ))
+  )
+#+end_src
+
+#+begin_src shhh :tangle ~/.config/doom/scripts/echo.sh :shebang #!/bin/bash
+echo "$@" > ~/.config/doom/scripts/tmpfile
+#+end_src
+
+*** dockerfile-hadolint
+Runs from container. No configurable options
+#+begin_src sh :tangle ~/.config/doom/scripts/hadolint-container.sh :shebang #!/bin/bash
+docker run --rm -i hadolint/hadolint hadolint --no-color /dev/stdin <&0
+#+end_src
+
+*** markdownlint-cli
+Runs from container. Accepts flycheck-configured options: config file
+#+begin_src shhh :tangle ~/.config/doom/scripts//markdownlintcli-container.sh :shebang #!/bin/bash
+arg_count="$#"
+if [ "$arg_count" -eq 1 ]; then
+    path="$1"
+    filename=$(basename "$1")
+    docker run --rm -i -v $path:/workdir/$filename ghcr.io/igorshubovych/markdownlint-cli:latest $filename
+elif [ "$arg_count" -eq 3 ] && [ "$1" == "--config" ]; then
+    path="$3"
+    filename=$(basename "$3")
+    confpath="$2"
+    docker run --rm -i -v $path:/workdir/$filename -v $confpath:/conf.yml ghcr.io/igorshubovych/markdownlint-cli:latest --config /conf.yml $filename
+fi
+#+end_src
+
+#+begin_src yaml :tangle ~/.config/doom/.markdownlint.yaml
+default: true
+MD013: false  # ignore line-length
+MD033: false  # ignore no-inline-html
+MD041: false  # ignore first-line-heading
+#+end_src
+
+*** shellcheck
+Runs from container. Accepts flycheck-configured options: flycheck-shellcheck-follow-sources (t/nil)
+#+begin_src shhh :tangle ~/.config/doom/scripts/shellcheck-container.sh :shebang #!/bin/bash
+docker run --rm -i koalaman/shellcheck:stable "$@" <&0
+#+end_src
+
+*** tflint
+Runs from container
+- Requirements ::
+  - Image build: install plugins
+  - Custom flycheck checker: mainline flycheck no longer supports latest tflint
+
+- Build image ::
+#+begin_src hcl :tangle ~/.config/doom/.tflint.hcl
+plugin "terraform" {
+  enabled = true
+  preset = "all"
+}
+plugin "aws" {
+    enabled = true
+    version = "0.27.0"
+    source  = "github.com/terraform-linters/tflint-ruleset-aws"
+}
+/*
+plugin "aws-serverless" {
+  enabled = true
+  version = "0.3.2"
+  source = "github.com/awslabs/serverless-rules"
+}
+,*/
+#+end_src
+
+#+begin_src dockerfile :tangle ~/.config/doom/Dockerfile
+FROM ghcr.io/terraform-linters/tflint
+
+COPY .tflint.hcl /data
+
+RUN tflint --init
+#+end_src
+
+#+begin_src sh :tangle no
+cd ~/.config/doom/
+docker build . -t tflint-plugins
+docker run --rm -i tflint-plugins -v
+#+end_src
+
+#+RESULTS:
+| TFLint | version           | 0.48.0          |
+| +      | ruleset.terraform | (0.4.0-bundled) |
+| +      | ruleset.aws       | (0.27.0)        |
+
+- Setup checker ::
+#+begin_src elisp
+(flycheck-define-checker terraform-tflint-custom
+  "A custom Terraform checker using tflint.
+
+See URL `https://github.com/wata727/tflint'."
+  :command ("docker" "run" "--rm" "-i"
+            "-v" (eval (concat (expand-file-name (custom/find-subproject-root "main.tf")) ":/data"))
+            "-v" (eval (concat (expand-file-name tflint-custom-config) ":/.tflint.hcl"))
+            "tflint-plugins" "--format=compact" "--config=/.tflint.hcl")
+  :error-patterns
+  ((info line-start   (optional (file-name)) ":" line ":" column ": notice - "  (message) line-end)
+  (warning line-start (optional (file-name)) ":" line ":" column ": warning - " (message) line-end)
+  (error line-start   (optional (file-name)) ":" line ":" column ": error - "   (message) line-end))
+  :modes terraform-mode
+  :next-checkers (terraform))
+(add-to-list 'flycheck-checkers 'terraform-tflint-custom)
+#+end_src
+
 ** highlight-indent-guides
 #+begin_src elisp
+;;; == HIGHLIGHT-INDENT-GUIDES ==
 (use-package! highlight-indent-guides
   :disabled t
   :defer t
@@ -629,14 +767,12 @@ Module to show file definitions or headings
 ;;; == IMENU-LIST ==
 (use-package! imenu-list
   :defer t
-  :config
-  (setq
-   imenu-list-focus-after-activation t    ; window auto-focus
-   imenu-list-auto-resize t               ; windown auto-size (is it working?)
-   imenu-auto-rescan t                    ; auto-refresh
-   imenu-auto-rescan-maxout (* 1024 1024) ; limit auto-refresh to max filesize
-   )
-)
+  :custom
+  (imenu-list-focus-after-activation t)    ; window auto-focus
+  (imenu-list-auto-resize t)               ; windown auto-size (is it working?)
+  (imenu-auto-rescan t)                    ; auto-refresh
+  (imenu-auto-rescan-maxout (* 1024 1024)) ; limit auto-refresh to max filesize
+  )
 (map! :leader :desc "imenu-list" "t i" #'imenu-list-smart-toggle)
 #+end_src
 
@@ -689,13 +825,14 @@ Control Kubernetes
 (use-package! lsp-mode
   :defer t
   :custom
-  (lsp-headerline-breadcrumb-enable t)     ; enable headerline breadcrumb
-  (gc-cons-threshold (* 400 1024 1024))    ; increase GC threshold to improve perf in LSP mode
+  (gc-cons-threshold (* 400 1024 1024))      ; increase GC threshold to improve perf in LSP mode
   (read-process-output-max (* 1 1024 1024))  ; handle large LSP responses
   )
 (use-package! lsp-treemacs
   :after lsp-mode  ;; and treemacs
-  :config (lsp-treemacs-sync-mode 1))
+  :config
+  (lsp-treemacs-sync-mode 1)
+  )
 #+end_src
 
 ** org-mode
@@ -716,10 +853,11 @@ Control Kubernetes
   (after-save . org-babel-tangle)                             ; export org code blocks on save
   (org-src-mode . evil-insert-state)                          ; enter code block editing with insert mode
   (org-mode . (lambda ()
+    (flycheck-mode 0)                                         ; disable flycheck-mode
     (display-line-numbers-mode 0)                             ; disable lines numbers for org-mode
     (highlight-regexp ":tangle no" 'error)                    ; highlight :tangle no
     (map! :leader "TAB" #'org-fold-show-subtree)              ; unfold subsections on SPC-TAB
-    (sp-local-pair 'org-mode "=" "=" :unless '(sp-point-before-word-p sp-point-before-same-p)) ; auto-pair = and ~
+    ;(sp-local-pair 'org-mode "=" "=" :unless '(sp-point-before-word-p sp-point-before-same-p)) ; auto-pair = and ~
     (sp-local-pair 'org-mode "~" "~" :unless'(sp-point-before-word-p sp-point-before-same-p))
     ))
   )
@@ -739,6 +877,8 @@ Control Kubernetes
 ;;; == ORG-ROAM ==
 (use-package! org-roam
   :defer t
+  :init
+  (map! :leader :desc "org-roam backlinks" "t o" #'org-roam-buffer-toggle)
   :config
   (setq org-roam-directory org-directory ; org-dir = org-roam-dir
         org-roam-index-file (concat org-directory "README.org") ; org-roam main file
@@ -770,8 +910,9 @@ Control Kubernetes
   )
 (use-package! org-roam-timestamps
   :after org-roam
-  :config (org-roam-timestamps-mode 1))
-(map! :leader :desc "org-roam backlinks" "t o" #'org-roam-buffer-toggle)
+  :config
+  (org-roam-timestamps-mode 1)
+  )
 #+end_src
 
 - org-roam-ui :: Interactive web UI for =org-roam=
@@ -805,13 +946,14 @@ Module for displaying project file tree
 #+begin_src elisp
 ;;; == TREEMACS ==
 (use-package! treemacs
-  :defer t
+  :init
+  (map! :leader :desc "treemacs" "t t" #'treemacs)
+  :custom
+  (treemacs-width 28)              ; adjust window width
   :config
-  (setq treemacs-width 28)         ; adjust window width
   (treemacs-follow-mode 1)         ; follow files
   (treemacs-project-follow-mode 1) ; follow projects
 )
-(map! :leader :desc "treemacs" "t t" #'treemacs)
 #+end_src
 
 ** vterm
@@ -823,10 +965,9 @@ Module for displaying project file tree
   (setq-default vterm-shell (executable-find "fish"))             ; set fish shell as default
   )
 (map! :leader
-      (:prefix ("t". "toggle")
-       :desc "vterm popup"              "s"     #'+vterm/toggle  ; open popup
-       :desc "vterm window"             "S"     #'+vterm/here    ; open in current window
-       ))
+       :desc "vterm popup"              "t s"     #'+vterm/toggle  ; open popup
+       :desc "vterm window"             "t S"     #'+vterm/here    ; open in current window
+       )
 #+end_src
 
 ** Windows
@@ -839,7 +980,6 @@ Module for displaying project file tree
 
        :desc "Split view, right"        "s"             #'evil-window-split
        :desc "Split view, down"         "v"             #'evil-window-vsplit
-       ;; uses same buffer
 
        :desc "Select LEFT window"       "<left>"        #'evil-window-left
        :desc "Select DOWN window"       "<down>"        #'evil-window-down
@@ -852,11 +992,8 @@ Module for displaying project file tree
        :desc "Move window RIGHT"        "S-<right>"     #'+evil/window-move-right
 
        :desc "Maximize window"          "m m"           #'doom/window-maximize-buffer
-       ;; close all other windows
        :desc "Maximize vertically"      "m v"           #'doom/window-maximize-vertically
-       ;; close all windows UP/DOWN
        :desc "Maximize horizontally"    "m s"           #'doom/window-maximize-horizontally
-       ;; close all windown LEFT/RIGHT
 
        :desc "Close window"             "c"             #'evil-window-delete
        :desc "Kill buffer & window"     "d"             #'kill-buffer-and-window))
@@ -886,24 +1023,23 @@ Additional packages from emacs repos
 * Notes
 ** Tasks
 *** general tasks
-- Enter at the end of line in visual mode -> insert mode -> actual EOL - > RET
-    Probably with =evil-insert-state-hook= followed by =evil-end-of-line= cmd.
-- Looks into modules loading, lazify ones which always load without particular need
-- EOF margin: should not show more than X empty lines when going to end of file
-- fzf+grep-like functionality
 - Try out different indent guides ~highlight-indent-guides-method~
     =fill=, =column=, =character= (current) or =bitmap=
-- Sort sections in ~config.el~
-- Install ~LSP~ for =Terraform=
 - Enable and setup [[https://www.emacswiki.org/emacs/SmoothScrolling][smooth scrolling]]
-- Figure out formatters for langs
 - Exclude some things from =file-name-history=
+
+*** code tasks
+- Install ~LSP~ for =Terraform=
+- Move most LSPs and Linters to containers
+- TFLint ::
+  - Fix directory select. Should be the topmost one with a =main.tf= in a project
 
 *** org-mode tasks
 - Org unfold sections in insert mode
   - Insert mode: TAB on closed section should open it
 - org-scr-mode :: Exit with =:q= or =:w= (if no filename was provided)
 - Try to customize =org-fancy-priorities=
+- Wrapper for clipboard paste to automatically detect images and launch =custom/org-save-clipboard-image=
 
 *** to disable
 - disable =evil-record-macro= =q= and other related commands
@@ -987,3 +1123,4 @@ https://emacs.stackexchange.com/questions/19578/list-hooks-that-will-run-after-c
 https://stackoverflow.com/questions/34497696/swap-and-to-make-colon-commands-easier-to-type-in-emacs
 https://github.com/larstvei/dot-emacs
 https://github.com/Remedan/dotfiles
+https://github.com/rolandtritsch/emacs.d/blob/trunk/roland/30-general-coding.org

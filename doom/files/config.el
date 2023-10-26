@@ -8,7 +8,7 @@
  display-line-numbers-type t                                     ; show line numbers
  mouse-drag-copy-region t                                        ; select-to-copy with mouse
  confirm-kill-emacs nil                                          ; quit without prompt
- company-global-modes '(not text-mode org-mode markdown-mode)    ; disable autocomplete for plain text
+; company-global-modes '(not text-mode org-mode markdown-mode)    ; disable autocomplete for plain text
  scroll-margin 3                                                 ; add margin to cursor while scrolling
  projectile-project-search-path '("~/repos/")                    ;
  dired-kill-when-opening-new-dired-buffer t                      ; dired: stop creating buffers for each dir
@@ -142,7 +142,7 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   (dired-mode . centaur-tabs-local-mode)
   (pdf-view-mode . centaur-tabs-local-mode)
   :custom
-  (centaur-tabs-height 14)                                   ; reduce tab height
+  (centaur-tabs-height 13)                                   ; reduce tab height
   (centaur-tabs-set-close-button nil)                        ; remove close button
   :config                                                    ; hide tabs in various buffers
   (centaur-tabs-group-by-projectile-project)                 ; group tabs by projects
@@ -153,6 +153,8 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   (add-to-list 'centaur-tabs-excluded-prefixes "*Native-compile")
   (add-to-list 'centaur-tabs-excluded-prefixes "*compilation")
   (add-to-list 'centaur-tabs-excluded-prefixes "*pylsp")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*Messages")
+  (add-to-list 'centaur-tabs-excluded-prefixes "*scratch")
   (unbind-key "<tab-line> <mouse-1>" centaur-tabs-close-map) ; disable tab closing with LMB
   (define-key centaur-tabs-default-map
    (vector centaur-tabs-display-line 'mouse-2) 'centaur-tabs-do-select)
@@ -276,6 +278,25 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 (evil-ex-define-cmd "wq" 'custom/write-and-quit)                           ; write file and kill buffer
 (evil-ex-define-cmd "q"  'custom/kill-buffer)                              ; kill buffer instead of killing emacs; :q! - kill without prompt
 
+;;; == FLYCHECK ==
+(use-package! flycheck
+  :defer t
+  :custom
+  (flycheck-dockerfile-hadolint-executable "~/.config/doom/scripts/hadolint-container.sh")
+  (flycheck-markdown-markdownlint-cli-config "~/.config/doom/.markdownlint.yaml")
+  (flycheck-sh-shellcheck-executable "~/.config/doom/scripts/shellcheck-container.sh")
+  ;(flycheck-display-errors-function #'flycheck-display-error-messages-unless-error-list) ; i need reverse of this
+  )
+
+(add-hook 'lsp-managed-mode-hook
+          (lambda ()
+            (when (derived-mode-p 'dockerfile-mode)
+              (flycheck-add-next-checker 'lsp 'dockerfile-hadolint))
+            (when (derived-mode-p 'sh-mode)
+              (flycheck-add-next-checker 'lsp 'sh-bash))  ; next one is sh-shellcheck
+            )
+          )
+
 (use-package! highlight-indent-guides
   :disabled t
   :defer t
@@ -338,7 +359,7 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 (use-package! lsp-mode
   :defer t
   :custom
-  (lsp-headerline-breadcrumb-enable t)     ; enable headerline breadcrumb
+  ;(lsp-headerline-breadcrumb-enable t)     ; enable headerline breadcrumb
   (gc-cons-threshold (* 400 1024 1024))    ; increase GC threshold to improve perf in LSP mode
   (read-process-output-max (* 1 1024 1024))  ; handle large LSP responses
   )
@@ -361,6 +382,7 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   (after-save . org-babel-tangle)                             ; export org code blocks on save
   (org-src-mode . evil-insert-state)                          ; enter code block editing with insert mode
   (org-mode . (lambda ()
+    (flycheck-mode 0)                                         ; disable flycheck-mode
     (display-line-numbers-mode 0)                             ; disable lines numbers for org-mode
     (highlight-regexp ":tangle no" 'error)                    ; highlight :tangle no
     (map! :leader "TAB" #'org-fold-show-subtree)              ; unfold subsections on SPC-TAB
@@ -436,7 +458,6 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 
 ;;; == TREEMACS ==
 (use-package! treemacs
-  :defer t
   :config
   (setq treemacs-width 28)         ; adjust window width
   (treemacs-follow-mode 1)         ; follow files

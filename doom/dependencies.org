@@ -1,0 +1,113 @@
+#+title: Dependencies
+
+* Table of Contents :toc:
+- [[#about][About]]
+- [[#languages][Languages]]
+  - [[#docker][Docker]]
+  - [[#javascript][JavaScript]]
+  - [[#json][JSON]]
+  - [[#lua][Lua]]
+  - [[#markdown][Markdown]]
+  - [[#org][Org]]
+  - [[#python][Python]]
+  - [[#shell][Shell]]
+  - [[#terraform][Terraform]]
+  - [[#texlatex][TeX/LaTeX]]
+  - [[#yaml][YAML]]
+
+* About
+Required dependencies for additional functionality, which is normally unavailable via pure Emacs means.
+
+* Languages
+[[https://www.flycheck.org/en/latest/languages.html][Flycheck available linters]]
+Install linter inside a container: https://github.com/flycheck/flycheck/issues/1834
+** Docker
+*** LSP
+- [[https://github.com/rcjsuen/dockerfile-language-server-nodejs][dockerfile-language-server-nodejs]] ::
+  - Install: ~npm install -g dockerfile-language-server-nodejs~
+  - Image: [[https://github.com/emacs-lsp/lsp-docker][lsp-docker]]
+*** Linter
+- [[https://github.com/hadolint/hadolint][hadolint]] ::
+  - Install: =brew package=, =scoop package=, =build (haskell)= or =run container=
+  - Image: =hadolint/hadolint= OR =ghcr.io/hadolint/hadolint=
+
+** JavaScript
+*** LSP
+- [[https://github.com/typescript-language-server/typescript-language-server][ts-ls]] ::
+  - Install: ~npm install -g typescript-language-server typescript~
+  - Image: [[https://github.com/emacs-lsp/lsp-docker][lsp-docker]]
+- deno-ls
+*** Linter
+https://www.flycheck.org/en/latest/languages.html#javascript
+
+** JSON
+*** LSP
+- [[https://www.npmjs.com/package/vscode-json-languageserver][vscode-json-languageserver]] ::
+  - Install: ~npm install -g vscode-json-languageserver~
+  - Image: ?
+*** Linter
+https://www.flycheck.org/en/latest/languages.html#json
+
+** Lua
+*** LSP
+- EmmyLua
+- lua-language-server
+- lua-lsp
+*** Linter
+https://www.flycheck.org/en/latest/languages.html#lua
+
+** Markdown
+*** Linter
+- [[https://github.com/igorshubovych/markdownlint-cli][markdownlint-cli]] ::
+  - Install: ~npm install -g markdownlint-cli~
+  - Image: =ghcr.io/igorshubovych/markdownlint-cli:latest=
+*** Render
+- ?
+
+** Org
+*** Render
+-?
+
+** Python
+*** LSP
+- [[https://github.com/python-lsp/python-lsp-server][python-lsp-server]] ::
+  - Install: ~pip3 install python-lsp-server~
+  - Image: no. Do we really need one?
+*** Linter
+- [[https://github.com/pycqa/flake8][Flake8]]
+- [[https://github.com/pylint-dev/pylint][Pylint]]
+- [[https://github.com/PyCQA/pyflakes][Pyflakes]] (requires [[https://github.com/Wilfred/flycheck-pyflakes][flycheck-pyflakes]])
+
+** Shell
+*** LSP
+- [[https://github.com/bash-lsp/bash-language-server][bash-language-server]] ::
+  - Install: ~npm i -g bash-language-server~
+  - Image: [[https://github.com/emacs-lsp/lsp-docker][lsp-docker]]
+*** Linter
+- [[https://github.com/koalaman/shellcheck/][ShellCheck]] ::
+  - Install: ~cabal~, ~stack~ or various package managers
+  - Image: =koalaman/shellcheck:stable=
+
+** Terraform
+*** Linter
+- [[https://github.com/terraform-linters/tflint][TFLint]] ::
+  - Install: ~curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash~
+  - Image: =ghcr.io/terraform-linters/tflint=
+  - Addon: [[https://github.com/terraform-linters/tflint-ruleset-aws][ruleset-aws]]
+** TeX/LaTeX
+*** LSP
+- digestif
+- TexLab
+*** Linter
+https://www.flycheck.org/en/latest/languages.html#tex-latex
+*** Render
+- ?
+
+** YAML
+*** LSP
+- [[https://github.com/redhat-developer/yaml-language-server][yaml-language-server]] ::
+  - Install: build with ~yarn~, requires =VSCode= and =NodeJS=
+  - Image: =quay.io/redhat-developer/yaml-language-server:latest=
+*** Linter
+https://www.flycheck.org/en/latest/languages.html#yaml
+

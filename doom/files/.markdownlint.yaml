@@ -1,0 +1,4 @@
+default: true
+MD013: false  # ignore line-length
+MD033: false  # ignore no-inline-html
+MD041: false  # ignore first-line-heading
