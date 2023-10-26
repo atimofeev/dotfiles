@@ -109,7 +109,7 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
                   (insert image-link)))))
       (message "Failed to save clipboard image."))))
 
-(defun convert-md-links-to-org ()
+(defun custom/convert-md-links-to-org ()
   "Convert Markdown links to Org-mode links within the current selection."
   (interactive)
   (if (use-region-p)
@@ -123,6 +123,16 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
               (setq end new-end)))))
     (message "No region selected. Please select a region to convert.")))
 
+(defun custom/find-subproject-root (pattern)
+  "Finds the subproject root upon checking the top occurrence of PATTERN going up from a current dir."
+  (let* ((file-dir (file-name-directory (buffer-file-name)))
+         (closest-root
+          (locate-dominating-file file-dir
+                                  (lambda (dir)
+                                    (file-exists-p (expand-file-name pattern dir))))))
+    closest-root)
+  )
+
 ;;; == BUFFER KEYMAPS ==
 (map! :leader
       (:prefix ("b". "buffer")
@@ -135,7 +145,7 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
        :desc "Kill other buffers" "k"       #'doom/kill-other-buffers
        :desc "Kill all buffers"   "K"       #'doom/kill-all-buffers))
 
-;;; ==CENTAUR-TABS==
+;;; == CENTAUR-TABS ==
 (use-package! centaur-tabs
   :hook                                                      ; hide tabs in various modes
   (vterm-mode . centaur-tabs-local-mode)
@@ -198,7 +208,6 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   (evil-visual-state-tag   (propertize "[Visual]"))
   (evil-operator-state-tag (propertize "[Operator]"))
   )
-
 ;; setting up custom FG/BG colors to further increace visibility of evil-state
 (defun setup-doom-modeline-evil-states ()
   (set-face-attribute 'doom-modeline-evil-normal-state   nil :background "lawngreen" :foreground "black")
@@ -282,21 +291,40 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 (use-package! flycheck
   :defer t
   :custom
+  (flycheck-relevant-error-other-file-minimum-level nil)  ; show errors from all related files
   (flycheck-dockerfile-hadolint-executable "~/.config/doom/scripts/hadolint-container.sh")
+  (flycheck-markdown-markdownlint-cli-executable "~/.config/doom/scripts/markdownlintcli-container.sh")
   (flycheck-markdown-markdownlint-cli-config "~/.config/doom/.markdownlint.yaml")
   (flycheck-sh-shellcheck-executable "~/.config/doom/scripts/shellcheck-container.sh")
-  ;(flycheck-display-errors-function #'flycheck-display-error-messages-unless-error-list) ; i need reverse of this
+  (tflint-custom-config "~/.config/doom/.tflint.hcl")
+  :config
+  (flycheck-add-next-checker 'markdown-markdownlint-cli 'textlint)
+  (flycheck-add-next-checker 'textlint 'proselint)
+  ;(flycheck-display-errors-funct ion #'flycheck-display-error-messages-unless-error-list) ; i need reverse of this
+  :hook
+  (lsp-managed-mode-hook . (lambda ()                     ; setup checkers chaining with LSP
+    (when (derived-mode-p 'dockerfile-mode)(flycheck-add-next-checker 'lsp 'dockerfile-hadolint))
+    (when (derived-mode-p 'sh-mode)        (flycheck-add-next-checker 'lsp 'sh-bash))  ; next one is sh-shellcheck
+    ))
   )
 
-(add-hook 'lsp-managed-mode-hook
-          (lambda ()
-            (when (derived-mode-p 'dockerfile-mode)
-              (flycheck-add-next-checker 'lsp 'dockerfile-hadolint))
-            (when (derived-mode-p 'sh-mode)
-              (flycheck-add-next-checker 'lsp 'sh-bash))  ; next one is sh-shellcheck
-            )
-          )
+(flycheck-define-checker terraform-tflint-custom
+  "A custom Terraform checker using tflint.
 
+See URL `https://github.com/wata727/tflint'."
+  :command ("docker" "run" "--rm" "-i"
+            "-v" (eval (concat (expand-file-name (custom/find-subproject-root "main.tf")) ":/data"))
+            "-v" (eval (concat (expand-file-name tflint-custom-config) ":/.tflint.hcl"))
+            "tflint-plugins" "--format=compact" "--config=/.tflint.hcl")
+  :error-patterns
+  ((info line-start   (optional (file-name)) ":" line ":" column ": notice - "  (message) line-end)
+  (warning line-start (optional (file-name)) ":" line ":" column ": warning - " (message) line-end)
+  (error line-start   (optional (file-name)) ":" line ":" column ": error - "   (message) line-end))
+  :modes terraform-mode
+  :next-checkers (terraform))
+(add-to-list 'flycheck-checkers 'terraform-tflint-custom)
+
+;;; == HIGHLIGHT-INDENT-GUIDES ==
 (use-package! highlight-indent-guides
   :disabled t
   :defer t
@@ -310,14 +338,12 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 ;;; == IMENU-LIST ==
 (use-package! imenu-list
   :defer t
-  :config
-  (setq
-   imenu-list-focus-after-activation t    ; window auto-focus
-   imenu-list-auto-resize t               ; windown auto-size (is it working?)
-   imenu-auto-rescan t                    ; auto-refresh
-   imenu-auto-rescan-maxout (* 1024 1024) ; limit auto-refresh to max filesize
-   )
-)
+  :custom
+  (imenu-list-focus-after-activation t)    ; window auto-focus
+  (imenu-list-auto-resize t)               ; windown auto-size (is it working?)
+  (imenu-auto-rescan t)                    ; auto-refresh
+  (imenu-auto-rescan-maxout (* 1024 1024)) ; limit auto-refresh to max filesize
+  )
 (map! :leader :desc "imenu-list" "t i" #'imenu-list-smart-toggle)
 
 ;;; == INDENT-BARS ==
@@ -359,13 +385,14 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 (use-package! lsp-mode
   :defer t
   :custom
-  ;(lsp-headerline-breadcrumb-enable t)     ; enable headerline breadcrumb
-  (gc-cons-threshold (* 400 1024 1024))    ; increase GC threshold to improve perf in LSP mode
+  (gc-cons-threshold (* 400 1024 1024))      ; increase GC threshold to improve perf in LSP mode
   (read-process-output-max (* 1 1024 1024))  ; handle large LSP responses
   )
 (use-package! lsp-treemacs
   :after lsp-mode  ;; and treemacs
-  :config (lsp-treemacs-sync-mode 1))
+  :config
+  (lsp-treemacs-sync-mode 1)
+  )
 
 ;;; == ORG-MODE ==
 (use-package! org
@@ -386,7 +413,7 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
     (display-line-numbers-mode 0)                             ; disable lines numbers for org-mode
     (highlight-regexp ":tangle no" 'error)                    ; highlight :tangle no
     (map! :leader "TAB" #'org-fold-show-subtree)              ; unfold subsections on SPC-TAB
-    (sp-local-pair 'org-mode "=" "=" :unless '(sp-point-before-word-p sp-point-before-same-p)) ; auto-pair = and ~
+    ;(sp-local-pair 'org-mode "=" "=" :unless '(sp-point-before-word-p sp-point-before-same-p)) ; auto-pair = and ~
     (sp-local-pair 'org-mode "~" "~" :unless'(sp-point-before-word-p sp-point-before-same-p))
     ))
   )
@@ -403,6 +430,8 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 ;;; == ORG-ROAM ==
 (use-package! org-roam
   :defer t
+  :init
+  (map! :leader :desc "org-roam backlinks" "t o" #'org-roam-buffer-toggle)
   :config
   (setq org-roam-directory org-directory ; org-dir = org-roam-dir
         org-roam-index-file (concat org-directory "README.org") ; org-roam main file
@@ -434,8 +463,9 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   )
 (use-package! org-roam-timestamps
   :after org-roam
-  :config (org-roam-timestamps-mode 1))
-(map! :leader :desc "org-roam backlinks" "t o" #'org-roam-buffer-toggle)
+  :config
+  (org-roam-timestamps-mode 1)
+  )
 
 ;;; == ORG ROAM UI ==
 (use-package! org-roam-ui
@@ -458,12 +488,14 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 
 ;;; == TREEMACS ==
 (use-package! treemacs
+  :init
+  (map! :leader :desc "treemacs" "t t" #'treemacs)
+  :custom
+  (treemacs-width 28)              ; adjust window width
   :config
-  (setq treemacs-width 28)         ; adjust window width
   (treemacs-follow-mode 1)         ; follow files
   (treemacs-project-follow-mode 1) ; follow projects
 )
-(map! :leader :desc "treemacs" "t t" #'treemacs)
 
 ;;; == VTERM ==
 (use-package! vterm
@@ -472,10 +504,9 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   (setq-default vterm-shell (executable-find "fish"))             ; set fish shell as default
   )
 (map! :leader
-      (:prefix ("t". "toggle")
-       :desc "vterm popup"              "s"     #'+vterm/toggle  ; open popup
-       :desc "vterm window"             "S"     #'+vterm/here    ; open in current window
-       ))
+       :desc "vterm popup"              "t s"     #'+vterm/toggle  ; open popup
+       :desc "vterm window"             "t S"     #'+vterm/here    ; open in current window
+       )
 
 ;;; == EVIL-WINDOWS KEYMAPS ==
 (map! :leader
@@ -485,7 +516,6 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 
        :desc "Split view, right"        "s"             #'evil-window-split
        :desc "Split view, down"         "v"             #'evil-window-vsplit
-       ;; uses same buffer
 
        :desc "Select LEFT window"       "<left>"        #'evil-window-left
        :desc "Select DOWN window"       "<down>"        #'evil-window-down
@@ -498,11 +528,8 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
        :desc "Move window RIGHT"        "S-<right>"     #'+evil/window-move-right
 
        :desc "Maximize window"          "m m"           #'doom/window-maximize-buffer
-       ;; close all other windows
        :desc "Maximize vertically"      "m v"           #'doom/window-maximize-vertically
-       ;; close all windows UP/DOWN
        :desc "Maximize horizontally"    "m s"           #'doom/window-maximize-horizontally
-       ;; close all windown LEFT/RIGHT
 
        :desc "Close window"             "c"             #'evil-window-delete
        :desc "Kill buffer & window"     "d"             #'kill-buffer-and-window))
