@@ -70,7 +70,7 @@ get_symlinks() {
                 link=${link/\$HOME/$HOME}
             done
             eval src=\${link%=*}
-            eval dest=\${link#*=}
+            eval dest="${link#*=}"
             src=${src%/}
             dest=${dest%/}
             create_symlink "$src" "$dest"
@@ -82,19 +82,19 @@ create_symlink() {
     local src=$1
     local dest=$2
 
-    if [ ! -e $src ]; then
+    if [ ! -e "$src" ]; then
         echo "Source $src does not exist. Skipping..."
         return
     fi
 
-    if [ -e $dest ] || [ -L $dest ]; then
+    if [ -e "$dest" ] || [ -L "$dest" ]; then
         echo "Removing existing file or symlink at $dest"
-        rm -rf $dest
+        rm -rf "$dest"
     fi
 
-    mkdir --parents $(dirname $dest)
+    mkdir --parents "$(dirname "$dest")"
     echo "Creating symlink $src -> $dest"
-    ln -s $src $dest
+    ln -s "$src" "$dest"
 }
 
 parse_args() {
