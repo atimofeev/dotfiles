@@ -45,10 +45,12 @@ This is an =.org= file which generates app configuration with =org-babel-tangle=
 Inspired by [[https://gitlab.com/dwt1/dotfiles/-/blob/master/.config/doom/config.org][DistroTube configuration]].
 :end:
 See [[file:keybinds.org][Keybind Help]] for useful and mostly default keybinds in Doom Emacs.
-See [[file:dependencies.org][dependencies]] for a list of required external software.
+
+Also, [[file:dependencies.org][dependencies]] for a list of required external software.
 
 * init.el
 Init config with selectable modules
+
 See [[file:files/init.el][init.el]].
 
 * config.el
@@ -420,12 +422,11 @@ On the fly syntax checking
   (flycheck-add-next-checker 'markdown-markdownlint-cli 'textlint)
   (flycheck-add-next-checker 'textlint 'proselint)
   ;(flycheck-display-errors-funct ion #'flycheck-display-error-messages-unless-error-list) ; i need reverse of this
-  :hook
-  (lsp-managed-mode-hook . (lambda ()                     ; setup checkers chaining with LSP
+  )
+(add-hook 'lsp-managed-mode-hook (lambda ()                     ; setup checkers chaining with LSP
     (when (derived-mode-p 'dockerfile-mode)(flycheck-add-next-checker 'lsp 'dockerfile-hadolint))
     (when (derived-mode-p 'sh-mode)        (flycheck-add-next-checker 'lsp 'sh-bash))  ; next one is sh-shellcheck
     ))
-  )
 #+end_src
 
 #+begin_src shhh :tangle ~/.config/doom/scripts/echo.sh :shebang #!/bin/bash
@@ -830,6 +831,7 @@ Additional packages from emacs repos
 - org-scr-mode :: Exit with =:q= or =:w= (if no filename was provided)
 - Try to customize =org-fancy-priorities=
 - Wrapper for clipboard paste to automatically detect images and launch =custom/org-save-clipboard-image=
+- org dwim :: open images in new buffer if they can't fit in a window view
 
 *** to disable
 - disable =evil-record-macro= =q= and other related commands

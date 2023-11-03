@@ -301,12 +301,11 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   (flycheck-add-next-checker 'markdown-markdownlint-cli 'textlint)
   (flycheck-add-next-checker 'textlint 'proselint)
   ;(flycheck-display-errors-funct ion #'flycheck-display-error-messages-unless-error-list) ; i need reverse of this
-  :hook
-  (lsp-managed-mode-hook . (lambda ()                     ; setup checkers chaining with LSP
+  )
+(add-hook 'lsp-managed-mode-hook (lambda ()                     ; setup checkers chaining with LSP
     (when (derived-mode-p 'dockerfile-mode)(flycheck-add-next-checker 'lsp 'dockerfile-hadolint))
     (when (derived-mode-p 'sh-mode)        (flycheck-add-next-checker 'lsp 'sh-bash))  ; next one is sh-shellcheck
     ))
-  )
 
 (flycheck-define-checker terraform-tflint-custom
   "A custom Terraform checker using tflint.
