@@ -14,6 +14,11 @@
   - [[#terraform][Terraform]]
   - [[#texlatex][TeX/LaTeX]]
   - [[#yaml][YAML]]
+- [[#email-client][Email Client]]
+  - [[#message-indexing][Message indexing]]
+  - [[#email-sync][Email sync]]
+  - [[#send-email][Send email]]
+  - [[#org-mode-integration][org-mode integration]]
 
 * About
 Required dependencies for additional functionality, which is normally unavailable via pure Emacs means.
@@ -111,3 +116,36 @@ https://www.flycheck.org/en/latest/languages.html#tex-latex
 *** Linter
 https://www.flycheck.org/en/latest/languages.html#yaml
 
+* Email Client
+=mu4e= required configuration
+[[https://www.youtube.com/watch?v=yZRyEhi4y44&list=PLEoMzSkcN8oM-kA19xOQc8s0gr0PpFGJQ&index=1][System Crafters video series guide]]
+[[https://github.com/hlissner/dotfiles/tree/be0dce5dae8f3cbafaac0cc44269d84b4a742c46/shell/mu][hlissner dotfiles]]
+** Message indexing
+- mu / maildir-utils (+ mu4e on debian) ::
+  - Insall (fedora):
+    ~dnf install maildir-utils~
+  - Setup:
+#+begin_src sh
+mu init --maildir ~/.mail --my-address email@example.com
+mu index
+#+end_src
+** Email sync
+- isync / mbsync ::
+  - Faster sync: https://tecosaur.github.io/emacs-config/config.html#fetching
+  - Install:
+    ~dnf install isync~
+  - Config:
+#+begin_src conf :tangle no
+:tangle ~/.mbsyncrc
+IMAPAccount gmail
+Host imap.gmail.com
+User legalaze94@gmail.com
+SSLType IMAPS
+CertificateFile
+#+end_src
+** Send email
+- msmtp ::
+  - Install:
+    ~dnf install msmtp~
+** org-mode integration
+- org-msg ::
