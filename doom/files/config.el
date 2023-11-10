@@ -156,24 +156,25 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   (centaur-tabs-set-close-button nil)                        ; remove close button
   :config                                                    ; hide tabs in various buffers
   (centaur-tabs-group-by-projectile-project)                 ; group tabs by projects
-  (add-to-list 'centaur-tabs-excluded-prefixes "*doom")
-  (add-to-list 'centaur-tabs-excluded-prefixes "*Org")
-  (add-to-list 'centaur-tabs-excluded-prefixes "*Ilist")
-  (add-to-list 'centaur-tabs-excluded-prefixes "*Async-native")
-  (add-to-list 'centaur-tabs-excluded-prefixes "*Native-compile")
-  (add-to-list 'centaur-tabs-excluded-prefixes "*compilation")
-  (add-to-list 'centaur-tabs-excluded-prefixes "*pylsp")
-  (add-to-list 'centaur-tabs-excluded-prefixes "*Messages")
-  (add-to-list 'centaur-tabs-excluded-prefixes "*scratch")
+  (dolist (prefix '(                                         ; disable tabs for select buffer names
+                    "*doom" "*Async-native" "*Native-compile" "*Messages" "*scratch"
+                    "*Org" "*Ilist" "*org-roam" "*httpd"
+                    "*compilation" "*pylsp" "*yamlls" "*bash-ls" "*jsts-ls" "*ansible-ls" "*json-ls"
+                    ))
+    (add-to-list 'centaur-tabs-excluded-prefixes prefix))
   (unbind-key "<tab-line> <mouse-1>" centaur-tabs-close-map) ; disable tab closing with LMB
   (define-key centaur-tabs-default-map
    (vector centaur-tabs-display-line 'mouse-2) 'centaur-tabs-do-select)
   )
-(map! :leader
-      "<left>" #'centaur-tabs-backward
-      "<right>" #'centaur-tabs-forward
-      "<up>" #'centaur-tabs-forward-group
-      "<down>" #'centaur-tabs-backward-group)
+;(map! :leader
+;      "<left>" #'centaur-tabs-backward
+;      "<right>" #'centaur-tabs-forward
+;      "<up>" #'centaur-tabs-forward-group
+;      "<down>" #'centaur-tabs-backward-group)
+(map! "C-s-<left>" #'centaur-tabs-backward
+      "C-s-<right>" #'centaur-tabs-forward
+      "C-s-<up>" #'centaur-tabs-forward-group
+      "C-s-<down>" #'centaur-tabs-backward-group)
 
 ;;; == GPTEL ==
 (defvar openai-api-key nil "Variable to hold OpenAI API key.")
@@ -296,12 +297,12 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   (flycheck-markdown-markdownlint-cli-executable "~/.config/doom/scripts/markdownlintcli-container.sh")
   (flycheck-markdown-markdownlint-cli-config "~/.config/doom/.markdownlint.yaml")
   (flycheck-sh-shellcheck-executable "~/.config/doom/scripts/shellcheck-container.sh")
-  (tflint-custom-config "~/.config/doom/.tflint.hcl")
   :config
   (flycheck-add-next-checker 'markdown-markdownlint-cli 'textlint)
   (flycheck-add-next-checker 'textlint 'proselint)
   ;(flycheck-display-errors-funct ion #'flycheck-display-error-messages-unless-error-list) ; i need reverse of this
   )
+(setq tflint-custom-config "~/.config/doom/.tflint.hcl")
 (add-hook 'lsp-managed-mode-hook (lambda ()                     ; setup checkers chaining with LSP
     (when (derived-mode-p 'dockerfile-mode)(flycheck-add-next-checker 'lsp 'dockerfile-hadolint))
     (when (derived-mode-p 'sh-mode)        (flycheck-add-next-checker 'lsp 'sh-bash))  ; next one is sh-shellcheck

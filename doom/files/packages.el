@@ -14,3 +14,4 @@
 (package! gptel-extensions     ; extended functionality
   :recipe (:host github :repo "kamushadenes/gptel-extensions.el"
                  :files ("gptel-extensions.el")))
+(package! jenkinsfile-mode)
