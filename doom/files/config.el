@@ -11,13 +11,13 @@
 ; company-global-modes '(not text-mode org-mode markdown-mode)    ; disable autocomplete for plain text
  scroll-margin 3                                                 ; add margin to cursor while scrolling
  projectile-project-search-path '("~/repos/")                    ;
- dired-kill-when-opening-new-dired-buffer t                      ; dired: stop creating buffers for each dir
  global-auto-revert-non-file-buffers t                           ; auto-update non-file buffers (e.g. Dired)
 )
 (global-auto-revert-mode 1)                                      ; auto-update changed files
 (beacon-mode 1)                                                  ; cursor highlight on big movements or between windows
-(set-frame-parameter nil 'alpha-background 90)                   ; should add true transparency..
-(add-to-list 'default-frame-alist '(alpha-background . 90))
+(pixel-scroll-precision-mode)                                    ; smooth scrolling
+;(set-frame-parameter nil 'alpha-background 97)                   ; should add true transparency..
+;(add-to-list 'default-frame-alist '(alpha-background . 97))
 
 (global-set-key (kbd "C-M-<up>")   'mc/mark-previous-like-this)  ; spawn additional cursor above; C-g to exit
 (global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)      ; spawn additional cursor below
@@ -176,22 +176,14 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
       "C-s-<up>" #'centaur-tabs-forward-group
       "C-s-<down>" #'centaur-tabs-backward-group)
 
-;;; == GPTEL ==
-(defvar openai-api-key nil "Variable to hold OpenAI API key.")
-(defun read-openai-api-key ()
-  "Read API key from file and set `openai-api-key`."
-  (with-temp-buffer
-    (insert-file-contents "~/repos/dotfiles/doom/api.key")
-    (setq openai-api-key (string-trim (buffer-string)))))
-
-(use-package! gptel
+;;; == DIRED ==
+(use-package! dired
   :defer t
-  :init
-  (read-openai-api-key)
   :custom
-  (gptel-api-key openai-api-key)
-  (gptel-default-mode 'org-mode)
-  (gptel-model "gpt-4")
+  (dired-kill-when-opening-new-dired-buffer t)  ; stop creating buffers for each dir
+  )
+(evil-define-key 'normal dired-mode-map
+  (kbd "DEL") 'dired-up-directory               ; move up dirs with Backspace
   )
 
 ;;; == DOOM-MODELINE ==
@@ -323,6 +315,24 @@ See URL `https://github.com/wata727/tflint'."
   :modes terraform-mode
   :next-checkers (terraform))
 (add-to-list 'flycheck-checkers 'terraform-tflint-custom)
+
+;;; == GPTEL ==
+(defvar openai-api-key nil "Variable to hold OpenAI API key.")
+(defun read-openai-api-key ()
+  "Read API key from file and set `openai-api-key`."
+  (with-temp-buffer
+    (insert-file-contents "~/repos/dotfiles/doom/api.key")
+    (setq openai-api-key (string-trim (buffer-string)))))
+
+(use-package! gptel
+  :defer t
+  :init
+  (read-openai-api-key)
+  :custom
+  (gptel-api-key openai-api-key)
+  (gptel-default-mode 'org-mode)
+  (gptel-model "gpt-4")
+  )
 
 ;;; == HIGHLIGHT-INDENT-GUIDES ==
 (use-package! highlight-indent-guides
