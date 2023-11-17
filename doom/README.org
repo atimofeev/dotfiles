@@ -2,7 +2,6 @@
 #+author: Artem Timofeev
 #+property: header-args :tangle ~/.config/doom/config.el
 #+startup: content
-
 * Table of Contents :toc:
 - [[#about-this-config][About this config]]
 - [[#initel][init.el]]
@@ -85,7 +84,7 @@ Main or uncategorized settings
 #+end_src
 
 ** Custom functions
-#+begin_src elisp
+#+begin_src elisp :exports none
 ;;; == CUSTOM FUNCTIONS ==
 #+end_src
 
@@ -233,6 +232,7 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 #+end_src
 
 ** centaur-tabs
+Add tabs to buffers
 #+begin_src elisp
 ;;; == CENTAUR-TABS ==
 (use-package! centaur-tabs
@@ -267,6 +267,7 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
 #+end_src
 
 ** dired
+Traverse and manage directories
 #+begin_src elisp
 ;;; == DIRED ==
 (use-package! dired
@@ -423,10 +424,6 @@ On the fly syntax checking
     ))
 #+end_src
 
-#+begin_src shhh :tangle ~/.config/doom/scripts/echo.sh :shebang #!/bin/bash
-echo "$@" > ~/.config/doom/scripts/tmpfile
-#+end_src
-
 *** dockerfile-hadolint
 Runs from container. No configurable options
 #+begin_src sh :tangle ~/.config/doom/scripts/hadolint-container.sh :shebang #!/bin/bash
@@ -527,6 +524,7 @@ See URL `https://github.com/wata727/tflint'."
 #+end_src
 
 ** gptel
+ChatGPT in Emacs
 #+begin_src elisp
 ;;; == GPTEL ==
 (defvar openai-api-key nil "Variable to hold OpenAI API key.")
@@ -620,6 +618,7 @@ Control Kubernetes
 #+end_src
 
 ** lsp
+Language servers for code suggestions, highlighting and errors
 #+begin_src elisp
 ;;; == LSP ==
 (use-package! lsp-mode
@@ -636,7 +635,7 @@ Control Kubernetes
 #+end_src
 
 ** org-mode
-- .org :: Highly flexible structured plain text file format
+- org :: Highly flexible structured plain text file format
 #+begin_src elisp
 ;;; == ORG-MODE ==
 (use-package! org
@@ -757,6 +756,7 @@ Module for displaying project file tree
 #+end_src
 
 ** vterm
+Terminal inside Emacs
 #+begin_src elisp
 ;;; == VTERM ==
 (use-package! vterm
@@ -771,6 +771,7 @@ Module for displaying project file tree
 #+end_src
 
 ** Windows
+Manage Emacs windows
 #+begin_src elisp
 ;;; == EVIL-WINDOWS KEYMAPS ==
 (map! :leader
@@ -932,3 +933,5 @@ https://stackoverflow.com/questions/34497696/swap-and-to-make-colon-commands-eas
 https://github.com/larstvei/dot-emacs
 https://github.com/Remedan/dotfiles
 https://github.com/rolandtritsch/emacs.d/blob/trunk/roland/30-general-coding.org
+https://github.com/ndrvtl/emacs-pgtk
+https://github.com/bbatsov/emacs-lisp-style-guide
