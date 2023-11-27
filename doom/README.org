@@ -741,6 +741,21 @@ Settings for coding modes, such as =Python-mode=, =c-mode=, etc..
           )
 #+end_src
 
+** recenter
+Recenters view upon reaching end of buffer
+Hack to disable scrolling past 50% of window past buffer end
+#+begin_src elisp
+;;; == RECENTER ON BUFFER END ==
+(defun my-recenter-if-end-of-buffer-visible (&rest args)
+  "Advice to recenter window if the end of the buffer is visible."
+  (when (and (not (equal (point-max) (point-min)))
+             (pos-visible-in-window-p (point-max)))
+    (recenter)))
+
+(advice-add 'pixel-scroll-interpolate-down :after #'my-recenter-if-end-of-buffer-visible)
+;(advice-add 'scroll-up :after #'my-recenter-if-end-of-buffer-visible)
+#+end_src
+
 ** treemacs
 Module for displaying project file tree
 #+begin_src elisp

@@ -496,6 +496,16 @@ See URL `https://github.com/wata727/tflint'."
             )
           )
 
+;;; == RECENTER ON BUFFER END ==
+(defun my-recenter-if-end-of-buffer-visible (&rest args)
+  "Advice to recenter window if the end of the buffer is visible."
+  (when (and (not (equal (point-max) (point-min)))
+             (pos-visible-in-window-p (point-max)))
+    (recenter)))
+
+(advice-add 'pixel-scroll-interpolate-down :after #'my-recenter-if-end-of-buffer-visible)
+;(advice-add 'scroll-up :after #'my-recenter-if-end-of-buffer-visible)
+
 ;;; == TREEMACS ==
 (use-package! treemacs
   :init
