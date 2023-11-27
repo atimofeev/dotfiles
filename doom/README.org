@@ -18,16 +18,17 @@
   - [[#expand-region][expand-region]]
   - [[#flycheck][flycheck]]
   - [[#gptel][gptel]]
-  - [[#highlight-indent-guides][highlight-indent-guides]]
   - [[#imenu-list][imenu-list]]
   - [[#indent-bars][indent-bars]]
   - [[#kubel][kubel]]
   - [[#lsp][lsp]]
   - [[#org-mode][org-mode]]
   - [[#prog-mode][prog-mode]]
+  - [[#recenter][recenter]]
   - [[#treemacs][treemacs]]
   - [[#vterm][vterm]]
   - [[#windows][Windows]]
+  - [[#whiteroom-mode][Whiteroom-mode]]
 - [[#packagesel][packages.el]]
 - [[#notes][Notes]]
   - [[#tasks][Tasks]]
@@ -800,6 +801,24 @@ Manage Emacs windows
        :desc "Kill buffer & window"     "d"             #'kill-buffer-and-window))
 #+end_src
 
+** Whiteroom-mode
+#+begin_src elisp
+;;; == WHITEROOM-MODE ==
+(after! writeroom-mode
+  (add-hook! 'writeroom-mode-enable-hook
+    (centaur-tabs-mode -1)
+    (git-gutter-mode -1)
+    (company-mode -1)
+    )
+
+  (add-hook! 'writeroom-mode-disable-hook
+    (centaur-tabs-mode 1)
+    (git-gutter-mode 1)
+    (company-mode 1)
+    )
+  )
+#+end_src
+
 * packages.el
 Additional packages from emacs repos
 #+begin_src elisp :tangle ~/.config/doom/packages.el
@@ -872,8 +891,8 @@ Additional packages from emacs repos
   2. <mouse-1> click a roam link, it opens a new tab
   3. <mouse-1> click on original tab, it goes to original tab
   4. from original tab <mouse-1> click on second roam tab, it get recognized as <mouse-2> and closes tab.
-     - When you unbind ~centaur-tabs-do-close~ from both ~centaur-tabs-close-map~ (mouse-1 and mouse-2), and ~centaur-tabs-default-map~ (mouse-2),
-in reproduced scenario you can't go to second roam tab with <mouse-1>, it says =<tab-line> <mouse-2> is undefined=.
+     - When you unbind ~centaur-tabs-do-close~ from both ~centaur-tabs-close-map~ (mouse-1 and mouse-2), and ~centaur-tabs-default-map~ (mouse-2), in reproduced scenario you can't go to second roam tab with <mouse-1>, it says =<tab-line> <mouse-2> is undefined=.
+- Overscroll :: Currently no solution found to control or prevent buffer overscroll
 
 ** Code to implement
 *** Centaur-Tabs

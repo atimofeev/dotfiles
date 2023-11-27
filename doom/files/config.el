@@ -543,3 +543,18 @@ See URL `https://github.com/wata727/tflint'."
 
        :desc "Close window"             "c"             #'evil-window-delete
        :desc "Kill buffer & window"     "d"             #'kill-buffer-and-window))
+
+;;; == WHITEROOM-MODE ==
+(after! writeroom-mode
+  (add-hook! 'writeroom-mode-enable-hook
+    (centaur-tabs-mode -1)
+    (git-gutter-mode -1)
+    (company-mode -1)
+    )
+
+  (add-hook! 'writeroom-mode-disable-hook
+    (centaur-tabs-mode 1)
+    (git-gutter-mode 1)
+    (company-mode 1)
+    )
+  )
