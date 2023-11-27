@@ -10,7 +10,8 @@
  confirm-kill-emacs nil                                          ; quit without prompt
 ; company-global-modes '(not text-mode org-mode markdown-mode)    ; disable autocomplete for plain text
  scroll-margin 3                                                 ; add margin to cursor while scrolling
- projectile-project-search-path '("~/repos/")                    ;
+ mouse-wheel-scroll-amount '(3((shift) . hscroll))               ; faster mouse scrolling
+ projectile-project-search-path '("~/repos/")                    ; folder for projects
  global-auto-revert-non-file-buffers t                           ; auto-update non-file buffers (e.g. Dired)
 )
 (global-auto-revert-mode 1)                                      ; auto-update changed files
@@ -159,18 +160,18 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   (dolist (prefix '(                                         ; disable tabs for select buffer names
                     "*doom" "*Async-native" "*Native-compile" "*Messages" "*scratch"
                     "*Org" "*Ilist" "*org-roam" "*httpd"
-                    "*compilation" "*pylsp" "*yamlls" "*bash-ls" "*jsts-ls" "*ansible-ls" "*json-ls"
+                    "*compilation" "*pylsp" "*yamlls" "*bash-ls" "*jsts-ls" "*ansible-ls" "*json-ls" "*docker"
                     ))
     (add-to-list 'centaur-tabs-excluded-prefixes prefix))
   (unbind-key "<tab-line> <mouse-1>" centaur-tabs-close-map) ; disable tab closing with LMB
   (define-key centaur-tabs-default-map
    (vector centaur-tabs-display-line 'mouse-2) 'centaur-tabs-do-select)
   )
-;(map! :leader
-;      "<left>" #'centaur-tabs-backward
-;      "<right>" #'centaur-tabs-forward
-;      "<up>" #'centaur-tabs-forward-group
-;      "<down>" #'centaur-tabs-backward-group)
+(map! :leader
+      "<left>" #'centaur-tabs-backward
+      "<right>" #'centaur-tabs-forward
+      "<up>" #'centaur-tabs-forward-group
+      "<down>" #'centaur-tabs-backward-group)
 (map! "C-s-<left>" #'centaur-tabs-backward
       "C-s-<right>" #'centaur-tabs-forward
       "C-s-<up>" #'centaur-tabs-forward-group
@@ -332,17 +333,6 @@ See URL `https://github.com/wata727/tflint'."
   (gptel-api-key openai-api-key)
   (gptel-default-mode 'org-mode)
   (gptel-model "gpt-4")
-  )
-
-;;; == HIGHLIGHT-INDENT-GUIDES ==
-(use-package! highlight-indent-guides
-  :disabled t
-  :defer t
-  :custom
-  (highlight-indent-guides-auto-odd-face-perc 0)
-  (highlight-indent-guides-auto-even-face-perc 0)
-  :config
-  (highlight-indent-guides-auto-set-faces) ; FIXME indent glitches (not working)
   )
 
 ;;; == IMENU-LIST ==
@@ -514,7 +504,7 @@ See URL `https://github.com/wata727/tflint'."
   (treemacs-width 28)              ; adjust window width
   :config
   (treemacs-follow-mode 1)         ; follow files
-  (treemacs-project-follow-mode 1) ; follow projects
+  ;(treemacs-project-follow-mode 1) ; follow projects
 )
 
 ;;; == VTERM ==

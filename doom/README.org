@@ -70,7 +70,8 @@ Main or uncategorized settings
  confirm-kill-emacs nil                                          ; quit without prompt
 ; company-global-modes '(not text-mode org-mode markdown-mode)    ; disable autocomplete for plain text
  scroll-margin 3                                                 ; add margin to cursor while scrolling
- projectile-project-search-path '("~/repos/")                    ;
+ mouse-wheel-scroll-amount '(3((shift) . hscroll))               ; faster mouse scrolling
+ projectile-project-search-path '("~/repos/")                    ; folder for projects
  global-auto-revert-non-file-buffers t                           ; auto-update non-file buffers (e.g. Dired)
 )
 (global-auto-revert-mode 1)                                      ; auto-update changed files
@@ -249,18 +250,18 @@ Add tabs to buffers
   (dolist (prefix '(                                         ; disable tabs for select buffer names
                     "*doom" "*Async-native" "*Native-compile" "*Messages" "*scratch"
                     "*Org" "*Ilist" "*org-roam" "*httpd"
-                    "*compilation" "*pylsp" "*yamlls" "*bash-ls" "*jsts-ls" "*ansible-ls" "*json-ls"
+                    "*compilation" "*pylsp" "*yamlls" "*bash-ls" "*jsts-ls" "*ansible-ls" "*json-ls" "*docker"
                     ))
     (add-to-list 'centaur-tabs-excluded-prefixes prefix))
   (unbind-key "<tab-line> <mouse-1>" centaur-tabs-close-map) ; disable tab closing with LMB
   (define-key centaur-tabs-default-map
    (vector centaur-tabs-display-line 'mouse-2) 'centaur-tabs-do-select)
   )
-;(map! :leader
-;      "<left>" #'centaur-tabs-backward
-;      "<right>" #'centaur-tabs-forward
-;      "<up>" #'centaur-tabs-forward-group
-;      "<down>" #'centaur-tabs-backward-group)
+(map! :leader
+      "<left>" #'centaur-tabs-backward
+      "<right>" #'centaur-tabs-forward
+      "<up>" #'centaur-tabs-forward-group
+      "<down>" #'centaur-tabs-backward-group)
 (map! "C-s-<left>" #'centaur-tabs-backward
       "C-s-<right>" #'centaur-tabs-forward
       "C-s-<up>" #'centaur-tabs-forward-group
@@ -506,6 +507,8 @@ docker run --rm -i tflint-plugins -v
 | +      | ruleset.aws       | (0.27.0)        |
 
 - Setup checker ::
+FIXME:
+Suspicious state from syntax checker terraform-tflint-custom: Flycheck checker terraform-tflint-custom returned 1, but its output contained no errors: Failed to check ruleset; failed to check "aws_lb_invalid_ip_address_type" rule: main.tf:80,22-35: Reference to undeclared input variable; An input variable with the name "app_count" has not been declared. This variable can be declared with a variable "app_count" {} block.
 #+begin_src elisp
 (flycheck-define-checker terraform-tflint-custom
   "A custom Terraform checker using tflint.
@@ -543,20 +546,6 @@ ChatGPT in Emacs
   (gptel-api-key openai-api-key)
   (gptel-default-mode 'org-mode)
   (gptel-model "gpt-4")
-  )
-#+end_src
-
-** highlight-indent-guides
-#+begin_src elisp
-;;; == HIGHLIGHT-INDENT-GUIDES ==
-(use-package! highlight-indent-guides
-  :disabled t
-  :defer t
-  :custom
-  (highlight-indent-guides-auto-odd-face-perc 0)
-  (highlight-indent-guides-auto-even-face-perc 0)
-  :config
-  (highlight-indent-guides-auto-set-faces) ; FIXME indent glitches (not working)
   )
 #+end_src
 
@@ -767,7 +756,7 @@ Module for displaying project file tree
   (treemacs-width 28)              ; adjust window width
   :config
   (treemacs-follow-mode 1)         ; follow files
-  (treemacs-project-follow-mode 1) ; follow projects
+  ;(treemacs-project-follow-mode 1) ; follow projects
 )
 #+end_src
 
