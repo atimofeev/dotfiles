@@ -3,6 +3,7 @@ if status is-interactive
 end
 
 ### ENV VARS ###
+set EDITOR "nvim"
 set GOPATH "$HOME/go"
 set HASKELL_PATHS "$HOME/.cabal/bin $HOME/.ghcup/bin"
 set -e fish_user_paths
@@ -50,9 +51,6 @@ end
 
 # RIPGREP #
 alias rg='rg --color=always --ignore-case '
-
-# SPONGE #
-set sponge_successful_exit_codes 0 130
 
 # GIT # TODO: Refactor
 function mv
@@ -132,6 +130,8 @@ end
 alias t=terraform
 alias a=ansible
 alias k=kubectl
+alias mk=minikube
+alias d=docker
 alias rack='cd ~/Rack2Free && ./Rack && cd -'
 
 alias cdtl='cd $(git rev-parse --show-toplevel 2>/dev/null)'
@@ -150,7 +150,7 @@ alias nf='neofetch --backend off --color_blocks off'
 alias chx='chmod +x'
 
 # adding flags
-alias df='df --human-readable --print-type --exclude-type=tmpfs'
+alias df='df --human-readable --print-type --exclude-type=tmpfs --exclude-type=squashfs'
 alias du='du --human-readable'
 alias free='free --human'
 alias mkdir='mkdir --parents --verbose'
