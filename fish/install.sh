@@ -1,5 +1,7 @@
 $INSTALLER fish
 
+chsh -s /usr/bin/fish
+
 HOME_BIN="$HOME/.bin"
 SCRIPTS_REPO="https://raw.githubusercontent.com/atimofeev/learning-python/main/"
 
