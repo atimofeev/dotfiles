@@ -28,14 +28,14 @@ set -U Z_DATA "$HOME/.local/share/z/data"
 set -U Z_DATA_DIR "$HOME/.local/share/z"
 set -U Z_EXCLUDE "^$HOME\$"
 
-# EXA #
-if type -q exa
-    alias ls='exa --color=always --group-directories-first'
-    alias ll='exa -l --color=always --group-directories-first'
-    alias la='exa --all -l --color=always --group-directories-first'
-    alias ld='exa --list-dirs -l --color=always --group-directories-first' # list exact dir info
-    alias lt='exa --tree -all --color=always --group-directories-first --level 2'
-    alias l.='exa --all | egrep "^\."' # show only dotfiles
+# EZA #
+if type -q eza
+    alias ls='eza --color=always --group-directories-first'
+    alias ll='eza -l --color=always --group-directories-first'
+    alias la='eza --all -l --color=always --group-directories-first'
+    alias ld='eza --list-dirs -l --color=always --group-directories-first' # list exact dir info
+    alias lt='eza --tree -all --color=always --group-directories-first --level 2'
+    alias l.='eza --all | egrep "^\."' # show only dotfiles
 end
 
 # BAT #
