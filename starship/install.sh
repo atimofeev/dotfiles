@@ -1,1 +1,1 @@
-curl --silent --show-error https://starship.rs/install.sh --fail | sudo sh
+curl --location --silent --show-error --fail https://starship.rs/install.sh  | sudo sh
