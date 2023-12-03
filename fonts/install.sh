@@ -3,7 +3,7 @@ FILENAME=$(basename $URL)
 TMP_DIR=/tmp
 FONT_DIR="$HOME/.local/share/fonts"
 
-mkdir -p $FONT_DIR
+mkdir --parents $FONT_DIR
 
 wget --quiet --output-document $TMP_DIR/$FILENAME $URL
 
