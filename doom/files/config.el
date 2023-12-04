@@ -398,7 +398,7 @@ See URL `https://github.com/wata727/tflint'."
 (use-package! org
   :defer t
   :custom
-  (org-directory "~/org")                                     ; org-agenda and other org tools will work upon this dir
+  (org-directory "~/repos/org")                                     ; org-agenda and other org tools will work upon this dir
   (org-support-shift-select t)                                ; enable select with S-<arrows>
   (org-startup-folded "content")                              ; startup with everything unfolded except lowest sub-sections
   (help-at-pt-display-when-idle t)                            ; show tooltips on links
