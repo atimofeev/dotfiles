@@ -2,7 +2,7 @@
 ;;; == GENERAL SETTINGS ==
 (setq
  user-full-name "Artem Timofeev"
- doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 15 :weight 'semi-light)
+ doom-font (font-spec :family "DejaVuSansM Nerd Font Mono" :size 16 :weight 'semi-light)
  doom-theme 'doom-one
  shell-file-name (executable-find "bash")                        ; use bash shell for internal needs
  display-line-numbers-type t                                     ; show line numbers
@@ -159,7 +159,7 @@ Depends on xclip for clipboard and ImageMagick for conversion to image."
   (centaur-tabs-group-by-projectile-project)                 ; group tabs by projects
   (dolist (prefix '(                                         ; disable tabs for select buffer names
                     "*doom" "*Async-native" "*Native-compile" "*Messages" "*scratch"
-                    "*Org" "*Ilist" "*org-roam" "*httpd"
+                    "*Org" "*Ilist" "*org-roam" "*httpd" "*pdflatex" "*Latex"
                     "*compilation" "*pylsp" "*yamlls" "*bash-ls" "*jsts-ls" "*ansible-ls" "*json-ls" "*docker"
                     ))
     (add-to-list 'centaur-tabs-excluded-prefixes prefix))
