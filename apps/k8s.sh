@@ -9,4 +9,4 @@ sudo install minikube-linux-amd64 /usr/local/bin/minikube
 rm minikube-linux-amd64
 
 # k9s (CLI GUI)
-$INSTALLER k9s
+curl -sS https://webinstall.dev/k9s | bash
