@@ -67,7 +67,7 @@ https://www.flycheck.org/en/latest/languages.html#lua
   - Install: ~npm install -g markdownlint-cli~
   - Image: =ghcr.io/igorshubovych/markdownlint-cli:latest=
 *** Render
-- ?
+- pip install grip
 
 ** Org
 *** Render
@@ -99,6 +99,7 @@ https://www.flycheck.org/en/latest/languages.html#lua
   - Install: ~curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash~
   - Image: =ghcr.io/terraform-linters/tflint=
   - Addon: [[https://github.com/terraform-linters/tflint-ruleset-aws][ruleset-aws]]
+
 ** TeX/LaTeX
 *** LSP
 - digestif
@@ -106,7 +107,8 @@ https://www.flycheck.org/en/latest/languages.html#lua
 *** Linter
 https://www.flycheck.org/en/latest/languages.html#tex-latex
 *** Render
-- ?
+- texlive
+- M-x pdf-tools-install
 
 ** YAML
 *** LSP
