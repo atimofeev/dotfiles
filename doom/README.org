@@ -77,9 +77,9 @@ Main or uncategorized settings
 (global-auto-revert-mode 1)                                      ; auto-update changed files
 (beacon-mode 1)                                                  ; cursor highlight on big movements or between windows
 (pixel-scroll-precision-mode)                                    ; smooth scrolling
-;(set-frame-parameter nil 'alpha-background 97)                   ; should add true transparency..
-;(add-to-list 'default-frame-alist '(alpha-background . 97))
-
+(set-frame-parameter nil 'alpha-background 96)                   ; enable true transparency
+(add-to-list 'default-frame-alist '(alpha-background . 96))
+(set-frame-parameter nil 'undecorated t)                         ; remove window decorations
 (global-set-key (kbd "C-M-<up>")   'mc/mark-previous-like-this)  ; spawn additional cursor above; C-g to exit
 (global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)      ; spawn additional cursor below
 (unbind-key "<insertchar>" overwrite-mode)                       ; disable overwrite mode on Insert key
