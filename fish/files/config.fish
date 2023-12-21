@@ -53,9 +53,9 @@ end
 alias rg='rg --color=always --ignore-case '
 
 # GIT # TODO: Refactor
-function mv
-    git mv $argv; or command mv --interactive $argv
-end
+#function mv
+#    git mv $argv; or command mv --interactive $argv
+#end
 function gitdiff
     git diff --name-only --relative --diff-filter=d | xargs bat --diff
 end
@@ -132,6 +132,7 @@ alias a=ansible
 alias k=kubectl
 alias mk=minikube
 alias d=docker
+alias dstopall='docker stop $(docker ps -q)'
 alias rack='cd ~/Rack2Free && ./Rack && cd -'
 
 alias cdtl='cd $(git rev-parse --show-toplevel 2>/dev/null)'
