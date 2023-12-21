@@ -8,7 +8,7 @@
  display-line-numbers-type t                                     ; show line numbers
  mouse-drag-copy-region t                                        ; select-to-copy with mouse
  confirm-kill-emacs nil                                          ; quit without prompt
-; company-global-modes '(not text-mode org-mode markdown-mode)    ; disable autocomplete for plain text
+ company-global-modes '(not text-mode org-mode markdown-mode)    ; disable autocomplete for plain text
  scroll-margin 3                                                 ; add margin to cursor while scrolling
  mouse-wheel-scroll-amount '(3((shift) . hscroll))               ; faster mouse scrolling
  projectile-project-search-path '("~/repos/")                    ; folder for projects
