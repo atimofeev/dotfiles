@@ -10,3 +10,6 @@ rm minikube-linux-amd64
 
 # k9s (CLI GUI)
 curl -sS https://webinstall.dev/k9s | bash
+
+# helm
+curl --silent --show-error --fail https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
