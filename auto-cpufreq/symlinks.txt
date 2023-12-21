@@ -1,0 +1,2 @@
+#SRC=DEST
+$DIR/auto-cpufreq/files/auto-cpufreq.conf=/etc/auto-cpufreq.conf
