@@ -8,19 +8,19 @@ INSTALLER="Unknown"
 declare -a TARGET_APPS
 
 detect_package_manager() {
-    if [ -n "$PREFIX" ] && command -v pkg > /dev/null; then
+    if [ -n "$PREFIX" ] && command -v pkg >/dev/null; then
         INSTALLER="pkg install -yq"
-    elif command -v apt-get > /dev/null; then
+    elif command -v apt-get >/dev/null; then
         INSTALLER="sudo apt-get install -yq"
-    elif command -v dnf > /dev/null; then
+    elif command -v dnf >/dev/null; then
         INSTALLER="sudo dnf install -yq"
-    elif command -v yum > /dev/null; then
+    elif command -v yum >/dev/null; then
         INSTALLER="sudo yum install -yq"
-    elif command -v pacman > /dev/null; then
+    elif command -v pacman >/dev/null; then
         INSTALLER="sudo pacman -S --noconfirm"
-    elif command -v zypper > /dev/null; then
+    elif command -v zypper >/dev/null; then
         INSTALLER="sudo zypper install -yq"
-    elif command -v pkg > /dev/null; then
+    elif command -v pkg >/dev/null; then
         INSTALLER="sudo pkg install -yq"
     fi
 }
@@ -48,7 +48,7 @@ install_requirements() {
             fi
             echo "Found requirement: $requirement"
             install_app "$requirement"
-        done < "$app_dir/requirements.txt"
+        done <"$app_dir/requirements.txt"
     fi
 }
 
@@ -56,7 +56,7 @@ execute_install_script() {
     local app_dir="$1"
     if [[ -f "$app_dir/install.sh" ]]; then
         echo "Launching $app_dir install.sh"
-        ( cd "$app_dir" && bash install.sh )
+        (cd "$app_dir" && bash install.sh)
     fi
 }
 
@@ -69,12 +69,12 @@ get_symlinks() {
                 link=${link/\$DIR/$DIR}
                 link=${link/\$HOME/$HOME}
             done
-            eval src=\${link%=*}
+            eval src="${link%=*}"
             eval dest="${link#*=}"
             src=${src%/}
             dest=${dest%/}
             create_symlink "$src" "$dest"
-        done < "$app_dir/symlinks.txt"
+        done <"$app_dir/symlinks.txt"
     fi
 }
 
@@ -103,9 +103,9 @@ parse_args() {
         exit 1
     fi
 
-    while (( "$#" )); do
+    while (("$#")); do
         case "$1" in
-            -l|--links)
+            -l | --links)
                 LINKS_ONLY=true
                 shift
                 ;;
