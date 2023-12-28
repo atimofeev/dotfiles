@@ -21,9 +21,9 @@
   - [[#imenu-list][imenu-list]]
   - [[#indent-bars][indent-bars]]
   - [[#kubel][kubel]]
+  - [[#languages][languages]]
   - [[#lsp][lsp]]
   - [[#org-mode][org-mode]]
-  - [[#prog-mode][prog-mode]]
   - [[#recenter][recenter]]
   - [[#treemacs][treemacs]]
   - [[#vterm][vterm]]
@@ -608,6 +608,26 @@ Control Kubernetes
   :after kubel)
 #+end_src
 
+** languages
+Settings for coding modes, such as =Python-mode=, =sh-mode=, etc..
+#+begin_src elisp
+;;; == LANGUAGES ==
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook 'delete-trailing-whitespace nil t) ; remove whitespace on save
+            (rainbow-delimiters-mode)                                      ; enable colored delimiters ([{
+            )
+          )
+
+(use-package! terraform-mode
+  :defer t
+  :config
+  (add-hook 'terraform-mode-hook 'terraform-format-on-save-mode)
+  )
+(with-eval-after-load 'apheleia
+  (add-to-list 'apheleia-mode-alist '(sh-mode . shfmt)))
+#+end_src
+
 ** lsp
 Language servers for code suggestions, highlighting and errors
 #+begin_src elisp
@@ -717,18 +737,6 @@ Language servers for code suggestions, highlighting and errors
     (org-roam-ui-open-on-start t)
     ; TODO: write comments for custom options
     )
-#+end_src
-
-** prog-mode
-Settings for coding modes, such as =Python-mode=, =c-mode=, etc..
-#+begin_src elisp
-;;; ==PROG-MODE==
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (add-hook 'before-save-hook 'delete-trailing-whitespace nil t) ; remove whitespace on save
-            (rainbow-delimiters-mode)                                      ; enable colored delimiters ([{
-            )
-          )
 #+end_src
 
 ** recenter

@@ -382,6 +382,22 @@ See URL `https://github.com/wata727/tflint'."
 (use-package! kubel-evil
   :after kubel)
 
+;;; == LANGUAGES ==
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook 'delete-trailing-whitespace nil t) ; remove whitespace on save
+            (rainbow-delimiters-mode)                                      ; enable colored delimiters ([{
+            )
+          )
+
+(use-package! terraform-mode
+  :defer t
+  :config
+  (add-hook 'terraform-mode-hook 'terraform-format-on-save-mode)
+  )
+(with-eval-after-load 'apheleia
+  (add-to-list 'apheleia-mode-alist '(sh-mode . shfmt)))
+
 ;;; == LSP ==
 (use-package! lsp-mode
   :defer t
@@ -478,14 +494,6 @@ See URL `https://github.com/wata727/tflint'."
     (org-roam-ui-open-on-start t)
     ; TODO: write comments for custom options
     )
-
-;;; ==PROG-MODE==
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (add-hook 'before-save-hook 'delete-trailing-whitespace nil t) ; remove whitespace on save
-            (rainbow-delimiters-mode)                                      ; enable colored delimiters ([{
-            )
-          )
 
 ;;; == RECENTER ON BUFFER END ==
 (defun my-recenter-if-end-of-buffer-visible (&rest args)
