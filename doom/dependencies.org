@@ -35,6 +35,10 @@ Install linter inside a container: https://github.com/flycheck/flycheck/issues/1
 - [[https://github.com/hadolint/hadolint][hadolint]] ::
   - Install: =brew package=, =scoop package=, =build (haskell)= or =run container=
   - Image: =hadolint/hadolint= OR =ghcr.io/hadolint/hadolint=
+*** Format
+- [[https://github.com/jessfraz/dockfmt][dockfmt]] ::
+  - Install: ~go install github.com/jessfraz/dockfmt@latest~
+  - Notes:
 
 ** JavaScript
 *** LSP
@@ -67,7 +71,12 @@ https://www.flycheck.org/en/latest/languages.html#lua
   - Install: ~npm install -g markdownlint-cli~
   - Image: =ghcr.io/igorshubovych/markdownlint-cli:latest=
 *** Render
-- pip install grip
+- multimarkdown ::
+  - Install: ~dnf install multimarkdown~
+  - Notes: No live preview, opens in browser
+- grip-mode ::
+  - Install: ~pip install grip~
+  - Notes: Does not work in GTK, issues rendering inline HTML
 
 ** Org
 *** Render
@@ -76,12 +85,14 @@ https://www.flycheck.org/en/latest/languages.html#lua
 ** Python
 *** LSP
 - [[https://github.com/python-lsp/python-lsp-server][python-lsp-server]] ::
-  - Install: ~pip3 install python-lsp-server~
+  - Install: ~pip install python-lsp-server[all]~
   - Image: no. Do we really need one?
 *** Linter
 - [[https://github.com/pycqa/flake8][Flake8]]
 - [[https://github.com/pylint-dev/pylint][Pylint]]
 - [[https://github.com/PyCQA/pyflakes][Pyflakes]] (requires [[https://github.com/Wilfred/flycheck-pyflakes][flycheck-pyflakes]])
+*** Formatter
+ - Install: ~pip install black~
 
 ** Shell
 *** LSP
@@ -92,6 +103,9 @@ https://www.flycheck.org/en/latest/languages.html#lua
 - [[https://github.com/koalaman/shellcheck/][ShellCheck]] ::
   - Install: ~cabal~, ~stack~ or various package managers
   - Image: =koalaman/shellcheck:stable=
+*** Formatter
+- [[https://github.com/patrickvane/shfmt][shfmt]] ::
+  - Install: Install single executable
 
 ** Terraform
 *** Linter
@@ -99,6 +113,9 @@ https://www.flycheck.org/en/latest/languages.html#lua
   - Install: ~curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash~
   - Image: =ghcr.io/terraform-linters/tflint=
   - Addon: [[https://github.com/terraform-linters/tflint-ruleset-aws][ruleset-aws]]
+*** Formatter
+- Install: terraform-mode
+- Usage: ~(add-hook 'terraform-mode-hook 'terraform-format-on-save-mode)~
 
 ** TeX/LaTeX
 *** LSP
@@ -117,11 +134,13 @@ https://www.flycheck.org/en/latest/languages.html#tex-latex
   - Image: =quay.io/redhat-developer/yaml-language-server:latest=
 *** Linter
 https://www.flycheck.org/en/latest/languages.html#yaml
+*** Formatter
 
 * Email Client
 =mu4e= required configuration
 [[https://www.youtube.com/watch?v=yZRyEhi4y44&list=PLEoMzSkcN8oM-kA19xOQc8s0gr0PpFGJQ&index=1][System Crafters video series guide]]
 [[https://github.com/hlissner/dotfiles/tree/be0dce5dae8f3cbafaac0cc44269d84b4a742c46/shell/mu][hlissner dotfiles]]
+
 ** Message indexing
 - mu / maildir-utils (+ mu4e on debian) ::
   - Insall (fedora):
@@ -131,6 +150,7 @@ https://www.flycheck.org/en/latest/languages.html#yaml
 mu init --maildir ~/.mail --my-address email@example.com
 mu index
 #+end_src
+
 ** Email sync
 - isync / mbsync ::
   - Faster sync: https://tecosaur.github.io/emacs-config/config.html#fetching
@@ -145,9 +165,11 @@ User legalaze94@gmail.com
 SSLType IMAPS
 CertificateFile
 #+end_src
+
 ** Send email
 - msmtp ::
   - Install:
     ~dnf install msmtp~
+
 ** org-mode integration
 - org-msg ::
