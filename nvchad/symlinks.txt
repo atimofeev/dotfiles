@@ -1,0 +1,2 @@
+#SRC=DEST
+$DIR/nvchad/files=$HOME/.config/nvim/lua/custom
