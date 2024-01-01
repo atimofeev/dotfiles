@@ -107,6 +107,10 @@ local plugins = {
 						["<M-c>"] = "Submit",
 						["<M-k>"] = "Abort",
 					},
+					popup = {
+						["p"] = "PushPopup",
+						["P"] = "PullPopup",
+					},
 				},
 			})
 		end,
