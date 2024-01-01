@@ -18,6 +18,7 @@ local plugins = {
 			{
 				"NvChad/nvcommunity",
 				{ import = "nvcommunity.lsp.mason-lspconfig" },
+				{ import = "nvcommunity.lsp.lsplines" },
 				{
 					"mason-lspconfig.nvim",
 					opts = {
