@@ -32,6 +32,7 @@ https://github.com/NvChad/nvcommunity
 
 ## Configuration Examples
 
+https://github.com/Alexis12119/nvim-config
 https://github.com/cgxxv/custom/
 https://github.com/dreamsofcode-io/neovim-python
 https://github.com/dreamsofcode-io/neovim-go-config

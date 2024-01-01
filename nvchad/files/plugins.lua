@@ -6,35 +6,27 @@ local plugins = {
 	{ --built-in
 		"neovim/nvim-lspconfig",
 		dependencies = {
-			"williamboman/mason-lspconfig.nvim",
-			"jose-elias-alvarez/null-ls.nvim",
-		},
-		opts = function()
-			require("plugins.configs.lspconfig")
-			require("custom.configs.lspconfig")
-		end,
-	},
+			{
+				"nvimtools/none-ls.nvim",
+				opts = function()
+					require("custom.configs.null-ls")
+				end,
+			},
 
-	{
-		"williamboman/mason-lspconfig.nvim",
-		lazy = false,
-		dependencies = {
 			"williamboman/mason.nvim",
-		},
-		opts = function()
-			require("custom.configs.mason-lsp")
-		end,
-	},
 
-	{
-		"jose-elias-alvarez/null-ls.nvim",
-		dependencies = {
-			"williamboman/mason.nvim",
-			"jay-babu/mason-null-ls.nvim",
+			{
+				"NvChad/nvcommunity",
+				{ import = "nvcommunity.lsp.mason-lspconfig" },
+				{
+					"mason-lspconfig.nvim",
+					opts = {
+						automatic_installation = true,
+						ensure_installed = require("custom.configs.packages").lsp,
+					},
+				},
+			},
 		},
-		opts = function()
-			return require("custom.configs.null-ls")
-		end,
 	},
 
 	{
@@ -42,11 +34,19 @@ local plugins = {
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			"williamboman/mason.nvim",
-			"jose-elias-alvarez/null-ls.nvim",
+			"nvimtools/none-ls.nvim",
 		},
 		config = function()
 			require("custom.configs.null-ls")
+			require("mason-null-ls").setup({
+				automatic_installation = true,
+			})
 		end,
+	},
+
+	{
+		"folke/trouble.nvim",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
 	},
 
 	---- UI ----
@@ -101,6 +101,13 @@ local plugins = {
 			require("neogit").setup({
 				disable_hint = true,
 				disable_signs = true,
+				mappings = {
+					commit_editor = {
+						["q"] = "Close",
+						["<M-c>"] = "Submit",
+						["<M-k>"] = "Abort",
+					},
+				},
 			})
 		end,
 	},
