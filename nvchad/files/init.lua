@@ -8,3 +8,11 @@
 local opt = vim.opt
 
 opt.relativenumber = true
+
+vim.treesitter.language.register("hcl", "terraform-vars")
+
+vim.filetype.add({
+	filename = {
+		["Jenkinsfile"] = "groovy",
+	},
+})
