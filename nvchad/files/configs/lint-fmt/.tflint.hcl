@@ -1,0 +1,16 @@
+plugin "terraform" {
+  enabled = true
+  preset = "all"
+}
+plugin "aws" {
+    enabled = true
+    version = "0.27.0"
+    source  = "github.com/terraform-linters/tflint-ruleset-aws"
+}
+/*
+plugin "aws-serverless" {
+  enabled = true
+  version = "0.3.2"
+  source = "github.com/awslabs/serverless-rules"
+}
+*/
