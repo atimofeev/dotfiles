@@ -2,7 +2,9 @@
 
 ## Features
 
-- Automatic tree-sitter modules installation
+- Automatic tree-sitter modules installation (full auto discovery)
+- Automatic LSP install (from list in configs/packages.lua)
+- Automatic Lint/Fmt install (from list in configs/null-ls.lua)
 - Automatic formatting on save
 - Inline git blame
 - Rainbow delimiters
@@ -12,18 +14,20 @@
 
 ### Functionality
 
-- Automatic LSP install (lspconfig + mason-lspconfig)
-- Automatic Lint/Fmt install (null-ls + mason-null-ls)
+- Debugging (nvim-dap + nvim-dap-ui + mason-nvim-dap.nvim)
 - Project management (with subprojects)
-- Org-mode support (neorg)
+- Notes (obsidian.nvim?)
+- Journal
 - Code completion (codeium.nvim)
 - ChatGPT integration (ChatGPT.nvim)
-- Debugging (nvim-dap + nvim-dap-ui)
 
 ### Settings
 
 - Prevent scrolling past end of buffer (no more than 50% of screen)
-- Set cursor window border margin (3 lines)
+
+### Issues to Fix
+
+- All good for now!
 
 ## Useful Links
 
