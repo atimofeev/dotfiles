@@ -16,3 +16,6 @@ vim.filetype.add({
 		["Jenkinsfile"] = "groovy",
 	},
 })
+
+-- Cursor scrolling margin
+vim.opt.scrolloff = 6
