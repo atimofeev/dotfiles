@@ -7,11 +7,11 @@ opt.relativenumber = true
 vim.treesitter.language.register("hcl", "terraform-vars")
 
 -- apply filetype of groovy to Jenkinsfile; enables treesitter highlight
-vim.filetype.add({
-	filename = {
-		["Jenkinsfile"] = "groovy",
-	},
-})
+vim.filetype.add {
+  filename = {
+    ["Jenkinsfile"] = "groovy",
+  },
+}
 
 -- Cursor scrolling margin
 vim.opt.scrolloff = 6
