@@ -17,13 +17,18 @@
 - Debugging (nvim-dap + nvim-dap-ui + mason-nvim-dap.nvim)
 - Project management (with subprojects)
 - Notes (obsidian.nvim?)
+  https://github.com/goshatch/orgroam_to_obsidian
 - Journal
 - Code completion (codeium.nvim)
 - ChatGPT integration (ChatGPT.nvim)
+- Enable yaml schema detection (yaml.ansible, yaml.kubernetes, yaml.docker-compose)
+  https://github.com/b0o/SchemaStore.nvim (ansible, docker-compose)
+  https://github.com/someone-stole-my-name/yaml-companion.nvim
 
 ### Settings
 
 - Prevent scrolling past end of buffer (no more than 50% of screen)
+- Apply editorconfig to formatters. [example](https://github.com/SchemaStore/schemastore/blob/master/.editorconfig)
 
 ### Issues to Fix
 
