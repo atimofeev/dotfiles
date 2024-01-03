@@ -20,15 +20,12 @@ local plugins = {
 					},
 				},
 			},
+
 			{
 				"nvimtools/none-ls.nvim",
 				dependencies = {
 					{
 						"jay-babu/mason-null-ls.nvim",
-						--event = { "BufReadPre", "BufNewFile" },
-						dependencies = {
-							"nvimtools/none-ls.nvim",
-						},
 						config = function()
 							require("custom.configs.null-ls")
 							require("mason-null-ls").setup({
@@ -37,9 +34,6 @@ local plugins = {
 						end,
 					},
 				},
-				opts = function()
-					require("custom.configs.null-ls")
-				end,
 			},
 
 			{
