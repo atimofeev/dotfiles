@@ -24,7 +24,7 @@ local plugins = {
 				"nvimtools/none-ls.nvim",
 				dependencies = {
 					{
-            "jay-babu/mason-null-ls.nvim",
+						"jay-babu/mason-null-ls.nvim",
 						--event = { "BufReadPre", "BufNewFile" },
 						dependencies = {
 							"nvimtools/none-ls.nvim",
@@ -42,10 +42,10 @@ local plugins = {
 				end,
 			},
 
-			-- {
-			-- 	"NvChad/nvcommunity",
-			-- 	{ import = "nvcommunity.lsp.lsplines" },
-			-- },
+			{
+				"NvChad/nvcommunity",
+				{ import = "nvcommunity.lsp.lsplines" },
+			},
 		},
 	},
 
@@ -66,7 +66,6 @@ local plugins = {
 	{
 		"NvChad/nvcommunity",
 		{ import = "nvcommunity.editor.rainbowdelimiters" },
-		--{ import = "nvcommunity.editor.treesittercontext" },
 	},
 
 	{ --built-in
@@ -99,9 +98,9 @@ local plugins = {
 		"NeogitOrg/neogit",
 		lazy = false,
 		dependencies = {
-			"nvim-lua/plenary.nvim", -- required
-			"sindrets/diffview.nvim", -- optional - Diff integration
-			"nvim-telescope/telescope.nvim", -- optional
+			"nvim-lua/plenary.nvim",
+			"sindrets/diffview.nvim",
+			"nvim-telescope/telescope.nvim",
 		},
 		config = function()
 			require("neogit").setup({
@@ -124,7 +123,7 @@ local plugins = {
 
 	---- MISC ----
 
-	{
+	{ -- exit INSERT mode with fast "jk"
 		"max397574/better-escape.nvim",
 		event = "InsertEnter",
 		config = function()

@@ -14,7 +14,7 @@ local sources = {
 	b.diagnostics.ruff,
 	-- Go
 	b.diagnostics.golangci_lint,
-	b.formatting.gofmt,
+	b.formatting.gofmt, -- ADD TO MASON
 	b.formatting.golines,
 	-- Bash
 	b.diagnostics.shellcheck,
@@ -24,13 +24,13 @@ local sources = {
 	-- Docker
 	b.diagnostics.hadolint,
 	-- Terraform
-	b.diagnostics.terraform_validate,
-	--b.diagnostics.tflint, -- MANUALLY ADD
+	b.diagnostics.terraform_validate, -- ADD TO MASON
+	--b.diagnostics.tflint, -- ADD TO NULL-LS
 	b.diagnostics.tfsec,
-	b.formatting.terraform_fmt,
+	b.formatting.terraform_fmt, -- ADD TO MASON
 	-- YAML
 	b.diagnostics.yamllint,
-	b.formatting.yamlfmt,
+	--b.formatting.yamlfmt,
 	b.formatting.yamlfix.with({
 		env = {
 			YAMLFIX_COMMENTS_MIN_SPACES_FROM_CONTENT = "2",
