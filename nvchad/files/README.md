@@ -18,12 +18,15 @@
 - Project management (with subprojects)
 - Notes (obsidian.nvim?)
   https://github.com/goshatch/orgroam_to_obsidian
+  https://www.reddit.com/r/ObsidianMD/comments/qeb333/simplifying_the_transition_from_roam_to_obsidian/
 - Journal
 - Code completion (codeium.nvim)
 - ChatGPT integration (ChatGPT.nvim)
 - Enable yaml schema detection (yaml.ansible, yaml.kubernetes, yaml.docker-compose)
   https://github.com/b0o/SchemaStore.nvim (ansible, docker-compose)
   https://github.com/someone-stole-my-name/yaml-companion.nvim
+  https://github.com/someone-stole-my-name/yaml-companion.nvim/issues/23
+- Add [KubeLinter](https://github.com/stackrox/kube-linter)
 
 ### Settings
 
