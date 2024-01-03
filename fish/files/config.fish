@@ -3,8 +3,8 @@ if status is-interactive
 end
 
 ### ENV VARS ###
-set EDITOR "nvim"
-set GOPATH "/usr/local/go"
+set EDITOR nvim
+set GOPATH /usr/local/go
 set -e fish_user_paths
 set -U fish_user_paths $GOPATH/bin $HOME/.bin $HOME/.local/bin $HOME/.config/emacs/bin $fish_user_paths
 
@@ -42,7 +42,7 @@ if type -q bat
     alias less='bat --color=always --style=auto'
     alias cat='bat --color=always --style=plain --paging=never'
     set -x MANPAGER "sh -c 'col -bx | bat -l man -p'" # man pages -> bat
-    set -x MANROFFOPT "-c"                            # bat man pages formatting fix
+    set -x MANROFFOPT -c # bat man pages formatting fix
     function help # help [command] -> bat
         $argv --help 2>&1 | bat --plain --language=help
     end
@@ -83,7 +83,7 @@ function git_remove_file_history
     end
 
     # Ensure that the user is in a Git repository
-    if not git rev-parse --is-inside-work-tree > /dev/null 2>&1
+    if not git rev-parse --is-inside-work-tree >/dev/null 2>&1
         echo "You must be inside a Git repository to run this command."
         return 1
     end
@@ -106,20 +106,35 @@ end
 function ex
     if test -f "$argv[1]"
         set ext (string match -r '\..+$' "$argv[1]")
-        if test "$ext" = ".tar.bz2"; tar xjf $argv[1]
-        else if test "$ext" = ".tar.gz"; tar xzf $argv[1]
-        else if test "$ext" = ".bz2"; bunzip2 $argv[1]
-        else if test "$ext" = ".rar"; unrar x $argv[1]
-        else if test "$ext" = ".gz"; gunzip $argv[1]
-        else if test "$ext" = ".tar"; tar xf $argv[1]
-        else if test "$ext" = ".tbz2"; tar xjf $argv[1]
-        else if test "$ext" = ".tgz"; tar xzf $argv[1]
-        else if test "$ext" = ".zip"; unzip $argv[1]
-        else if test "$ext" = ".Z"; uncompress $argv[1]
-        else if test "$ext" = ".7z"; 7z x $argv[1]
-        else if test "$ext" = ".tar.xz"; tar -Jxf $argv[1]
-        else if test "$ext" = ".tar.zst"; unzstd $argv[1]
-        else; echo "'$argv[1]' cannot be extracted via ex()"; end
+        if test "$ext" = ".tar.bz2"
+            tar xjf $argv[1]
+        else if test "$ext" = ".tar.gz"
+            tar xzf $argv[1]
+        else if test "$ext" = ".bz2"
+            bunzip2 $argv[1]
+        else if test "$ext" = ".rar"
+            unrar x $argv[1]
+        else if test "$ext" = ".gz"
+            gunzip $argv[1]
+        else if test "$ext" = ".tar"
+            tar xf $argv[1]
+        else if test "$ext" = ".tbz2"
+            tar xjf $argv[1]
+        else if test "$ext" = ".tgz"
+            tar xzf $argv[1]
+        else if test "$ext" = ".zip"
+            unzip $argv[1]
+        else if test "$ext" = ".Z"
+            uncompress $argv[1]
+        else if test "$ext" = ".7z"
+            7z x $argv[1]
+        else if test "$ext" = ".tar.xz"
+            tar -Jxf $argv[1]
+        else if test "$ext" = ".tar.zst"
+            unzstd $argv[1]
+        else
+            echo "'$argv[1]' cannot be extracted via ex()"
+        end
     else
         echo "'$argv[1]' is not a valid file"
     end

@@ -4,6 +4,7 @@ local b = null_ls.builtins
 
 local config_path = vim.fn.expand("~/.config/nvim/lua/custom/configs/lint-fmt/")
 
+-- Builtin sources list: https://github.com/nvimtools/none-ls.nvim/blob/main/doc/BUILTINS.md
 local sources = {
 	b.formatting.prettier.with({ filetypes = { "json", "markdown" } }),
 	-- Lua
@@ -14,20 +15,23 @@ local sources = {
 	b.diagnostics.ruff,
 	-- Go
 	b.diagnostics.golangci_lint,
-	b.formatting.gofmt, -- ADD TO MASON
+	b.formatting.gofumpt,
 	b.formatting.golines,
 	-- Bash
 	b.diagnostics.shellcheck,
 	b.formatting.shfmt,
+	-- Fish
+	b.diagnostics.fish,
+	b.formatting.fish_indent,
 	-- Ansible
 	b.diagnostics.ansiblelint,
 	-- Docker
 	b.diagnostics.hadolint,
 	-- Terraform
-	b.diagnostics.terraform_validate, -- ADD TO MASON
+	b.diagnostics.terraform_validate,
 	--b.diagnostics.tflint, -- ADD TO NULL-LS
 	b.diagnostics.tfsec,
-	b.formatting.terraform_fmt, -- ADD TO MASON
+	b.formatting.terraform_fmt,
 	-- YAML
 	b.diagnostics.yamllint,
 	--b.formatting.yamlfmt,
@@ -40,9 +44,9 @@ local sources = {
 	b.diagnostics.markdownlint.with({
 		extra_args = { "--config", config_path .. ".markdownlint.yaml" },
 	}),
-	--b.formatting.markdown_toc, -- gets in a short loop along with prettier
 	-- JSON
 	b.diagnostics.jsonlint,
+	b.formatting.fixjson,
 }
 
 null_ls.setup({
