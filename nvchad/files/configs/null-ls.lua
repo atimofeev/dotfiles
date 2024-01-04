@@ -35,6 +35,7 @@ local sources = {
   b.diagnostics.tfsec,
   b.formatting.terraform_fmt,
   -- YAML
+  b.diagnostics.actionlint.with { filetypes = { "yaml.gh_actions" } },
   b.diagnostics.yamllint,
   --b.formatting.yamlfmt,
   b.formatting.yamlfix.with {
