@@ -49,3 +49,4 @@ https://github.com/cgxxv/custom/
 https://github.com/dreamsofcode-io/neovim-python
 https://github.com/dreamsofcode-io/neovim-go-config
 https://github.com/dreamsofcode-io/neovim-rust
+https://github.com/TymekDev/dotfiles/tree/main/config/nvim
