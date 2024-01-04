@@ -19,23 +19,21 @@ local sources = {
   b.diagnostics.golangci_lint,
   b.formatting.gofumpt,
   b.formatting.golines,
-  -- Bash
+  -- shell
   b.diagnostics.shellcheck,
   b.formatting.shfmt,
-  -- Fish
   b.diagnostics.fish,
   b.formatting.fish_indent,
-  -- Ansible
-  b.diagnostics.ansiblelint,
   -- Docker
   b.diagnostics.hadolint,
   -- Terraform
-  b.diagnostics.terraform_validate,
   --b.diagnostics.tflint, -- ADD TO NULL-LS
+  b.diagnostics.terraform_validate,
   b.diagnostics.tfsec,
   b.formatting.terraform_fmt,
   -- YAML
   b.diagnostics.actionlint.with { filetypes = { "yaml.gh_actions" } },
+  b.diagnostics.ansiblelint,
   b.diagnostics.yamllint,
   --b.formatting.yamlfmt,
   b.formatting.yamlfix.with {
