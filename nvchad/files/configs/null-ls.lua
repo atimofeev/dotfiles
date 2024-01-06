@@ -8,9 +8,7 @@ local config_path = vim.fn.expand "~/.config/nvim/lua/custom/configs/lint-fmt/"
 local sources = {
   b.formatting.prettier.with { filetypes = { "json", "markdown" } },
   -- Lua
-  b.formatting.stylua.with {
-    extra_args = { "--config-path", config_path .. ".stylua.toml" },
-  },
+  b.formatting.stylua.with { extra_args = { "--config-path", config_path .. ".stylua.toml" } },
   -- Python
   b.formatting.black,
   b.diagnostics.mypy,
@@ -36,15 +34,9 @@ local sources = {
   b.diagnostics.ansiblelint,
   b.diagnostics.yamllint,
   --b.formatting.yamlfmt,
-  b.formatting.yamlfix.with {
-    env = {
-      YAMLFIX_COMMENTS_MIN_SPACES_FROM_CONTENT = "2",
-    },
-  },
+  b.formatting.yamlfix.with { env = { YAMLFIX_COMMENTS_MIN_SPACES_FROM_CONTENT = "2" } },
   -- Markdown
-  b.diagnostics.markdownlint.with {
-    extra_args = { "--config", config_path .. ".markdownlint.yaml" },
-  },
+  b.diagnostics.markdownlint.with { extra_args = { "--config", config_path .. ".markdownlint.yaml" } },
   -- JSON
   b.diagnostics.jsonlint,
   b.formatting.fixjson,
