@@ -3,48 +3,9 @@ local plugins = {
 
   ---- LSP ----
 
-  { --built-in
-    "neovim/nvim-lspconfig",
-    dependencies = {
-      {
-        "NvChad/nvcommunity",
-        { import = "nvcommunity.lsp.mason-lspconfig" },
-        {
-          "mason-lspconfig",
-          opts = {
-            automatic_installation = true,
-            ensure_installed = require("custom.configs.packages").lsp,
-          },
-          dependencies = {
-            "williamboman/mason.nvim",
-          },
-        },
-      },
+  { import = "custom.configs.lsp" },
 
-      {
-        "nvimtools/none-ls.nvim",
-        dependencies = {
-          {
-            "jay-babu/mason-null-ls.nvim",
-            config = function()
-              require "custom.configs.null-ls"
-              require("mason-null-ls").setup {
-                automatic_installation = true,
-              }
-            end,
-          },
-        },
-      },
-
-      {
-        "NvChad/nvcommunity",
-        { import = "nvcommunity.lsp.lsplines" },
-        { import = "nvcommunity/diagnostics/trouble" },
-      },
-    },
-  },
-
-  ---- UI ----
+  ---- UI/VISIBILITY ----
 
   { --built-in
     "nvim-treesitter/nvim-treesitter",
