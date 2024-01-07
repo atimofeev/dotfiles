@@ -57,6 +57,7 @@ https://github.com/Allaman/nvim
 https://github.com/ayamir/nvimdots
 https://github.com/Phantas0s/.dotfiles/tree/master/nvim
 https://github.com/theniceboy/nvim
+https://github.com/SUSTech-data/nvdim/
 
 ### Community Configs
 
