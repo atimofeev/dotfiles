@@ -14,24 +14,15 @@ local plugins = {
     },
   },
 
-  {
-    "NvChad/nvcommunity",
-    { import = "nvcommunity.editor.rainbowdelimiters" },
-  },
+  { "NvChad/nvcommunity", { import = "nvcommunity.editor.rainbowdelimiters" } },
 
   { --built-in
     "nvim-tree/nvim-tree.lua",
     opts = {
-      git = {
-        enable = true,
-      },
+      git = { enable = true },
       renderer = {
         highlight_git = true,
-        icons = {
-          show = {
-            git = true,
-          },
-        },
+        icons = { show = { git = true } },
       },
     },
   },
@@ -53,7 +44,7 @@ local plugins = {
       "sindrets/diffview.nvim",
       "nvim-telescope/telescope.nvim",
     },
-    config = function()
+    opts = function()
       require("neogit").setup {
         disable_hint = true,
         disable_signs = true,
@@ -77,7 +68,7 @@ local plugins = {
   { -- exit INSERT mode with fast "jk"
     "max397574/better-escape.nvim",
     event = "InsertEnter",
-    config = function()
+    opts = function()
       require("better_escape").setup()
     end,
   },
