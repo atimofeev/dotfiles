@@ -27,6 +27,7 @@
 - .editorconfig: [example](https://github.com/SchemaStore/schemastore/blob/master/.editorconfig); [editorconfig-checker](https://github.com/editorconfig-checker/editorconfig-checker)
 - [todo-comments.nvim](https://github.com/folke/todo-comments.nvim)
 - Fast text navigation: [leap.nvim](https://github.com/ggandor/leap.nvim)
+- Split and join arguments: [mini-splitjoin](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-splitjoin.md)
 
 ### Settings
 
@@ -58,6 +59,7 @@ https://github.com/ayamir/nvimdots
 https://github.com/Phantas0s/.dotfiles/tree/master/nvim
 https://github.com/theniceboy/nvim
 https://github.com/SUSTech-data/nvdim/
+https://github.com/mgastonportillo/nvchad-config
 
 ### Community Configs
 
