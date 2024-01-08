@@ -7,16 +7,15 @@ local plugins = {
 
   ---- UI/VISIBILITY ----
 
-  { --built-in
+  {
     "nvim-treesitter/nvim-treesitter",
-    opts = {
-      auto_install = true,
-    },
+    opts = { auto_install = true },
+    dependencies = { "nvim-treesitter/playground" },
   },
 
   { "NvChad/nvcommunity", { import = "nvcommunity.editor.rainbowdelimiters" } },
 
-  { --built-in
+  {
     "nvim-tree/nvim-tree.lua",
     opts = {
       git = { enable = true },
@@ -29,12 +28,7 @@ local plugins = {
 
   ---- GIT ----
 
-  { --built-in
-    "lewis6991/gitsigns.nvim",
-    opts = {
-      current_line_blame = true,
-    },
-  },
+  { "lewis6991/gitsigns.nvim", opts = { current_line_blame = true } },
 
   {
     "NeogitOrg/neogit",
