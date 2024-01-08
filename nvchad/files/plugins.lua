@@ -26,6 +26,14 @@ local plugins = {
     },
   },
 
+  { -- NOTE: This plugin adds notes
+    "folke/todo-comments.nvim",
+    event = "BufRead",
+    config = function()
+      require("todo-comments").setup()
+    end,
+  },
+
   ---- GIT ----
 
   { "lewis6991/gitsigns.nvim", opts = { current_line_blame = true } },
