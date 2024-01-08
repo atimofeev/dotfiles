@@ -20,6 +20,7 @@
 (set-frame-parameter nil 'alpha-background 96)                   ; enable true transparency
 (add-to-list 'default-frame-alist '(alpha-background . 96))
 (set-frame-parameter nil 'undecorated t)                         ; remove window decorations
+(map! :nv ";" #'evil-ex)                                         ; go into evil-ex cmd input without Ctrl
 (global-set-key (kbd "C-M-<up>")   'mc/mark-previous-like-this)  ; spawn additional cursor above; C-g to exit
 (global-set-key (kbd "C-M-<down>") 'mc/mark-next-like-this)      ; spawn additional cursor below
 (unbind-key "<insertchar>" overwrite-mode)                       ; disable overwrite mode on Insert key
