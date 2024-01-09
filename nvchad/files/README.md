@@ -2,19 +2,20 @@
 
 ## Features
 
-- Automatic tree-sitter modules installation (full auto discovery)
-- Automatic LSP install (from list in configs/packages.lua)
-- Automatic Lint/Fmt install (from list in configs/null-ls.lua)
-- Automatic formatting on save
-- Inline git blame
-- Rainbow delimiters
-- Git UI (neogit)
+- Tree-sitter with auto install: [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
+- LSP: [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
+- YAML schema detection: [yaml-companion.nvim](https://github.com/someone-stole-my-name/yaml-companion.nvim)
+- Linting, formatting on save: [none-ls.nvim](https://github.com/nvimtools/none-ls.nvim)
+- Auto install dependencies: [mason.nvim](https://github.com/williamboman/mason.nvim), [mason-lspconfig.nvim](https://github.com/williamboman/mason-lspconfig.nvim), [mason-null-ls.nvim](https://github.com/jay-babu/mason-null-ls.nvim)
+- Inline git blame: [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim)
+- Git UI: [neogit](https://github.com/NeogitOrg/neogit)
+- Colors and HL: [rainbow-delimiters.nvim](https://github.com/hiphish/rainbow-delimiters.nvim) [todo-comments.nvim](https://github.com/folke/todo-comments.nvim)
+- Navigation: [better-escape.nvim](https://github.com/max397574/better-escape.nvim)
 
 ## Goals
 
 ### Functionality
 
-- YAML schema detection: [yaml-companion.nvim](https://github.com/someone-stole-my-name/yaml-companion.nvim) or [SchemaStore.nvim](https://github.com/b0o/SchemaStore.nvim)
 - [KubeLinter](https://github.com/stackrox/kube-linter)
 - Project management (with subprojects)
 - Notes: [obsidian.nvim](https://github.com/epwalsh/obsidian.nvim) + [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) Migration tips: [1](https://github.com/goshatch/orgroam_to_obsidian), [2](https://www.reddit.com/r/ObsidianMD/comments/qeb333/simplifying_the_transition_from_roam_to_obsidian/)
@@ -25,8 +26,7 @@
 - Debugging (nvim-dap + nvim-dap-ui + mason-nvim-dap.nvim)
 - Notifications: [nvim-notify](https://github.com/rcarriga/nvim-notify)
 - .editorconfig: [example](https://github.com/SchemaStore/schemastore/blob/master/.editorconfig); [editorconfig-checker](https://github.com/editorconfig-checker/editorconfig-checker)
-- [todo-comments.nvim](https://github.com/folke/todo-comments.nvim)
-- Fast text navigation: [leap.nvim](https://github.com/ggandor/leap.nvim)
+- Navigation: [leap.nvim](https://github.com/ggandor/leap.nvim)
 - Split and join arguments: [mini-splitjoin](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-splitjoin.md)
 
 ### Settings
@@ -37,11 +37,6 @@
 ### Issues to Fix
 
 - All good for now!
-
-## Useful Links
-
-https://github.com/rockerBOO/awesome-neovim
-https://github.com/NvChad/nvcommunity
 
 ## Configuration
 
@@ -64,6 +59,7 @@ https://github.com/mgastonportillo/nvchad-config
 ### Community Configs
 
 https://github.com/NvChad/NvChad
+https://github.com/NvChad/nvcommunity
 https://github.com/SpaceVim/SpaceVim
 https://github.com/LunarVim/LunarVim
 https://github.com/AstroNvim/AstroNvim
