@@ -7,11 +7,7 @@ local plugins = {
 
   ---- UI/VISIBILITY ----
 
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = { auto_install = true },
-    dependencies = { "nvim-treesitter/playground" },
-  },
+  { "nvim-treesitter/nvim-treesitter", opts = { auto_install = true } },
 
   { "NvChad/nvcommunity", { import = "nvcommunity.editor.rainbowdelimiters" } },
 
@@ -26,7 +22,7 @@ local plugins = {
     },
   },
 
-  { -- NOTE: This plugin adds notes
+  {
     "folke/todo-comments.nvim",
     event = "BufRead",
     config = function()
