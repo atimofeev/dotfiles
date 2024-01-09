@@ -11,9 +11,12 @@ local setup = function(_, opts)
     ensure_installed = require("custom.configs.packages").lsp,
   }
 
-  -- local cfg = require("yaml-companion").setup {
-  --   --overrides
-  -- }
+  local cfg = require("yaml-companion").setup {
+    builtin_matchers = {
+      cloud_init = { enabled = true },
+      kubernetes = { enabled = true },
+    },
+  }
 
   require("mason-lspconfig").setup_handlers {
     -- Default setup for all servers, unless a custom one is defined below
@@ -30,19 +33,7 @@ local setup = function(_, opts)
     -- disable auto config for lua_ls to use NvChad conf instead
     ["lua_ls"] = function() end,
     ["yamlls"] = function()
-      lspconfig.yamlls.setup { --cfg }
-        settings = {
-          yaml = {
-            -- disable builtin schemastore
-            schemaStore = { enable = false, url = "" },
-            schemas = require("schemastore").yaml.schemas(),
-          },
-        },
-        on_attach = function(client, bufnr)
-          on_attach(client, bufnr)
-        end,
-        capabilities = capabilities,
-      }
+      lspconfig.yamlls.setup(cfg)
     end,
   }
 end
@@ -54,16 +45,16 @@ local spec = {
   event = { "VeryLazy", "BufRead" },
   config = function() end, -- Override to make sure load order is correct
   dependencies = {
-    -- {
-    --   "someone-stole-my-name/yaml-companion.nvim",
-    --   dependencies = {
-    --     { "nvim-lua/plenary.nvim" },
-    --     { "nvim-telescope/telescope.nvim" },
-    --   },
-    --   config = function()
-    --     require("telescope").load_extension "yaml_schema"
-    --   end,
-    -- },
+    {
+      "someone-stole-my-name/yaml-companion.nvim",
+      dependencies = {
+        { "nvim-lua/plenary.nvim" },
+        { "nvim-telescope/telescope.nvim" },
+      },
+      config = function()
+        require("telescope").load_extension "yaml_schema"
+      end,
+    },
     "b0o/schemastore.nvim",
     {
       "williamboman/mason.nvim",
