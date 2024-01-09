@@ -8,7 +8,7 @@ local setup = function(_, opts)
 
   require("mason-lspconfig").setup {
     automatic_installation = true,
-    ensure_installed = require("custom.configs.packages").lsp,
+    ensure_installed = require("custom.configs.dependencies").lsp,
   }
 
   local cfg = require("yaml-companion").setup {
