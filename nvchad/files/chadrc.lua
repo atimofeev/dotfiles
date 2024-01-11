@@ -29,6 +29,7 @@ M.ui = {
     ["Repeat"] = { fg = "#51afef" },
     ["@function"] = { fg = "#c678dd" },
     ["@property"] = { fg = "#dcaeea" },
+    ["@lsp.type.string"] = { fg = "green" },
     --["@constant.call"] = {fg = "#a9a1e1"}, --non-existent in TS
     --["@variable.declaration"] = {fg = "#dcaeea"}, --non-existent in TS
 
