@@ -7,9 +7,10 @@
 - YAML schema detection: [yaml-companion.nvim](https://github.com/someone-stole-my-name/yaml-companion.nvim)
 - Linting, formatting on save: [none-ls.nvim](https://github.com/nvimtools/none-ls.nvim)
 - Auto install dependencies: [mason.nvim](https://github.com/williamboman/mason.nvim), [mason-lspconfig.nvim](https://github.com/williamboman/mason-lspconfig.nvim), [mason-null-ls.nvim](https://github.com/jay-babu/mason-null-ls.nvim)
+- Project management: [project.nvim](https://github.com/ahmedkhalf/project.nvim)
 - Inline git blame: [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim)
 - Git UI: [neogit](https://github.com/NeogitOrg/neogit)
-- Colors and HL: [rainbow-delimiters.nvim](https://github.com/hiphish/rainbow-delimiters.nvim) [todo-comments.nvim](https://github.com/folke/todo-comments.nvim)
+- Colors and HL: [rainbow-delimiters.nvim](https://github.com/hiphish/rainbow-delimiters.nvim), [todo-comments.nvim](https://github.com/folke/todo-comments.nvim)
 - Navigation: [better-escape.nvim](https://github.com/max397574/better-escape.nvim)
 
 ## Goals
@@ -17,10 +18,9 @@
 ### Functionality
 
 - [KubeLinter](https://github.com/stackrox/kube-linter)
-- Project management (with subprojects)
+- Dashboard: [dashboard-nvim](https://github.com/nvimdev/dashboard-nvim)
 - Notes: [obsidian.nvim](https://github.com/epwalsh/obsidian.nvim) + [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) Migration tips: [1](https://github.com/goshatch/orgroam_to_obsidian), [2](https://www.reddit.com/r/ObsidianMD/comments/qeb333/simplifying_the_transition_from_roam_to_obsidian/)
 - Journal: [telekasten.nvim](https://github.com/renerocksai/telekasten.nvim)
-- Dashboard: [dashboard-nvim](https://github.com/nvimdev/dashboard-nvim)
 - Code completion: [codeium.nvim](https://github.com/Exafunction/codeium.nvim)
 - ChatGPT integration: [ChatGPT.nvim](https://github.com/jackMort/ChatGPT.nvim)
 - Debugging (nvim-dap + nvim-dap-ui + mason-nvim-dap.nvim)
@@ -33,6 +33,7 @@
 
 - Prevent scrolling past end of buffer (no more than 50% of screen)
 - [Integrate indent-blankline.nvim with rainbow-delimiters.nvim](https://github.com/lukas-reineke/indent-blankline.nvim#rainbow-delimitersnvim-integration)
+- Enable tree-sitter for .conf files
 
 ### Issues to Fix
 
