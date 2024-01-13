@@ -5,9 +5,10 @@ end
 ### ENV VARS ###
 set EDITOR nvim
 set GOPATH /usr/local/go
+set GOPATH_USR ~/go/
 set RUSTPATH $HOME/.cargo/bin
 set -e fish_user_paths
-set -U fish_user_paths $GOPATH/bin $HOME/.bin $HOME/.local/bin $HOME/.config/emacs/bin $RUSTPATH $fish_user_paths
+set -U fish_user_paths $GOPATH/bin $GOPATH_USR/bin $HOME/.bin $HOME/.local/bin $HOME/.config/emacs/bin $RUSTPATH $fish_user_paths
 
 ### APPS ###
 
