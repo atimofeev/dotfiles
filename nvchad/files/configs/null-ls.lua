@@ -9,6 +9,10 @@ local sources = {
   b.formatting.prettier.with { filetypes = { "json", "markdown" } },
   -- Lua
   b.formatting.stylua.with { extra_args = { "--config-path", config_path .. ".stylua.toml" } },
+  -- Nix
+  b.diagnostics.statix,
+  b.formatting.nixfmt,
+  b.formatting.nixpkgs_fmt,
   -- Python
   b.formatting.black,
   b.diagnostics.mypy,

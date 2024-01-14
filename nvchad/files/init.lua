@@ -13,6 +13,7 @@ vim.filetype.add {
     ["playbook.yml"] = "yaml.ansible",
     ["docker-compose.yaml"] = "yaml.docker-compose",
     ["docker-compose.yml"] = "yaml.docker-compose",
+    ["flake.lock"] = "json",
   },
   pattern = {
     [".*/playbooks/.*%.yaml"] = "yaml.ansible",

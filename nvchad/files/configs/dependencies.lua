@@ -6,6 +6,7 @@ M.lsp = {
   "pylsp",
   "gopls",
   "bashls",
+  "nil_ls",
   -- devops
   "ansiblels",
   "docker_compose_language_service",
