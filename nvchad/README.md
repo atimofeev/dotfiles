@@ -34,10 +34,12 @@
 - Prevent scrolling past end of buffer (no more than 50% of screen)
 - [Integrate indent-blankline.nvim with rainbow-delimiters.nvim](https://github.com/lukas-reineke/indent-blankline.nvim#rainbow-delimitersnvim-integration)
 - Enable tree-sitter for .conf files
+- Use obisian.nvim only for ~/vaults/ path
 
 ### Issues to Fix
 
-- All good for now!
+- lsp-lines can't install during from scratch installation
+- Startup error message from rebuilding nvcommunity modules (???)
 
 ## Configuration
 
