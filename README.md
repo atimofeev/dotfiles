@@ -1,5 +1,9 @@
 # My dotfiles (WIP)
 
+## Notice
+
+**Abandonement notice**: this repo most likely will be abandoned in favor of my new [nixos-config](https://github.com/atimofeev/nixos-config) repo.
+
 ## Introduction
 
 This repository contains a script that automates the installation of various applications and manages their respective dotfiles and configurations. Each application is housed in its own directory, which may have its specific installation script, a requirements file, and a symlinks file.
