@@ -9,6 +9,7 @@ M.general = {
     ["<leader>gg"] = { "<cmd> Neogit <CR>", "Open Neogit" },
     ["<leader>fr"] = { "<cmd> Telescope oldfiles <CR>", "Open recent files" },
     ["<leader>pp"] = { "<cmd> Telescope projects <CR>", "Open project" },
+    ["<leader><leader>"] = { "<cmd> Telescope projects <CR>", "Open project" },
   },
   v = {
     [">"] = { ">gv", "indent" },
