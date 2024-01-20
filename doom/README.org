@@ -430,13 +430,13 @@ On the fly syntax checking
 
 *** dockerfile-hadolint
 Runs from container. No configurable options
-#+begin_src sh :tangle ~/.config/doom/scripts/hadolint-container.sh :shebang #!/bin/bash
+#+begin_src sh :tangle ~/.config/doom/scripts/hadolint-container.sh :shebang #!/usr/bin/env bash
 docker run --rm -i hadolint/hadolint hadolint --no-color /dev/stdin <&0
 #+end_src
 
 *** markdownlint-cli
 Runs from container. Accepts flycheck-configured options: config file
-#+begin_src shhh :tangle ~/.config/doom/scripts//markdownlintcli-container.sh :shebang #!/bin/bash
+#+begin_src shhh :tangle ~/.config/doom/scripts//markdownlintcli-container.sh :shebang #!/usr/bin/env bash
 arg_count="$#"
 if [ "$arg_count" -eq 1 ]; then
     path="$1"
@@ -459,7 +459,7 @@ MD041: false  # ignore first-line-heading
 
 *** shellcheck
 Runs from container. Accepts flycheck-configured options: flycheck-shellcheck-follow-sources (t/nil)
-#+begin_src shhh :tangle ~/.config/doom/scripts/shellcheck-container.sh :shebang #!/bin/bash
+#+begin_src shhh :tangle ~/.config/doom/scripts/shellcheck-container.sh :shebang #!/usr/bin/env bash
 docker run --rm -i koalaman/shellcheck:stable "$@" <&0
 #+end_src
 
