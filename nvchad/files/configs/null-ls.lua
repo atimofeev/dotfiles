@@ -36,9 +36,20 @@ local sources = {
   -- YAML
   b.diagnostics.actionlint.with { filetypes = { "yaml.gh_actions" } },
   b.diagnostics.ansiblelint,
-  b.diagnostics.yamllint,
+  b.diagnostics.yamllint.with { extra_args = {"-c", config_path .. ".yamllint.yaml"} },
   --b.formatting.yamlfmt,
-  b.formatting.yamlfix.with { env = { YAMLFIX_COMMENTS_MIN_SPACES_FROM_CONTENT = "2" } },
+  b.formatting.yamlfix.with { 
+    env = {
+      YAMLFIX_COMMENTS_MIN_SPACES_FROM_CONTENT = "2", 
+      YAMLFIX_COMMENTS_REQUIRE_STARTING_SPACE="true",
+      YAMLFIX_WHITELINES="1",
+      YAMLFIX_SECTION_WHITELINES="1", 
+      YAMLFIX_SEQUENCE_STYLE="keep_style",
+      YAMLFIX_quote_representation='"', -- not working
+      YAMLFIX_preserve_quotes="true",
+      YAMLFIX_LINE_LENGTH="", -- disable line wrap
+    }
+  },
   -- Markdown
   b.diagnostics.markdownlint.with { extra_args = { "--config", config_path .. ".markdownlint.yaml" } },
   -- JSON
