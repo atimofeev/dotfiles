@@ -22,6 +22,7 @@ vim.filetype.add {
     [".*/roles/.*%.yml"] = "yaml.ansible",
     [".*/.github/workflows/.*%.yaml"] = "yaml.gh_actions",
     [".*/.github/workflows/.*%.yml"] = "yaml.gh_actions",
+    [".*%.conf"] = "conf",
   },
 }
 
