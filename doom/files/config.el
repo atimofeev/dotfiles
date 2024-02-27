@@ -15,7 +15,7 @@
  global-auto-revert-non-file-buffers t                           ; auto-update non-file buffers (e.g. Dired)
 )
 (global-auto-revert-mode 1)                                      ; auto-update changed files
-(beacon-mode 1)                                                  ; cursor highlight on big movements or between windows
+;(beacon-mode 1)                                                  ; cursor highlight on big movements or between windows
 (pixel-scroll-precision-mode)                                    ; smooth scrolling
 (set-frame-parameter nil 'alpha-background 96)                   ; enable true transparency
 (add-to-list 'default-frame-alist '(alpha-background . 96))

@@ -75,7 +75,7 @@ Main or uncategorized settings
  global-auto-revert-non-file-buffers t                           ; auto-update non-file buffers (e.g. Dired)
 )
 (global-auto-revert-mode 1)                                      ; auto-update changed files
-(beacon-mode 1)                                                  ; cursor highlight on big movements or between windows
+;(beacon-mode 1)                                                  ; cursor highlight on big movements or between windows
 (pixel-scroll-precision-mode)                                    ; smooth scrolling
 (set-frame-parameter nil 'alpha-background 96)                   ; enable true transparency
 (add-to-list 'default-frame-alist '(alpha-background . 96))
@@ -838,7 +838,7 @@ Additional packages from emacs repos
 #+begin_src elisp :tangle ~/.config/doom/packages.el
 ;; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
-(package! beacon)              ; cursor highlighting
+;(package! beacon)              ; cursor highlighting
 (package! imenu-list)          ; listing of file structure
 (package! mwim)                ; ident/comment-aware cursor movements with <home>/<end>
 (package! org-roam-timestamps) ; +c/mtime to PROPERTIES drawer in org-roam file
