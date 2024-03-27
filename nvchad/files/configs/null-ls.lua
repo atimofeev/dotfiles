@@ -47,7 +47,7 @@ local sources = {
       YAMLFIX_SEQUENCE_STYLE="keep_style",
       YAMLFIX_quote_representation='"', -- not working
       YAMLFIX_preserve_quotes="true",
-      YAMLFIX_LINE_LENGTH="", -- disable line wrap
+      YAMLFIX_LINE_LENGTH="999", -- disable line wrap
     }
   },
   -- Markdown
