@@ -76,7 +76,7 @@ local plugins = {
 
   ---- MISC ---
 
-  { -- exit INSERT mode with fast "jk"
+  { -- exit INSERT mode with fast "jj" or "jk"
     "max397574/better-escape.nvim",
     event = "InsertEnter",
     opts = function()
