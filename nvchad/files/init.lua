@@ -20,6 +20,8 @@ vim.filetype.add {
     [".*/playbooks/.*%.yml"] = "yaml.ansible",
     [".*/roles/.*%.yaml"] = "yaml.ansible",
     [".*/roles/.*%.yml"] = "yaml.ansible",
+    [".*/group_vars/.*"] = "yaml.ansible",
+    [".*/host_vars/.*"] = "yaml.ansible",
     [".*/.github/workflows/.*%.yaml"] = "yaml.gh_actions",
     [".*/.github/workflows/.*%.yml"] = "yaml.gh_actions",
     [".*%.conf"] = "conf",
