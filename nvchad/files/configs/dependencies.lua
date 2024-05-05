@@ -11,7 +11,7 @@ M.lsp = {
   "ansiblels",
   "docker_compose_language_service",
   "dockerls",
-  "groovyls",
+  --"groovyls",
   "helm_ls",
   "jsonls",
   "powershell_es",
