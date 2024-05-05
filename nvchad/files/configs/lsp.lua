@@ -78,11 +78,11 @@ local spec = {
       },
     },
 
-    {
-      "NvChad/nvcommunity",
-      { import = "nvcommunity.lsp.lsplines" },
-      { import = "nvcommunity/diagnostics/trouble" },
-    },
+    -- {
+    --   "NvChad/nvcommunity",
+    --   { import = "nvcommunity.lsp.lsplines" },
+    --   { import = "nvcommunity/diagnostics/trouble" },
+    -- },
   },
 }
 
