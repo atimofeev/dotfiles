@@ -10,6 +10,7 @@ local plugins = {
   -- { "nvim-treesitter/nvim-treesitter", opts = { auto_install = true } },
   {
     "luckasRanarison/tree-sitter-hyprlang",
+    enabled = false,
     event = "BufRead",
     dependencies = {
       {
